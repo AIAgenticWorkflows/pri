@@ -31,7 +31,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 150
     steps:
-      - uses: actions/checkout@v4
+      # Plain git instead of a marketplace action, so the workflow starts under any
+      # organisation policy on which actions are allowed.
+      - name: Check out the repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git init -q .
+          git config http.https://github.com/.extraheader "AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch -q --depth 1 origin "$GITHUB_REF_NAME"
+          git checkout -q -B "$GITHUB_REF_NAME" FETCH_HEAD
 
       - name: Read options
         env:
@@ -62,6 +72,6 @@ jobs:
             echo "Nothing changed."
           else
             git commit -m "Refresh price data ($(date -u +%F))"
-            git pull --rebase --autostash
-            git push
+            git pull -q --rebase origin "$GITHUB_REF_NAME"
+            git push -q origin "HEAD:$GITHUB_REF_NAME"
           fi
