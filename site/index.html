@@ -1,0 +1,1292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pri Max</title>
+<meta name="description" content="Check the official maximum retail price of groceries, household goods and medicines in Mauritius and Rodrigues.">
+<meta name="theme-color" content="#19689d">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3CclipPath id='c'%3E%3Cpath d='M10 2h16a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V10z'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='32' height='8' fill='%23cb3a30'/%3E%3Crect y='8' width='32' height='8' fill='%2319689d'/%3E%3Crect y='16' width='32' height='8' fill='%23edb329'/%3E%3Crect y='24' width='32' height='8' fill='%2328a05a'/%3E%3C/g%3E%3Ccircle cx='9.5' cy='9.5' r='2.6' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap">
+<style>
+/* Layout: one search-led column. Categories sit beside the results on wide screens
+   and scroll sideways on phones. Prices are drawn as shelf tags; gold means subsidised. */
+:root {
+  --bg: #f3f6fb;
+  --surface: #ffffff;
+  --surface-2: #eaf0f7;
+  --ink: #1c2740;
+  --ink-2: #536079;
+  --line: #d6dfeb;
+  --brand: #19689d;
+  --brand-strong: #114d77;
+  --on-brand: #ffffff;
+  --flag-red: #cb3a30;
+  --flag-blue: #19689d;
+  --flag-gold: #edb329;
+  --flag-green: #28a05a;
+  --sub: #edb329;
+  --on-sub: #3a2900;
+  --sub-bg: #fff2cc;
+  --sub-ink: #5f4300;
+  --sub-line: #e6c558;
+  --ok: #1a7a43;
+  --ok-bg: #e2f4e9;
+  --over: #b42d23;
+  --over-bg: #fbe5e2;
+  --shadow: 0 1px 2px rgba(28, 39, 64, 0.06), 0 8px 24px rgba(28, 39, 64, 0.07);
+  --font-display: "Sora", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1626;
+    --surface: #172238;
+    --surface-2: #1f2c46;
+    --ink: #e9eef7;
+    --ink-2: #a2b2ca;
+    --line: #2b3a57;
+    --brand: #5cb6e8;
+    --brand-strong: #93d2f6;
+    --on-brand: #0b1626;
+    --flag-red: #e2584e;
+    --flag-blue: #3b8fc6;
+    --flag-gold: #f0bf45;
+    --flag-green: #46b877;
+    --sub: #f0bf45;
+    --on-sub: #3a2900;
+    --sub-bg: #3a2f10;
+    --sub-ink: #ffdb7a;
+    --sub-line: #6b571b;
+    --ok: #62d394;
+    --ok-bg: #143422;
+    --over: #ff9086;
+    --over-bg: #40191a;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.28);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1626;
+  --surface: #172238;
+  --surface-2: #1f2c46;
+  --ink: #e9eef7;
+  --ink-2: #a2b2ca;
+  --line: #2b3a57;
+  --brand: #5cb6e8;
+  --brand-strong: #93d2f6;
+  --on-brand: #0b1626;
+  --flag-red: #e2584e;
+  --flag-blue: #3b8fc6;
+  --flag-gold: #f0bf45;
+  --flag-green: #46b877;
+  --sub: #f0bf45;
+  --on-sub: #3a2900;
+  --sub-bg: #3a2f10;
+  --sub-ink: #ffdb7a;
+  --sub-line: #6b571b;
+  --ok: #62d394;
+  --ok-bg: #143422;
+  --over: #ff9086;
+  --over-bg: #40191a;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.28);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 500 16px/1.5 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+[hidden] { display: none !important; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--brand); }
+:focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.flag { display: grid; grid-template-columns: repeat(4, 1fr); height: 5px; }
+.flag i:nth-child(1) { background: var(--flag-red); }
+.flag i:nth-child(2) { background: var(--flag-blue); }
+.flag i:nth-child(3) { background: var(--flag-gold); }
+.flag i:nth-child(4) { background: var(--flag-green); }
+
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; }
+
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 14px 6px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font: 800 1.3rem/1 var(--font-display); letter-spacing: -0.02em; }
+.brand svg { width: 30px; height: 30px; flex: none; }
+.lang { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); padding: 3px; }
+.lang button { border: 0; background: none; min-width: 40px; min-height: 34px; border-radius: 999px; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.04em; color: var(--ink-2); }
+.lang button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+.intro { padding-block: 14px 4px; }
+.intro h1 { margin: 0; font: 800 clamp(1.55rem, 4.6vw, 2.4rem)/1.12 var(--font-display); letter-spacing: -0.025em; text-wrap: balance; max-width: 18ch; }
+.intro p { margin: 10px 0 0; color: var(--ink-2); max-width: 58ch; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; padding-block: 16px 10px; }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: 12px; padding: 4px; gap: 2px; max-width: 100%; }
+.seg button { border: 0; background: none; border-radius: 9px; min-height: 40px; padding: 6px 14px; font-weight: 700; color: var(--ink-2); display: inline-flex; align-items: center; gap: 8px; }
+.seg button[aria-selected="true"], .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(28, 39, 64, 0.14); }
+.seg .n { font-size: 0.75rem; font-weight: 700; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.seg.small button { min-height: 36px; padding: 4px 12px; font-size: 0.9rem; }
+
+.searchbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 8px; display: flex; gap: 8px; }
+.search { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 8px; background: var(--surface); border: 2px solid var(--ink); border-radius: var(--radius); padding: 0 6px 0 12px; }
+.search:focus-within { border-color: var(--brand); }
+.search svg { width: 20px; height: 20px; flex: none; color: var(--ink-2); }
+.search input { flex: 1 1 auto; min-width: 0; border: 0; background: none; outline: 0; min-height: 50px; font-size: 1.05rem; font-weight: 600; }
+.search input::placeholder { color: var(--ink-2); font-weight: 500; }
+.search input::-webkit-search-cancel-button { display: none; }
+.icon-btn { border: 0; background: none; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; color: var(--ink-2); flex: none; }
+.icon-btn:hover { background: var(--surface-2); }
+.scan { flex: none; border: 0; border-radius: var(--radius); background: var(--brand); color: var(--on-brand); font-weight: 800; padding: 0 16px; min-height: 54px; display: inline-flex; align-items: center; gap: 8px; }
+.scan svg { width: 22px; height: 22px; }
+.scan:hover { background: var(--brand-strong); }
+
+.layout { display: grid; gap: 14px; padding-block: 6px 28px; }
+.cats { display: flex; gap: 8px; overflow-x: auto; padding-block: 2px 6px; scrollbar-width: none; margin-inline: -16px; padding-inline: 16px; }
+.cats::-webkit-scrollbar { display: none; }
+.chip { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; min-height: 40px; padding: 6px 14px; font-weight: 700; font-size: 0.92rem; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.chip .n { color: var(--ink-2); font-weight: 600; font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip[aria-pressed="true"] .n { color: inherit; opacity: 0.75; }
+.chip.is-sub { background: var(--sub-bg); border-color: var(--sub-line); color: var(--sub-ink); }
+.chip.is-sub .n { color: inherit; opacity: 0.8; }
+.chip.is-sub[aria-pressed="true"] { background: var(--sub); color: var(--on-sub); border-color: var(--sub); }
+
+.results { min-width: 0; }
+.results-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-bottom: 10px; }
+.results-head h2 { margin: 0; font: 700 1.05rem/1.3 var(--font-display); letter-spacing: -0.01em; }
+.sort { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 0.9rem; font-weight: 600; }
+.sort select { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; min-height: 38px; padding: 4px 8px; font-weight: 700; }
+.note { margin: 0 0 12px; padding: 10px 14px; border-radius: 12px; background: var(--surface-2); color: var(--ink); font-size: 0.95rem; }
+.note button { border: 0; background: none; color: var(--brand); font-weight: 800; padding: 0; text-decoration: underline; }
+
+.list { display: grid; gap: 10px; }
+.item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.item.is-open { box-shadow: var(--shadow); border-color: var(--ink-2); }
+.item.is-sub { border-color: var(--sub-line); }
+.item-head { width: 100%; border: 0; background: none; text-align: left; padding: 14px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 14px; align-items: center; }
+.item-main { min-width: 0; display: grid; gap: 4px; }
+.item-name { font-weight: 700; font-size: 1rem; line-height: 1.3; overflow-wrap: anywhere; }
+.item-meta { color: var(--ink-2); font-size: 0.86rem; display: flex; flex-wrap: wrap; gap: 2px 8px; }
+.item-meta span + span::before { content: "·"; margin-right: 8px; }
+.pill { justify-self: start; max-width: 100%; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; border-radius: 999px; padding: 3px 9px; background: var(--sub); color: var(--on-sub); }
+.pill.soft { background: var(--surface-2); color: var(--ink-2); text-transform: none; letter-spacing: 0; font-size: 0.74rem; }
+.pill + .pill { margin-top: -1px; }
+.note.inline { margin: 0; }
+.item-price { display: grid; justify-items: end; gap: 4px; }
+.tag { position: relative; display: inline-flex; align-items: baseline; gap: 3px; padding: 7px 12px 7px 22px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); font-family: var(--font-display); font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
+.tag::before { content: ""; position: absolute; left: 8px; top: 50%; width: 7px; height: 7px; margin-top: -3.5px; border-radius: 50%; background: var(--surface); border: 1px solid var(--line); }
+.tag small { font-size: 0.72rem; font-weight: 700; }
+.tag b { font-size: 1.45rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+.item.is-sub .tag { background: var(--sub-bg); border-color: var(--sub-line); color: var(--sub-ink); }
+.item.is-sub .tag::before { border-color: var(--sub-line); }
+.when { font-size: 0.78rem; color: var(--ink-2); text-align: right; }
+.soon { grid-column: 1 / -1; font-size: 0.86rem; font-weight: 700; color: var(--brand); }
+
+.detail { border-top: 1px dashed var(--line); padding: 14px; display: grid; gap: 14px; }
+.facts { display: grid; gap: 8px 18px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin: 0; }
+.facts div { min-width: 0; }
+.facts dt { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-2); }
+.facts dd { margin: 2px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+.mono { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+.sub-line { margin: 0; padding: 10px 12px; border-radius: 10px; background: var(--sub-bg); color: var(--sub-ink); font-size: 0.92rem; font-weight: 600; }
+.check { display: grid; gap: 8px; }
+.check label { font-weight: 800; font-size: 0.92rem; }
+.check-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.money { display: inline-flex; align-items: center; gap: 6px; border: 2px solid var(--line); border-radius: 12px; padding: 0 12px; background: var(--bg); }
+.money:focus-within { border-color: var(--brand); }
+.money span { font-weight: 800; color: var(--ink-2); }
+.money input { border: 0; background: none; outline: 0; width: 7.5em; min-height: 46px; font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.verdict { margin: 0; padding: 10px 12px; border-radius: 10px; font-weight: 700; }
+.verdict.ok { background: var(--ok-bg); color: var(--ok); }
+.verdict.over { background: var(--over-bg); color: var(--over); }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-2); }
+td.num, th.num { text-align: right; padding-right: 14px; }
+tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; }
+.hint { margin: 0; color: var(--ink-2); font-size: 0.9rem; }
+.field { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; min-height: 42px; padding: 4px 12px; font-weight: 600; width: min(100%, 260px); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; min-height: 42px; padding: 6px 14px; font-weight: 700; font-size: 0.92rem; text-decoration: none; color: var(--ink); display: inline-flex; align-items: center; gap: 8px; }
+.btn:hover { border-color: var(--ink-2); }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.more { margin-top: 14px; width: 100%; }
+.state { padding: 28px 16px; text-align: center; color: var(--ink-2); background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius); display: grid; gap: 8px; justify-items: center; }
+.state strong { color: var(--ink); font-size: 1.05rem; }
+.skeleton { height: 78px; border-radius: var(--radius); background: var(--surface-2); }
+
+.live { margin-top: 22px; display: grid; gap: 10px; }
+.live h3 { margin: 0; font: 700 1.05rem/1.3 var(--font-display); }
+.live .hint { margin-top: -6px; }
+
+.help { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); padding-block: 8px 28px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: grid; gap: 10px; align-content: start; }
+.card h2 { margin: 0; font: 700 1.1rem/1.25 var(--font-display); letter-spacing: -0.01em; text-wrap: balance; }
+.card p { margin: 0; color: var(--ink-2); }
+.contacts { display: grid; gap: 8px; margin: 2px 0 0; }
+.contacts div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.contacts dt { color: var(--ink-2); font-weight: 600; }
+.contacts dd { margin: 0; font: 800 1.15rem/1.2 var(--font-display); letter-spacing: 0.01em; user-select: all; overflow-wrap: anywhere; text-align: right; }
+.contacts dd.small { font-size: 0.98rem; }
+.sources { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 0.94rem; }
+.sources li { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.sources span { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+.foot { border-top: 1px solid var(--line); color: var(--ink-2); font-size: 0.9rem; padding-block: 18px 30px; }
+.foot p { margin: 0 0 6px; max-width: 70ch; }
+
+.scanner { position: fixed; inset: 0; z-index: 20; background: rgba(8, 13, 24, 0.82); display: grid; place-items: center; padding: 16px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+.scan-box { width: min(100%, 460px); background: var(--surface); border-radius: 18px; padding: 16px; display: grid; gap: 12px; }
+.scan-box h2 { margin: 0; font: 700 1.1rem/1.3 var(--font-display); }
+.scan-view { position: relative; aspect-ratio: 4 / 3; max-width: 100%; border-radius: 12px; overflow: hidden; background: #05080f; }
+.scan-view video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.scan-view::after { content: ""; position: absolute; left: 10%; right: 10%; top: 50%; height: 2px; background: var(--flag-red); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25); }
+.scan-box p { margin: 0; color: var(--ink-2); }
+
+@media (min-width: 900px) {
+  .layout { grid-template-columns: 250px minmax(0, 1fr); gap: 26px; align-items: start; }
+  .cats { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 82px); flex-direction: column; overflow: visible; margin-inline: 0; padding-inline: 0; gap: 4px; max-height: calc(100vh - 110px); overflow-y: auto; }
+  .chip { justify-content: space-between; border-color: transparent; background: none; border-radius: 10px; white-space: normal; text-align: left; }
+  .chip:not([aria-pressed="true"]):not(.is-sub):hover { background: var(--surface-2); }
+  .chip.is-sub { margin-bottom: 6px; }
+  .item-head { padding: 16px 18px; }
+  .detail { padding: 16px 18px; }
+}
+@media (max-width: 560px) {
+  .top { padding-block: 10px 2px; }
+  .intro { padding-block: 8px 0; }
+  .intro h1 { font-size: 1.45rem; }
+  .intro p { font-size: 0.93rem; margin-top: 6px; }
+  .controls { padding-block: 12px 6px; gap: 8px; }
+  .seg .n, .sort span { display: none; }
+  .seg button { padding-inline: 12px; }
+  .results-head { flex-wrap: nowrap; }
+  .results-head h2 { min-width: 0; }
+}
+@media (max-width: 420px) {
+  .scan span { display: none; }
+  .scan { padding: 0 14px; }
+  .tag b { font-size: 1.25rem; }
+  .item-head { gap: 4px 10px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .item, .chip, .btn, .seg button { transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s; }
+  .skeleton { animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: 0.55; } }
+}
+</style>
+</head>
+<body>
+<div class="flag" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+<header class="wrap top">
+  <a class="brand" href="#top">
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <clipPath id="tagclip"><path d="M10 2h16a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V10z"></path></clipPath>
+      <g clip-path="url(#tagclip)">
+        <rect width="32" height="8" fill="var(--flag-red)"></rect>
+        <rect y="8" width="32" height="8" fill="var(--flag-blue)"></rect>
+        <rect y="16" width="32" height="8" fill="var(--flag-gold)"></rect>
+        <rect y="24" width="32" height="8" fill="var(--flag-green)"></rect>
+      </g>
+      <circle cx="9.5" cy="9.5" r="2.6" fill="var(--bg)"></circle>
+    </svg>
+    <span>Pri Max</span>
+  </a>
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+    <button type="button" data-lang="kr" aria-pressed="false" title="Kreol Morisien">KR</button>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+  <section class="intro">
+    <h1 data-t="h1">Check the maximum price before you pay.</h1>
+    <p id="sub">Official maximum retail prices in Mauritius and Rodrigues, from the Price Fixing Unit.</p>
+  </section>
+
+  <section class="controls">
+    <div class="seg" id="tabs" role="tablist" aria-label="Product type">
+      <button type="button" role="tab" data-tab="shop" aria-selected="true"><span data-t="tabShop">Groceries &amp; home</span><span class="n" id="n-shop"></span></button>
+      <button type="button" role="tab" data-tab="med" aria-selected="false"><span data-t="tabMed">Medicines</span><span class="n" id="n-med"></span></button>
+    </div>
+    <div class="seg small" id="island" role="group" aria-label="Island">
+      <button type="button" data-isl="m" aria-pressed="true" data-t="islM">Mauritius</button>
+      <button type="button" data-isl="r" aria-pressed="false" data-t="islR">Rodrigues</button>
+    </div>
+  </section>
+
+  <div class="searchbar">
+    <label class="search" for="q">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <span class="sr" data-t="searchLabel">Search</span>
+      <input id="q" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Product, brand or barcode">
+      <button type="button" class="icon-btn" id="clear" hidden aria-label="Clear">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+      </button>
+    </label>
+    <button type="button" class="scan" id="scan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3M7 8v8M10.5 8v8M14 8v8M17 8v8"></path></svg>
+      <span data-t="scan">Scan</span>
+    </button>
+  </div>
+
+  <div class="layout">
+    <nav class="cats" id="cats" aria-label="Categories"></nav>
+    <section class="results" aria-live="polite">
+      <div class="results-head">
+        <h2 id="count">&nbsp;</h2>
+        <label class="sort"><span data-t="sortLabel">Sort</span>
+          <select id="sort">
+            <option value="auto" data-t="sortAuto">Recommended</option>
+            <option value="recent" data-t="sortRecent">Latest update</option>
+            <option value="low" data-t="sortLow">Price: low to high</option>
+            <option value="high" data-t="sortHigh">Price: high to low</option>
+            <option value="name" data-t="sortName">Name: A to Z</option>
+          </select>
+        </label>
+      </div>
+      <p class="note" id="note" hidden></p>
+      <div class="list" id="list">
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      </div>
+      <button type="button" class="btn more" id="more" hidden></button>
+      <section class="live" id="live" hidden></section>
+    </section>
+  </div>
+
+  <section class="help" id="help">
+    <div class="card">
+      <h2 data-t="helpTitle">Paid more than the maximum?</h2>
+      <p data-t="helpBody">Keep your receipt and tell the Consumer Affairs Unit of the Ministry of Commerce and Consumer Protection.</p>
+      <dl class="contacts">
+        <div><dt data-t="hotline">Hotline</dt><dd>185</dd></div>
+        <div><dt>WhatsApp</dt><dd>5942 8888</dd></div>
+        <div><dt data-t="email">Email</dt><dd class="small">consumerpu@govmu.org</dd></div>
+      </dl>
+    </div>
+    <div class="card">
+      <h2 data-t="aboutTitle">Where these prices come from</h2>
+      <p data-t="aboutBody">They are copied from the public lists of the Price Fixing Unit. A price applies from the date shown. If this page and the official list disagree, the official list is right.</p>
+      <ul class="sources" id="sources"></ul>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p id="updated"></p>
+    <p><span data-t="footer">Pri Max is an independent page by Aplica. It is not a government website.</span> <a href="https://www.aplica.biz" target="_blank" rel="noopener">aplica.biz</a></p>
+  </div>
+</footer>
+
+<div class="scanner" id="scanner" hidden role="dialog" aria-modal="true" aria-labelledby="scan-title">
+  <div class="scan-box">
+    <h2 id="scan-title" data-t="scanTitle">Point the camera at the barcode</h2>
+    <div class="scan-view"><video id="scan-video" playsinline muted></video></div>
+    <p id="scan-msg" data-t="scanStarting">Starting the camera…</p>
+    <button type="button" class="btn primary" id="scan-close" data-t="scanClose">Close</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  // ---------------------------------------------------------------- wording
+  const I18N = {
+    en: {
+      h1: 'Check the maximum price before you pay.',
+      sub: 'Official maximum retail prices for {n} products and medicines in Mauritius and Rodrigues, from the Price Fixing Unit.',
+      subPlain: 'Official maximum retail prices in Mauritius and Rodrigues, from the Price Fixing Unit.',
+      tabShop: 'Groceries & home', tabMed: 'Medicines', islM: 'Mauritius', islR: 'Rodrigues',
+      searchLabel: 'Search', ph: 'Product, brand or barcode', phMed: 'Medicine name or batch number', scan: 'Scan', clear: 'Clear',
+      all: 'All', subOnly: 'Subsidised', latest: 'Latest price updates', latestMed: 'Subsidised medicines',
+      nProducts: '{n} products', nMeds: '{n} medicines', nFor: '{n} results for “{q}”', nFor1: '1 result for “{q}”', noneHere: 'No maximum price in {island} for “{q}”.',
+      sortLabel: 'Sort', sortAuto: 'Recommended', sortRecent: 'Latest update', sortLow: 'Price: low to high', sortHigh: 'Price: high to low', sortName: 'Name: A to Z',
+      since: 'since {d}', from: 'from {d}', newFrom: 'Changes on {d}: Rs {p}',
+      subsidised: 'Subsidised', subExplain: 'Subsidised: the Government pays part of the price. The amount shown is the most you should pay.',
+      wasSub: 'This product was on the subsidised list before. Its latest price is on the regular list.',
+      barcode: 'Barcode', officialCat: 'Official category', history: 'Approved prices', date: 'From', list: 'List', regular: 'Regular', none0: 'not set',
+      check: 'Price on the shelf', within: 'Within the maximum: Rs {x} below it.', exact: 'Exactly the maximum price.',
+      over: 'Rs {x} above the maximum ({pc}% more). Keep the receipt and report it on 185.',
+      copy: 'Copy', copied: 'Copied', whatsapp: 'Share on WhatsApp', official: 'See it on the official list',
+      shareText: '{name}: maximum price Rs {p} in {island}, from the official list of the Price Fixing Unit.',
+      more: 'Show {n} more',
+      none: 'Nothing matches “{q}”.', noneHint: 'Check the spelling, try the brand, or type the numbers under the barcode.',
+      noneBarcode: 'Barcode {q} is not on the official lists. The product may not be price-controlled.',
+      noneCat: 'No product here with a maximum price in {island}.',
+      otherIsland: '{n} matching products have a maximum price in {island} only.', switchTo: 'Show {island}',
+      fuzzy: 'No exact match, so these are close spellings.',
+      loadErr: 'The price lists could not be loaded.', retry: 'Try again',
+      batches: '{n} batches', batch: 'Batch', batchHint: 'Medicine prices are approved batch by batch. Match the batch number printed on the box.', findBatch: 'Find a batch number',
+      liveTitle: 'Other medicines', liveSub: 'Searched live in the full official list.', liveLoading: 'Searching the official list…', liveNone: 'No other medicine matches “{q}”.',
+      liveErr: 'The official list did not answer. Try again in a moment.', liveOff: 'Medicines that are not subsidised are searched live from the official list on the published site.',
+      liveMin: 'Type at least 3 letters to also search the full official medicines list.', liveMore: '{n} matching batches in the official list. Add letters to narrow it down.',
+      helpTitle: 'Paid more than the maximum?', helpBody: 'Keep your receipt and tell the Consumer Affairs Unit of the Ministry of Commerce and Consumer Protection.',
+      hotline: 'Hotline', email: 'Email',
+      aboutTitle: 'Where these prices come from', aboutBody: 'They are copied from the public lists of the Price Fixing Unit. A price applies from the date shown. If this page and the official list disagree, the official list is right.',
+      rows: '{n} rows', liveList: 'searched live',
+      footer: 'Pri Max is an independent page by Aplica. It is not a government website.', updated: 'Official lists read on {d}.',
+      newer: 'Newer entry for this barcode', sameCode: '{n} other entries on the official lists carry this barcode.', showAll: 'Show them all',
+      scanTitle: 'Point the camera at the barcode', scanClose: 'Close', scanStarting: 'Starting the camera…', scanLooking: 'Looking for a barcode…',
+      scanNoCam: 'The camera is not available here. Type the numbers under the barcode instead.',
+      scanDenied: 'Camera access was refused. Allow it in your browser settings, or type the numbers under the barcode.',
+    },
+    fr: {
+      h1: 'Vérifiez le prix maximum avant de payer.',
+      sub: 'Les prix de vente maximums officiels de {n} produits et médicaments à Maurice et à Rodrigues, publiés par la Price Fixing Unit.',
+      subPlain: 'Les prix de vente maximums officiels à Maurice et à Rodrigues, publiés par la Price Fixing Unit.',
+      tabShop: 'Courses et maison', tabMed: 'Médicaments', islM: 'Maurice', islR: 'Rodrigues',
+      searchLabel: 'Rechercher', ph: 'Produit ou code-barres', phMed: 'Nom du médicament ou numéro de lot', scan: 'Scanner', clear: 'Effacer',
+      all: 'Tout', subOnly: 'Subventionnés', latest: 'Derniers prix mis à jour', latestMed: 'Médicaments subventionnés',
+      nProducts: '{n} produits', nMeds: '{n} médicaments', nFor: '{n} résultats pour « {q} »', nFor1: '1 résultat pour « {q} »', noneHere: 'Pas de prix maximum à {island} pour « {q} ».',
+      sortLabel: 'Trier', sortAuto: 'Recommandé', sortRecent: 'Mise à jour récente', sortLow: 'Prix croissant', sortHigh: 'Prix décroissant', sortName: 'Nom : A à Z',
+      since: 'depuis le {d}', from: 'à partir du {d}', newFrom: 'Change le {d} : Rs {p}',
+      subsidised: 'Subventionné', subExplain: 'Subventionné : le Gouvernement paie une partie du prix. Le montant affiché est le maximum à payer.',
+      wasSub: 'Ce produit figurait auparavant sur la liste subventionnée. Son dernier prix est sur la liste ordinaire.',
+      barcode: 'Code-barres', officialCat: 'Catégorie officielle', history: 'Prix approuvés', date: 'À partir du', list: 'Liste', regular: 'Ordinaire', none0: 'non fixé',
+      check: 'Prix affiché en rayon', within: 'Dans la limite : Rs {x} de moins que le maximum.', exact: 'Exactement le prix maximum.',
+      over: 'Rs {x} au-dessus du maximum ({pc} % de plus). Gardez le reçu et signalez-le au 185.',
+      copy: 'Copier', copied: 'Copié', whatsapp: 'Partager sur WhatsApp', official: 'Voir sur la liste officielle',
+      shareText: '{name} : prix maximum Rs {p} à {island}, selon la liste officielle de la Price Fixing Unit.',
+      more: 'Afficher {n} de plus',
+      none: 'Aucun résultat pour « {q} ».', noneHint: 'Vérifiez l’orthographe, essayez la marque ou tapez les chiffres sous le code-barres.',
+      noneBarcode: 'Le code-barres {q} ne figure pas sur les listes officielles. Le prix de ce produit n’est peut-être pas contrôlé.',
+      noneCat: 'Aucun produit ici avec un prix maximum à {island}.',
+      otherIsland: '{n} produits correspondants ont un prix maximum à {island} seulement.', switchTo: 'Afficher {island}',
+      fuzzy: 'Pas de correspondance exacte. Voici des orthographes proches.',
+      loadErr: 'Les listes de prix n’ont pas pu être chargées.', retry: 'Réessayer',
+      batches: '{n} lots', batch: 'Lot', batchHint: 'Le prix des médicaments est approuvé lot par lot. Comparez avec le numéro de lot imprimé sur la boîte.', findBatch: 'Chercher un numéro de lot',
+      liveTitle: 'Autres médicaments', liveSub: 'Recherche en direct dans la liste officielle complète.', liveLoading: 'Recherche dans la liste officielle…', liveNone: 'Aucun autre médicament pour « {q} ».',
+      liveErr: 'La liste officielle n’a pas répondu. Réessayez dans un instant.', liveOff: 'Les médicaments non subventionnés sont recherchés en direct dans la liste officielle sur le site publié.',
+      liveMin: 'Tapez au moins 3 lettres pour chercher aussi dans la liste officielle complète.', liveMore: '{n} lots correspondants dans la liste officielle. Ajoutez des lettres pour préciser.',
+      helpTitle: 'Vous avez payé plus que le maximum ?', helpBody: 'Gardez votre reçu et informez la Consumer Affairs Unit du ministère du Commerce et de la Protection des consommateurs.',
+      hotline: 'Hotline', email: 'E-mail',
+      aboutTitle: 'D’où viennent ces prix', aboutBody: 'Ils sont copiés des listes publiques de la Price Fixing Unit. Un prix s’applique à partir de la date indiquée. En cas de différence avec la liste officielle, c’est la liste officielle qui fait foi.',
+      rows: '{n} lignes', liveList: 'recherche en direct',
+      footer: 'Pri Max est une page indépendante réalisée par Aplica. Ce n’est pas un site du gouvernement.', updated: 'Listes officielles lues le {d}.',
+      newer: 'Entrée plus récente pour ce code-barres', sameCode: '{n} autres entrées des listes officielles portent ce code-barres.', showAll: 'Les afficher',
+      scanTitle: 'Visez le code-barres avec la caméra', scanClose: 'Fermer', scanStarting: 'Démarrage de la caméra…', scanLooking: 'Recherche d’un code-barres…',
+      scanNoCam: 'La caméra n’est pas disponible ici. Tapez plutôt les chiffres sous le code-barres.',
+      scanDenied: 'L’accès à la caméra a été refusé. Autorisez-le dans les réglages du navigateur, ou tapez les chiffres sous le code-barres.',
+    },
+    kr: {
+      h1: 'Verifie pri maximum avan ou peye.',
+      sub: 'Pri maximum ofisiel pou {n} prodwi ek medsinn dan Moris ek Rodrig, dapre Price Fixing Unit.',
+      subPlain: 'Pri maximum ofisiel dan Moris ek Rodrig, dapre Price Fixing Unit.',
+      tabShop: 'Komision ek lakaz', tabMed: 'Medsinn', islM: 'Moris', islR: 'Rodrig',
+      searchLabel: 'Rode', ph: 'Prodwi ouswa kod-bar', phMed: 'Nom medsinn ouswa nimero lot', scan: 'Skann', clear: 'Efase',
+      all: 'Tou', subOnly: 'Sibvansione', latest: 'Dernie pri ki finn sanze', latestMed: 'Medsinn sibvansione',
+      nProducts: '{n} prodwi', nMeds: '{n} medsinn', nFor: '{n} rezilta pou “{q}”', nFor1: '1 rezilta pou “{q}”', noneHere: 'Pena pri maximum dan {island} pou “{q}”.',
+      sortLabel: 'Triye', sortAuto: 'Rekomande', sortRecent: 'Dernie sanzman', sortLow: 'Pri: pli ba an premie', sortHigh: 'Pri: pli ot an premie', sortName: 'Nom: A ziska Z',
+      since: 'depi {d}', from: 'apartir {d}', newFrom: 'Sanze le {d}: Rs {p}',
+      subsidised: 'Sibvansione', subExplain: 'Sibvansione: Gouvernman pey enn parti pri-la. Montan ki ou trouve, se maximum ki ou bizin peye.',
+      wasSub: 'Sa prodwi-la ti lor lalis sibvansione avan. So dernie pri lor lalis normal.',
+      barcode: 'Kod-bar', officialCat: 'Kategori ofisiel', history: 'Pri ki finn aprouve', date: 'Apartir', list: 'Lalis', regular: 'Normal', none0: 'pa fixe',
+      check: 'Pri lor reyon', within: 'Dan limit: Rs {x} pli ba ki maximum.', exact: 'Exakteman pri maximum.',
+      over: 'Rs {x} plis ki maximum ({pc}% anplis). Gard ou resi ek sinyal li lor 185.',
+      copy: 'Kopie', copied: 'Finn kopie', whatsapp: 'Partaz lor WhatsApp', official: 'Get li lor lalis ofisiel',
+      shareText: '{name}: pri maximum Rs {p} dan {island}, dapre lalis ofisiel Price Fixing Unit.',
+      more: 'Montre {n} anplis',
+      none: 'Pena nanye pou “{q}”.', noneHint: 'Verifie lortograf, seye mark-la, ouswa tap bann sif anba kod-bar.',
+      noneBarcode: 'Kod-bar {q} pa lor bann lalis ofisiel. Kapav pri sa prodwi-la pa kontrole.',
+      noneCat: 'Pena prodwi isi ki ena enn pri maximum dan {island}.',
+      otherIsland: '{n} prodwi ki koresponn ena enn pri maximum dan {island} selman.', switchTo: 'Montre {island}',
+      fuzzy: 'Pena exakteman sa. Ala bann lortograf ki pre.',
+      loadErr: 'Pa finn kapav sarz bann lalis pri.', retry: 'Seye ankor',
+      batches: '{n} lot', batch: 'Lot', batchHint: 'Pri medsinn aprouve lot par lot. Get nimero lot ki ekrir lor bwat-la.', findBatch: 'Rod enn nimero lot',
+      liveTitle: 'Lezot medsinn', liveSub: 'Rode an direk dan lalis ofisiel konple.', liveLoading: 'Pe rode dan lalis ofisiel…', liveNone: 'Pena lezot medsinn pou “{q}”.',
+      liveErr: 'Lalis ofisiel pa finn reponn. Seye ankor dan enn ti moman.', liveOff: 'Bann medsinn ki pa sibvansione rode an direk dan lalis ofisiel lor sit pibliye.',
+      liveMin: 'Tap omwin 3 let pou rod osi dan lalis ofisiel konple.', liveMore: '{n} lot ki koresponn dan lalis ofisiel. Azout let pou presize.',
+      helpTitle: 'Ou finn pey plis ki maximum?', helpBody: 'Gard ou resi ek inform Consumer Affairs Unit, Minister Komers ek Proteksion Konsomater.',
+      hotline: 'Hotline', email: 'Email',
+      aboutTitle: 'Kot sa bann pri-la sorti', aboutBody: 'Zot kopie depi bann lalis piblik Price Fixing Unit. Enn pri aplike apartir dat ki montre. Si sa paz-la ek lalis ofisiel pa parey, se lalis ofisiel ki bon.',
+      rows: '{n} lalign', liveList: 'rode an direk',
+      footer: 'Pri Max se enn paz indepandan ki Aplica finn fer. Li pa enn sit gouvernman.', updated: 'Bann lalis ofisiel lir le {d}.',
+      newer: 'Ena enn pli nouvo pou sa kod-bar la', sameCode: '{n} lezot lantre lor bann lalis ofisiel ena sa mem kod-bar la.', showAll: 'Montre zot tou',
+      scanTitle: 'Viz kod-bar ar kamera', scanClose: 'Ferme', scanStarting: 'Kamera pe demare…', scanLooking: 'Pe rod enn kod-bar…',
+      scanNoCam: 'Kamera pa disponib isi. Tap plito bann sif anba kod-bar.',
+      scanDenied: 'Akse kamera finn refize. Otoriz li dan reglaz ou navigater, ouswa tap bann sif anba kod-bar.',
+    },
+  };
+
+  // Shopper categories: label in each language, plus search words people type for the whole group.
+  const CATS = {
+    rice: ['Rice', 'Riz', 'Diri', 'rice riz diri'],
+    pasta: ['Pasta', 'Pâtes', 'Pasta', 'pasta pates'],
+    pulses: ['Lentils & pulses', 'Lentilles et grains secs', 'Lanti ek grin sek', 'pulses grains secs grin sek'],
+    oil: ['Cooking oil', 'Huile', 'Delwil', 'oil huile delwil'],
+    'milk-powder': ['Milk powder', 'Lait en poudre', 'Dile an poud', 'milk lait dile powder poudre poud'],
+    'infant-milk': ['Infant milk', 'Lait infantile', 'Dile baba', 'infant milk lait dile baby bebe baba formula'],
+    'infant-food': ['Baby food', 'Aliments pour bébé', 'Manze baba', 'baby bebe baba infant food aliment manze'],
+    butter: ['Butter & margarine', 'Beurre et margarine', 'Diber ek margarinn', ''],
+    cheese: ['Cheese', 'Fromage', 'Fromaz', 'cheese fromage fromaz'],
+    cereals: ['Breakfast cereals', 'Céréales', 'Sereal', 'cereal cereals cereales sereal breakfast'],
+    'canned-fish': ['Canned fish', 'Poisson en conserve', 'Pwason dan bwat', 'fish poisson pwason canned conserve bwat'],
+    'canned-meat': ['Canned meat', 'Viande en conserve', 'Laviann dan bwat', 'meat viande laviann canned conserve bwat'],
+    'canned-veg': ['Canned vegetables', 'Légumes en conserve', 'Legim dan bwat', 'vegetables legumes legim canned conserve bwat'],
+    'frozen-veg': ['Frozen vegetables', 'Légumes surgelés', 'Legim konzle', 'frozen surgele konzle vegetables legumes legim'],
+    tea: ['Tea', 'Thé', 'Dite', 'tea the dite'],
+    'baby-diapers': ['Baby diapers', 'Couches bébé', 'Kous baba', 'diapers couches kous nappies baby bebe baba'],
+    'adult-diapers': ['Adult diapers', 'Couches adultes', 'Kous adilt', 'diapers couches kous adult adulte adilt incontinence'],
+    sanitary: ['Sanitary pads', 'Serviettes hygiéniques', 'Serviet ijienik', 'sanitary pads serviettes hygieniques serviet'],
+    soap: ['Soap & detergent', 'Savon et lessive', 'Savon ek lesiv', 'soap savon detergent lessive lesiv'],
+    'toilet-paper': ['Toilet paper', 'Papier toilette', 'Papie twalet', 'toilet paper papier toilette papie twalet'],
+    'animal-feed': ['Animal feed', 'Aliments pour animaux', 'Manze zanimo', 'animal feed aliment manze zanimo'],
+    other: ['Other', 'Autres', 'Lezot', ''],
+  };
+  // The same thing in English, French and Kreol: product names on the official lists mix all three.
+  const SYNONYMS = [
+    ['rice', 'riz', 'diri'], ['milk', 'lait', 'dile'], ['powder', 'poudre', 'poud'], ['oil', 'huile', 'delwil'], ['butter', 'beurre', 'diber'],
+    ['margarine', 'margarinn'], ['cheese', 'fromage', 'fromaz'], ['tuna', 'thon', 'ton'], ['sardine', 'sardines', 'sardinn'],
+    ['mackerel', 'maquereau', 'maquereaux'], ['fish', 'poisson', 'pwason'], ['lentil', 'lentils', 'lentille', 'lentilles', 'lanti'],
+    ['bean', 'beans', 'haricot', 'haricots', 'zariko'], ['pea', 'peas', 'pois'], ['tomato', 'tomatoes', 'tomate', 'tomates', 'pomdamour'],
+    ['corn', 'mais', 'sweetcorn'], ['mushroom', 'mushrooms', 'champignon', 'champignons'], ['spinach', 'epinard', 'epinards'],
+    ['carrot', 'carrots', 'carotte', 'carottes', 'karot'], ['fries', 'frites'], ['chicken', 'poulet', 'poul'], ['beef', 'boeuf', 'bef'], ['mutton', 'mouton'],
+    ['soap', 'savon'], ['detergent', 'lessive', 'lesiv'], ['diaper', 'diapers', 'couche', 'couches', 'kous', 'nappies'], ['baby', 'bebe', 'baba'],
+    ['adult', 'adulte', 'adultes', 'adilt'], ['spaghetti', 'spaghettis', 'spageti'], ['macaroni', 'macaronis', 'makaroni'], ['pasta', 'pates'],
+    ['soya', 'soja', 'soybean'], ['sunflower', 'tournesol'], ['cereal', 'cereals', 'cereale', 'cereales', 'sereal'], ['vegetable', 'vegetables', 'legume', 'legumes', 'legim'],
+    ['frozen', 'surgele', 'surgeles', 'konzle'], ['pad', 'pads', 'serviette', 'serviettes', 'serviet'], ['softener', 'adoucissant', 'assouplissant'],
+  ];
+  const STOP = new Set(['de', 'du', 'des', 'la', 'le', 'les', 'en', 'au', 'aux', 'et', 'a', 'of', 'in', 'and', 'with', 'for', 'the', 'ek', 'dan', 'pou']);
+  const SYN = new Map();
+  for (const group of SYNONYMS) for (const word of group) SYN.set(word, group);
+  const CAT_ORDER = ['rice', 'pasta', 'pulses', 'oil', 'milk-powder', 'infant-milk', 'infant-food', 'baby-diapers', 'adult-diapers', 'sanitary', 'canned-fish', 'canned-meat', 'canned-veg', 'frozen-veg', 'butter', 'cheese', 'cereals', 'tea', 'soap', 'toilet-paper', 'animal-feed', 'other'];
+  const CLASSES = {
+    diabetes: ['Diabetes', 'Diabète', 'Diabet', 'diabetes diabete diabet sugar sucre'],
+    hypertension: ['Blood pressure', 'Tension artérielle', 'Tansion', 'blood pressure tension tansion hypertension'],
+    cardio: ['Heart & circulation', 'Cœur et circulation', 'Leker ek sirkilasion', 'heart coeur leker cardio cholesterol circulation'],
+    cancer: ['Cancer', 'Cancer', 'Kanser', 'cancer kanser'],
+    other: ['Other', 'Autres', 'Lezot', ''],
+  };
+  const LANGS = ['en', 'fr', 'kr'];
+  const MONTHS_KR = ['Zan', 'Fev', 'Mar', 'Avr', 'Me', 'Zin', 'Zil', 'Out', 'Sep', 'Okt', 'Nov', 'Des'];
+  const LISTS = {
+    p: 'https://pfu.govmu.org/max-retail-prices-p',
+    s: 'https://pfu.govmu.org/max-retail-prices-s',
+    ph: 'https://pfu.govmu.org/max-retail-prices-pharmaceutical',
+    phs: 'https://pfu.govmu.org/subsidised-mrp-pharmaceutical',
+  };
+  const PAGE = 40;
+
+  // ---------------------------------------------------------------- helpers
+  const $ = (sel, el = document) => el.querySelector(sel);
+  const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
+  const store = {
+    get(key, fallback) { try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; } },
+    set(key, value) { try { localStorage.setItem(key, value); } catch { /* private window: carry on without it */ } },
+  };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const squash = (s) => norm(s).replace(/ /g, '');
+  const money = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const count = (n) => n.toLocaleString('en-US');
+
+  const state = {
+    lang: 'en', island: 'm', tab: 'shop', q: '', cat: '', subOnly: false, cls: '', sort: 'auto', limit: PAGE, open: '',
+  };
+  let G = null; // groceries and household products
+  let M = null; // medicines kept on the page
+  let META = null;
+  let TODAY = 0;
+  const live = { q: '', status: 'idle', items: [], total: 0, rows: 0, available: null, timer: 0, ctrl: null };
+
+  const t = (key, vars) => {
+    let text = (I18N[state.lang] && I18N[state.lang][key]) ?? I18N.en[key] ?? key;
+    if (vars) for (const k of Object.keys(vars)) text = text.replace(`{${k}}`, vars[k]);
+    return text;
+  };
+  const langIndex = () => LANGS.indexOf(state.lang);
+  const catLabel = (id) => (CATS[id] || CATS.other)[langIndex()];
+  const classLabel = (id) => (CLASSES[id] || CLASSES.other)[langIndex()];
+  const islandName = (isl) => t(isl === 'm' ? 'islM' : 'islR');
+
+  function todayInMauritius() {
+    try {
+      const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Indian/Mauritius', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+      return Number(parts.replace(/-/g, ''));
+    } catch {
+      const d = new Date(Date.now() + 4 * 3600 * 1000);
+      return d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate();
+    }
+  }
+  function fmtDate(n) {
+    const y = Math.floor(n / 10000), m = Math.floor(n / 100) % 100, d = n % 100;
+    if (state.lang === 'kr') return `${d} ${MONTHS_KR[m - 1]} ${y}`;
+    return new Intl.DateTimeFormat(state.lang === 'fr' ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, d)));
+  }
+  function fmtStamp(iso) {
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return '';
+    const n = Number(new Intl.DateTimeFormat('en-CA', { timeZone: 'Indian/Mauritius', year: 'numeric', month: '2-digit', day: '2-digit' }).format(date).replace(/-/g, ''));
+    const time = new Intl.DateTimeFormat('en-GB', { timeZone: 'Indian/Mauritius', hour: '2-digit', minute: '2-digit' }).format(date);
+    return `${fmtDate(n)}, ${time}`;
+  }
+  const tagHtml = (value) => {
+    const [whole, cents] = money(value).split('.');
+    return `<span class="tag"><small>Rs</small><b>${whole}</b><small>.${cents}</small></span>`;
+  };
+
+  // ---------------------------------------------------------------- data
+  function prepare(groceries, medicines) {
+    const cats = groceries.cats;
+    G = {
+      types: groceries.types,
+      items: groceries.items.map(([n, b, e, c, h], i) => ({
+        id: `g${i}`, n, b, e, ek: e.replace(/^0+/, ''), c: cats[c], h,
+        text: `${norm(`${n} ${b}`)} ${(CATS[cats[c]] || CATS.other)[3]}`, words: null, view: {},
+      })),
+    };
+    G.byCode = new Map();
+    for (const it of G.items) {
+      if (!it.ek) continue;
+      if (!G.byCode.has(it.ek)) G.byCode.set(it.ek, []);
+      G.byCode.get(it.ek).push(it);
+    }
+    M = {
+      items: (medicines ? medicines.items : []).map(([n, k, sub, b, batches], i) => ({
+        id: `m${i}`, n, k: medicines.classes[k], sub, b, batches,
+        text: `${norm(`${n} ${b}`)} ${(CLASSES[medicines.classes[k]] || CLASSES.other)[3]}`,
+        codes: batches.map((x) => squash(x[1])), words: null, view: {},
+      })),
+    };
+  }
+
+  // What a shopper needs to know about a product on one island today:
+  // the price in force, since when, and the next change if one is already approved.
+  function groceryView(item, isl) {
+    if (item.view[isl] !== undefined) return item.view[isl];
+    const col = isl === 'm' ? 2 : 3;
+    const rows = item.h.filter((h) => h[col] > 0);
+    let view = null;
+    if (rows.length) {
+      const inForce = rows.filter((h) => h[0] <= TODAY);
+      const coming = rows.filter((h) => h[0] > TODAY);
+      let cur = null;
+      if (inForce.length) {
+        const day = inForce[0][0];
+        cur = inForce.filter((h) => h[0] === day).reduce((a, b) => (b[col] > a[col] ? b : a));
+      }
+      const next = coming.length ? coming[coming.length - 1] : null;
+      const shown = cur || next;
+      view = { cur, next: cur ? next : null, shown, price: shown[col], date: shown[0], sub: shown[1] === 1, pending: !cur, col, rows };
+    }
+    item.view[isl] = view;
+    return view;
+  }
+  function medicineView(item, isl) {
+    if (item.view[isl] !== undefined) return item.view[isl];
+    const col = isl === 'm' ? 2 : 3;
+    const rows = item.batches.filter((b) => b[col] > 0);
+    let view = null;
+    if (rows.length) {
+      const inForce = rows.filter((b) => b[0] <= TODAY);
+      const shown = inForce[0] || rows[rows.length - 1];
+      const day = shown[0];
+      const top = rows.filter((b) => b[0] === day).reduce((a, b) => (b[col] > a[col] ? b : a));
+      view = { shown: top, price: top[col], date: day, sub: item.sub === 1, pending: !inForce.length, col, rows };
+    }
+    item.view[isl] = view;
+    return view;
+  }
+  const viewOf = (item, isl = state.island) => (item.batches ? medicineView(item, isl) : groceryView(item, isl));
+  // Other entries of the official lists that carry the same barcode (a retyped name, or a reused code).
+  function sameCode(item) {
+    if (!item.ek || !G.byCode) return [];
+    return G.byCode.get(item.ek).filter((other) => other !== item && viewOf(other));
+  }
+
+  // ---------------------------------------------------------------- search
+  function editDistanceWithin(a, b, max) {
+    if (Math.abs(a.length - b.length) > max) return false;
+    let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= a.length; i++) {
+      const cur = [i];
+      let best = cur[0];
+      for (let j = 1; j <= b.length; j++) {
+        cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        if (cur[j] < best) best = cur[j];
+      }
+      if (best > max) return false;
+      prev = cur;
+    }
+    return prev[b.length] <= max;
+  }
+  const wordsOf = (item) => item.words || (item.words = item.text.split(' '));
+  function score(item, tokens) {
+    const nameWords = norm(item.n).split(' ');
+    const brandWords = norm(item.b).split(' ');
+    let total = 0;
+    for (const tok of tokens) {
+      const direct = tok.length === 1 ? wordsOf(item).includes(tok) : item.text.includes(tok);
+      if (direct) {
+        if (nameWords.some((w) => w === tok)) total += 4;
+        else if (nameWords.some((w) => w.startsWith(tok))) total += 3;
+        else if (brandWords.some((w) => w.startsWith(tok))) total += 2;
+        else total += 1;
+        continue;
+      }
+      const group = SYN.get(tok);
+      if (!group || !wordsOf(item).some((w) => group.includes(w))) return -1;
+      total += 2;
+    }
+    return total;
+  }
+  // Returns { items, kind } where kind is 'all' | 'text' | 'barcode' | 'batch' | 'fuzzy'.
+  function search(pool, query) {
+    const q = norm(query);
+    if (!q) return { items: pool, kind: 'all' };
+    const digits = query.replace(/[\s-]/g, '');
+    if (state.tab === 'shop' && /^\d{4,14}$/.test(digits)) {
+      const key = digits.replace(/^0+/, '');
+      const exact = pool.filter((it) => it.ek && it.ek === key);
+      const partial = exact.length ? [] : pool.filter((it) => it.ek && it.ek.includes(key));
+      const hits = exact.length ? exact : partial;
+      if (hits.length || digits.length >= 8) return { items: hits, kind: 'barcode' };
+    }
+    // Small joining words carry no meaning in a product search ("lait en poudre", "tuna in oil").
+    const all = q.split(' ');
+    const meaningful = all.filter((w) => !STOP.has(w));
+    const tokens = meaningful.length ? meaningful : all;
+    const scored = [];
+    for (const it of pool) {
+      const s = score(it, tokens);
+      if (s >= 0) scored.push([s, it]);
+    }
+    if (state.tab === 'med') {
+      const code = squash(query);
+      if (code.length >= 4) {
+        for (const it of pool) {
+          const at = it.codes.findIndex((c) => c === code || c.startsWith(code));
+          if (at >= 0 && !scored.some((x) => x[1] === it)) scored.push([100, it]);
+          if (at >= 0) it.hitBatch = it.batches[at][1];
+        }
+      }
+    }
+    if (scored.length) {
+      scored.sort((a, b) => b[0] - a[0]);
+      return { items: scored.map((x) => x[1]), kind: 'text', ranked: true };
+    }
+    // Close spellings, one letter off (two for long words).
+    const fuzzy = pool.filter((it) => tokens.every((tok) => (tok.length < 4
+      ? it.text.includes(tok)
+      : wordsOf(it).some((w) => w.includes(tok) || editDistanceWithin(tok, w.slice(0, tok.length + 1), tok.length >= 8 ? 2 : 1)))));
+    return { items: fuzzy, kind: 'fuzzy' };
+  }
+
+  function currentList() {
+    const isl = state.island;
+    const other = isl === 'm' ? 'r' : 'm';
+    const source = state.tab === 'shop' ? G.items : M.items;
+    for (const it of source) it.hitBatch = '';
+    const found = search(source, state.q);
+    let items = found.items;
+    if (state.tab === 'shop') {
+      if (state.subOnly) items = items.filter((it) => { const v = viewOf(it, isl) || viewOf(it, other); return v && v.sub; });
+      if (state.cat) items = items.filter((it) => it.c === state.cat);
+    } else if (state.cls) {
+      items = items.filter((it) => it.k === state.cls);
+    }
+    const here = items.filter((it) => viewOf(it, isl));
+    const elsewhere = items.length - here.length;
+    const sort = state.sort === 'auto' ? (found.ranked ? 'rank' : 'recent') : state.sort;
+    const sorted = here.slice();
+    if (sort === 'recent') sorted.sort((a, b) => viewOf(b, isl).date - viewOf(a, isl).date);
+    if (sort === 'low') sorted.sort((a, b) => viewOf(a, isl).price - viewOf(b, isl).price);
+    if (sort === 'high') sorted.sort((a, b) => viewOf(b, isl).price - viewOf(a, isl).price);
+    if (sort === 'name') sorted.sort((a, b) => a.n.localeCompare(b.n, undefined, { sensitivity: 'base' }));
+    return { items: sorted, kind: found.kind, elsewhere, other };
+  }
+
+  // ---------------------------------------------------------------- rendering
+  function officialLink(item, view) {
+    if (item.batches) return `${item.sub ? LISTS.phs : LISTS.ph}?field_commodity_name_value=${encodeURIComponent(item.n)}`;
+    const base = view.sub ? LISTS.s : LISTS.p;
+    return item.e ? `${base}?field_ean_code_ap_value=${encodeURIComponent(item.e)}` : `${base}?field_commodity_name_value=${encodeURIComponent(item.n)}`;
+  }
+  function shareText(item, view) {
+    return t('shareText', { name: item.n, p: money(view.price), island: islandName(state.island) });
+  }
+
+  function groceryDetail(item, view) {
+    const m = groceryView(item, 'm');
+    const r = groceryView(item, 'r');
+    const everSub = item.h.some((h) => h[1] === 1);
+    const facts = [
+      `<div><dt>${esc(t('islM'))}</dt><dd>${m ? `Rs ${money(m.price)}` : esc(t('none0'))}</dd></div>`,
+      `<div><dt>${esc(t('islR'))}</dt><dd>${r ? `Rs ${money(r.price)}` : esc(t('none0'))}</dd></div>`,
+      item.e ? `<div><dt>${esc(t('barcode'))}</dt><dd class="mono">${esc(item.e)}</dd></div>` : '',
+      `<div><dt>${esc(t('officialCat'))}</dt><dd>${esc(G.types[view.shown[4]] || catLabel(item.c))}</dd></div>`,
+    ].join('');
+    const history = item.h.length > 1
+      ? `<div><p class="hint"><strong>${esc(t('history'))}</strong></p><div class="tablewrap"><table><thead><tr><th>${esc(t('date'))}</th><th class="num">${esc(t('islM'))}</th><th class="num">${esc(t('islR'))}</th><th>${esc(t('list'))}</th></tr></thead><tbody>${item.h.map((h) => `<tr><td>${esc(fmtDate(h[0]))}</td><td class="num">${h[2] ? money(h[2]) : '–'}</td><td class="num">${h[3] ? money(h[3]) : '–'}</td><td>${esc(h[1] ? t('subsidised') : t('regular'))}</td></tr>`).join('')}</tbody></table></div></div>`
+      : '';
+    return `<div class="detail" id="d-${item.id}">
+      ${view.sub ? `<p class="sub-line">${esc(t('subExplain'))}</p>` : everSub ? `<p class="hint">${esc(t('wasSub'))}</p>` : ''}
+      <dl class="facts">${facts}</dl>
+      ${sameCode(item).length ? `<p class="note inline">${esc(t('sameCode', { n: count(sameCode(item).length) }))} <button type="button" data-code="${esc(item.e)}">${esc(t('showAll'))}</button></p>` : ''}
+      <div class="check">
+        <label for="chk-${item.id}">${esc(t('check'))}</label>
+        <div class="check-row"><span class="money"><span>Rs</span><input id="chk-${item.id}" data-check="${item.id}" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"></span></div>
+        <p class="verdict" id="v-${item.id}" hidden></p>
+      </div>
+      ${history}
+      ${actionsHtml(item, view)}
+    </div>`;
+  }
+  function medicineDetail(item, view) {
+    const many = item.batches.length > 8;
+    return `<div class="detail" id="d-${item.id}">
+      ${item.sub ? `<p class="sub-line">${esc(t('subExplain'))}</p>` : ''}
+      <p class="hint">${esc(t('batchHint'))}</p>
+      ${many ? `<input class="field" type="search" data-batchfilter="${item.id}" placeholder="${esc(t('findBatch'))}" value="${esc(item.hitBatch || '')}" autocomplete="off" autocapitalize="characters" spellcheck="false">` : ''}
+      <div class="tablewrap"><table><thead><tr><th>${esc(t('batch'))}</th><th class="num">${esc(islandName(state.island))}</th><th>${esc(t('date'))}</th></tr></thead><tbody id="b-${item.id}">${batchRows(item, view, item.hitBatch || '')}</tbody></table></div>
+      ${actionsHtml(item, view)}
+    </div>`;
+  }
+  function batchRows(item, view, filter) {
+    const f = squash(filter);
+    const rows = view.rows.filter((b) => !f || squash(b[1]).includes(f));
+    if (!rows.length) return `<tr><td colspan="3">–</td></tr>`;
+    return rows.slice(0, 200).map((b) => `<tr class="${f && squash(b[1]) === f ? 'hit' : ''}"><td class="mono">${esc(b[1] || '–')}</td><td class="num">Rs ${money(b[view.col])}</td><td>${esc(fmtDate(b[0]))}</td></tr>`).join('');
+  }
+  function actionsHtml(item, view) {
+    const text = shareText(item, view);
+    return `<div class="actions">
+      <a class="btn" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">${esc(t('whatsapp'))}</a>
+      <button type="button" class="btn" data-copy="${item.id}">${esc(t('copy'))}</button>
+      <a class="btn" href="${esc(officialLink(item, view))}" target="_blank" rel="noopener">${esc(t('official'))}</a>
+    </div>`;
+  }
+
+  function itemHtml(item) {
+    const view = viewOf(item);
+    const open = state.open === item.id;
+    const isMed = Boolean(item.batches);
+    const meta = isMed
+      ? [item.b, classLabel(item.k), t('batches', { n: count(view.rows.length) })]
+      : [item.b && squash(item.b).length <= 22 && !squash(item.n).startsWith(squash(item.b)) ? item.b : '', catLabel(item.c)];
+    const when = t(view.pending ? 'from' : 'since', { d: fmtDate(view.date) });
+    const soon = !isMed && view.next ? `<span class="soon">${esc(t('newFrom', { d: fmtDate(view.next[0]), p: money(view.next[view.col]) }))}</span>` : '';
+    return `<article class="item${view.sub ? ' is-sub' : ''}${open ? ' is-open' : ''}" data-id="${item.id}">
+      <button type="button" class="item-head" aria-expanded="${open}" aria-controls="d-${item.id}">
+        <span class="item-main">
+          ${view.sub ? `<span class="pill">${esc(t('subsidised'))}</span>` : ''}
+          ${!isMed && sameCode(item).some((other) => viewOf(other).date > view.date) ? `<span class="pill soft">${esc(t('newer'))}</span>` : ''}
+          <span class="item-name">${esc(item.n)}</span>
+          <span class="item-meta">${meta.filter(Boolean).map((x) => `<span>${esc(x)}</span>`).join('')}</span>
+        </span>
+        <span class="item-price">${tagHtml(view.price)}<span class="when">${esc(when)}</span></span>
+        ${soon}
+      </button>
+      ${open ? (isMed ? medicineDetail(item, view) : groceryDetail(item, view)) : ''}
+    </article>`;
+  }
+
+  function renderChips() {
+    const isl = state.island;
+    const el = $('#cats');
+    if (state.tab === 'shop') {
+      const counts = {};
+      let subs = 0;
+      let all = 0;
+      for (const it of G.items) {
+        const v = viewOf(it, isl);
+        if (!v) continue;
+        all++;
+        counts[it.c] = (counts[it.c] || 0) + 1;
+        if (v.sub) subs++;
+      }
+      el.innerHTML = [
+        `<button type="button" class="chip is-sub" data-sub aria-pressed="${state.subOnly}"><span>${esc(t('subOnly'))}</span><span class="n">${count(subs)}</span></button>`,
+        `<button type="button" class="chip" data-cat="" aria-pressed="${!state.cat}"><span>${esc(t('all'))}</span><span class="n">${count(all)}</span></button>`,
+        ...CAT_ORDER.filter((id) => counts[id]).map((id) => `<button type="button" class="chip" data-cat="${id}" aria-pressed="${state.cat === id}"><span>${esc(catLabel(id))}</span><span class="n">${count(counts[id])}</span></button>`),
+      ].join('');
+    } else {
+      const counts = {};
+      let all = 0;
+      for (const it of M.items) {
+        if (!viewOf(it, isl)) continue;
+        all++;
+        counts[it.k] = (counts[it.k] || 0) + 1;
+      }
+      el.innerHTML = [
+        `<button type="button" class="chip" data-cls="" aria-pressed="${!state.cls}"><span>${esc(t('all'))}</span><span class="n">${count(all)}</span></button>`,
+        ...Object.keys(CLASSES).filter((id) => counts[id]).map((id) => `<button type="button" class="chip" data-cls="${id}" aria-pressed="${state.cls === id}"><span>${esc(classLabel(id))}</span><span class="n">${count(counts[id])}</span></button>`),
+      ].join('');
+    }
+  }
+
+  function renderResults() {
+    const listEl = $('#list');
+    const noteEl = $('#note');
+    const moreEl = $('#more');
+    if (!G) return;
+    const { items, kind, elsewhere, other } = currentList();
+    const q = state.q.trim();
+    $('#count').textContent = q
+      ? t(items.length === 1 ? 'nFor1' : 'nFor', { n: count(items.length), q })
+      : (state.tab === 'shop'
+        ? (state.cat || state.subOnly ? t('nProducts', { n: count(items.length) }) : t('latest'))
+        : (state.cls ? t('nMeds', { n: count(items.length) }) : t('latestMed')));
+
+    const notes = [];
+    if (kind === 'fuzzy' && items.length) notes.push(esc(t('fuzzy')));
+    if (elsewhere > 0 && q) notes.push(`${esc(t('otherIsland', { n: count(elsewhere), island: islandName(other) }))} <button type="button" data-switch="${other}">${esc(t('switchTo', { island: islandName(other) }))}</button>`);
+    noteEl.hidden = !notes.length;
+    noteEl.innerHTML = notes.join('<br>');
+
+    if (!items.length) {
+      const digits = q.replace(/[\s-]/g, '');
+      const message = !q ? t('noneCat', { island: islandName(state.island) })
+        : elsewhere > 0 ? t('noneHere', { q, island: islandName(state.island) })
+        : (kind === 'barcode' && /^\d{8,14}$/.test(digits) ? t('noneBarcode', { q: digits }) : t('none', { q }));
+      listEl.innerHTML = `<div class="state"><strong>${esc(message)}</strong>${q && kind !== 'barcode' && !elsewhere ? `<span>${esc(t('noneHint'))}</span>` : ''}</div>`;
+      moreEl.hidden = true;
+    } else {
+      listEl.innerHTML = items.slice(0, state.limit).map(itemHtml).join('');
+      const rest = items.length - state.limit;
+      moreEl.hidden = rest <= 0;
+      if (rest > 0) moreEl.textContent = t('more', { n: count(Math.min(PAGE, rest)) });
+    }
+    renderLive();
+  }
+
+  function renderStatic() {
+    document.documentElement.lang = state.lang === 'kr' ? 'mfe' : state.lang;
+    for (const el of $$('[data-t]')) el.textContent = t(el.dataset.t);
+    for (const b of $$('#tabs [data-tab]')) b.setAttribute('aria-selected', String(b.dataset.tab === state.tab));
+    for (const b of $$('#island [data-isl]')) b.setAttribute('aria-pressed', String(b.dataset.isl === state.island));
+    for (const b of $$('.lang [data-lang]')) b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
+    $('#q').placeholder = t(state.tab === 'shop' ? 'ph' : 'phMed');
+    $('#clear').setAttribute('aria-label', t('clear'));
+    $('#scan').hidden = state.tab !== 'shop';
+    $('#sort').value = state.sort;
+    if (G) {
+      const products = G.items.length;
+      const meds = M.items.length;
+      $('#n-shop').textContent = count(products);
+      $('#n-med').textContent = meds ? count(meds) : '';
+      $('#sub').textContent = t('sub', { n: count(products + meds) });
+    } else {
+      $('#sub').textContent = t('subPlain');
+    }
+    if (META) {
+      const order = ['p', 's', 'ph', 'phs'];
+      $('#sources').innerHTML = order.filter((k) => META.lists[k]).map((k) => {
+        const l = META.lists[k];
+        return `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.title)}</a><span>${esc(l.onSite ? t('rows', { n: count(l.rows) }) : t('liveList'))}</span></li>`;
+      }).join('');
+      const stamps = order.map((k) => META.lists[k] && META.lists[k].fetchedAt).filter(Boolean).sort();
+      $('#updated').textContent = stamps.length ? t('updated', { d: fmtStamp(stamps[stamps.length - 1]) }) : '';
+    }
+  }
+
+  function render() {
+    renderStatic();
+    if (!G) return;
+    renderChips();
+    renderResults();
+  }
+
+  // ---------------------------------------------------------------- live medicine search (published site only)
+  function renderLive() {
+    const el = $('#live');
+    if (state.tab !== 'med') { el.hidden = true; return; }
+    el.hidden = false;
+    const q = state.q.trim();
+    let body = '';
+    if (live.available === false) body = `<p class="hint">${esc(t('liveOff'))}</p>`;
+    else if (norm(q).replace(/ /g, '').length < 3) body = `<p class="hint">${esc(t('liveMin'))}</p>`;
+    else if (live.status === 'loading' || live.q !== q) body = `<p class="hint">${esc(t('liveLoading'))}</p><div class="skeleton"></div>`;
+    else if (live.status === 'error') body = `<p class="hint">${esc(t('liveErr'))}</p>`;
+    else if (!live.items.length) body = `<p class="hint">${esc(t('liveNone', { q }))}</p>`;
+    else {
+      const shown = live.items.filter((it) => viewOf(it));
+      body = `<p class="hint">${esc(t('liveSub'))}${live.total > live.rows ? ` ${esc(t('liveMore', { n: count(live.total) }))}` : ''}</p><div class="list">${shown.map(itemHtml).join('')}</div>`;
+    }
+    el.innerHTML = `<h3>${esc(t('liveTitle'))}</h3>${body}`;
+  }
+  function scheduleLive() {
+    clearTimeout(live.timer);
+    if (live.ctrl) live.ctrl.abort();
+    const q = state.q.trim();
+    if (state.tab !== 'med' || live.available === false || norm(q).replace(/ /g, '').length < 3) return;
+    if (live.q === q && live.status === 'done') return;
+    live.status = 'loading';
+    live.timer = setTimeout(async () => {
+      const ctrl = new AbortController();
+      live.ctrl = ctrl;
+      try {
+        const res = await fetch(`api/medicines?q=${encodeURIComponent(q)}`, { signal: ctrl.signal, headers: { accept: 'application/json' } });
+        if (res.status === 404 || !(res.headers.get('content-type') || '').includes('json')) { live.available = false; renderLive(); return; }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        live.available = true;
+        live.q = q;
+        live.status = 'done';
+        live.total = data.total || 0;
+        live.rows = data.rows || 0;
+        live.items = (data.items || []).map(([n, k, sub, b, batches], i) => ({ id: `l${i}`, n, k: data.classes[k], sub, b, batches, text: norm(`${n} ${b}`), codes: [], view: {}, hitBatch: '' }));
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        if (live.available === null) live.available = false; else { live.q = q; live.status = 'error'; live.items = []; }
+      }
+      if (state.q.trim() === q) renderLive();
+    }, 450);
+  }
+  const findItem = (id) => (id[0] === 'g' ? G.items : id[0] === 'm' ? M.items : live.items).find((it) => it.id === id);
+
+  // ---------------------------------------------------------------- events
+  function setQuery(value) {
+    state.q = value;
+    state.limit = PAGE;
+    state.open = '';
+    $('#clear').hidden = !value;
+    renderResults();
+    scheduleLive();
+  }
+  $('#q').addEventListener('input', (e) => setQuery(e.target.value));
+  $('#q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
+  $('#clear').addEventListener('click', () => { $('#q').value = ''; setQuery(''); $('#q').focus(); });
+  $('#sort').addEventListener('change', (e) => { state.sort = e.target.value; state.limit = PAGE; renderResults(); });
+  $('#more').addEventListener('click', () => { state.limit += PAGE; renderResults(); });
+  $('.lang').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-lang]');
+    if (!b) return;
+    state.lang = b.dataset.lang;
+    store.set('pri.lang', state.lang);
+    render();
+  });
+  $('#island').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-isl]');
+    if (!b) return;
+    state.island = b.dataset.isl;
+    store.set('pri.island', state.island);
+    state.limit = PAGE;
+    render();
+  });
+  $('#tabs').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-tab]');
+    if (!b || b.dataset.tab === state.tab) return;
+    state.tab = b.dataset.tab;
+    state.limit = PAGE;
+    state.open = '';
+    state.sort = 'auto';
+    render();
+    scheduleLive();
+  });
+  $('#cats').addEventListener('click', (e) => {
+    const b = e.target.closest('.chip');
+    if (!b) return;
+    if ('sub' in b.dataset) state.subOnly = !state.subOnly;
+    else if ('cat' in b.dataset) state.cat = b.dataset.cat;
+    else if ('cls' in b.dataset) state.cls = b.dataset.cls;
+    state.limit = PAGE;
+    state.open = '';
+    renderChips();
+    renderResults();
+  });
+  $('#note').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-switch]');
+    if (!b) return;
+    state.island = b.dataset.switch;
+    store.set('pri.island', state.island);
+    render();
+  });
+  function onListClick(e) {
+    const copyBtn = e.target.closest('[data-copy]');
+    if (copyBtn) {
+      const item = findItem(copyBtn.dataset.copy);
+      const text = shareText(item, viewOf(item));
+      const done = () => { copyBtn.textContent = t('copied'); setTimeout(() => { copyBtn.textContent = t('copy'); }, 1600); };
+      const fallback = () => {
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.setAttribute('readonly', '');
+        area.style.cssText = 'position:fixed;left:-999px;top:0';
+        document.body.appendChild(area);
+        area.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch { ok = false; }
+        area.remove();
+        if (ok) done();
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback);
+      else fallback();
+      return;
+    }
+    const codeBtn = e.target.closest('[data-code]');
+    if (codeBtn) {
+      $('#q').value = codeBtn.dataset.code;
+      state.cat = '';
+      state.subOnly = false;
+      renderChips();
+      setQuery(codeBtn.dataset.code);
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      return;
+    }
+    const head = e.target.closest('.item-head');
+    if (!head) return;
+    const article = head.closest('.item');
+    const id = article.dataset.id;
+    const previous = state.open;
+    state.open = previous === id ? '' : id;
+    for (const targetId of [previous, id]) {
+      if (!targetId) continue;
+      const node = document.querySelector(`.item[data-id="${targetId}"]`);
+      const item = findItem(targetId);
+      if (node && item) node.outerHTML = itemHtml(item);
+    }
+  }
+  function onListInput(e) {
+    const check = e.target.dataset.check;
+    if (check) {
+      const item = findItem(check);
+      const view = viewOf(item);
+      const out = $(`#v-${check}`);
+      const value = Number.parseFloat(e.target.value);
+      if (!Number.isFinite(value) || value <= 0) { out.hidden = true; return; }
+      const diff = Math.round((value - view.price) * 100) / 100;
+      out.hidden = false;
+      out.className = `verdict ${diff > 0 ? 'over' : 'ok'}`;
+      out.textContent = diff > 0
+        ? t('over', { x: money(diff), pc: (Math.round((diff / view.price) * 1000) / 10).toLocaleString('en-US') })
+        : diff === 0 ? t('exact') : t('within', { x: money(-diff) });
+      return;
+    }
+    const filter = e.target.dataset.batchfilter;
+    if (filter) {
+      const item = findItem(filter);
+      $(`#b-${filter}`).innerHTML = batchRows(item, viewOf(item), e.target.value);
+    }
+  }
+  for (const id of ['#list', '#live']) {
+    $(id).addEventListener('click', onListClick);
+    $(id).addEventListener('input', onListInput);
+  }
+
+  // ---------------------------------------------------------------- barcode scanner
+  const scanner = { stream: null, timer: 0, reader: null, open: false };
+  function stopScanner() {
+    scanner.open = false;
+    clearInterval(scanner.timer);
+    if (scanner.reader && scanner.reader.reset) { try { scanner.reader.reset(); } catch { /* already stopped */ } }
+    scanner.reader = null;
+    if (scanner.stream) for (const track of scanner.stream.getTracks()) track.stop();
+    scanner.stream = null;
+    $('#scan-video').srcObject = null;
+    $('#scanner').hidden = true;
+  }
+  function foundCode(code) {
+    stopScanner();
+    $('#q').value = code;
+    setQuery(code);
+  }
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = () => reject(new Error('script blocked'));
+      document.head.appendChild(s);
+    });
+  }
+  async function startScanner() {
+    const msg = $('#scan-msg');
+    const video = $('#scan-video');
+    $('#scanner').hidden = false;
+    scanner.open = true;
+    msg.textContent = t('scanStarting');
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { msg.textContent = t('scanNoCam'); return; }
+    try {
+      scanner.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } }, audio: false });
+    } catch (err) {
+      msg.textContent = t(err && err.name === 'NotAllowedError' && window.isSecureContext && window.top === window ? 'scanDenied' : 'scanNoCam');
+      return;
+    }
+    if (!scanner.open) { for (const track of scanner.stream.getTracks()) track.stop(); return; }
+    video.srcObject = scanner.stream;
+    try { await video.play(); } catch { /* the stream still feeds the detector */ }
+    msg.textContent = t('scanLooking');
+    if ('BarcodeDetector' in window) {
+      let detector = null;
+      try { detector = new window.BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] }); } catch { detector = null; }
+      if (detector) {
+        let busy = false;
+        scanner.timer = setInterval(async () => {
+          if (busy || video.readyState < 2) return;
+          busy = true;
+          try {
+            const codes = await detector.detect(video);
+            if (codes.length && scanner.open) foundCode(codes[0].rawValue);
+          } catch { /* a frame that could not be read */ }
+          busy = false;
+        }, 220);
+        return;
+      }
+    }
+    // Phones without the built-in detector (iPhone): load a reader on demand.
+    try {
+      if (!window.ZXing) await loadScript('https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js');
+      const hints = new Map([[window.ZXing.DecodeHintType.POSSIBLE_FORMATS, [window.ZXing.BarcodeFormat.EAN_13, window.ZXing.BarcodeFormat.EAN_8, window.ZXing.BarcodeFormat.UPC_A, window.ZXing.BarcodeFormat.UPC_E]]]);
+      scanner.reader = new window.ZXing.BrowserMultiFormatReader(hints);
+      scanner.reader.decodeFromStream(scanner.stream, video, (result) => { if (result && scanner.open) foundCode(result.getText()); });
+    } catch {
+      msg.textContent = t('scanNoCam');
+    }
+  }
+  $('#scan').addEventListener('click', startScanner);
+  $('#scan-close').addEventListener('click', stopScanner);
+  $('#scanner').addEventListener('click', (e) => { if (e.target.id === 'scanner') stopScanner(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && scanner.open) stopScanner(); });
+
+  // ---------------------------------------------------------------- start
+  async function load() {
+    try {
+      const get = async (name, optional) => {
+        const res = await fetch(`data/${name}.json`, { cache: 'no-cache' });
+        if (!res.ok) { if (optional) return null; throw new Error(`${name}: HTTP ${res.status}`); }
+        return res.json();
+      };
+      const [groceries, medicines, meta] = await Promise.all([get('groceries'), get('medicines', true), get('meta', true)]);
+      META = meta;
+      prepare(groceries, medicines);
+      render();
+      scheduleLive();
+    } catch (err) {
+      $('#count').textContent = '';
+      $('#list').innerHTML = `<div class="state"><strong>${esc(t('loadErr'))}</strong><button type="button" class="btn primary" id="retry">${esc(t('retry'))}</button></div>`;
+      $('#retry').addEventListener('click', () => { $('#list').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>'; load(); });
+    }
+  }
+
+  TODAY = todayInMauritius();
+  const savedLang = store.get('pri.lang', '');
+  state.lang = LANGS.includes(savedLang) ? savedLang : ((navigator.language || 'en').toLowerCase().startsWith('fr') ? 'fr' : 'en');
+  state.island = store.get('pri.island', 'm') === 'r' ? 'r' : 'm';
+  if (location.hash === '#medicines') state.tab = 'med';
+  try {
+    const q = new URLSearchParams(location.search).get('q');
+    if (q) { state.q = q.slice(0, 80); $('#q').value = state.q; $('#clear').hidden = false; }
+  } catch { /* no query string here */ }
+  render();
+  load();
+})();
+</script>
+</body>
+</html>
