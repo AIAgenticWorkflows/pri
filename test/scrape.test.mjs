@@ -60,7 +60,7 @@ test('scraper reads every page, drops exact duplicates and survives a broken lis
   rows.splice(120, 0, rows[119]); // the site does contain exact duplicate rows
   const mock = await startMock({ '/max-retail-prices-p': rows, '/max-retail-prices-s': makeRows(30, 'SUB'), '/max-retail-prices-pharmaceutical': 'error', '/subsidised-mrp-pharmaceutical': makeRows(101, 'MED') });
   try {
-    const { result, read } = await scrapeInto(mock.url, { PRI_TIMEOUT_MS: '3000' });
+    const { result, read } = await scrapeInto(mock.url, { PRI_TIMEOUT_MS: '3000', PRI_LISTS: 'p,s,ph,phs' });
     assert.equal(result.code, undefined, result.stderr);
     const p = await read('p.json');
     assert.equal(p.reportedTotal, 251);

@@ -5,7 +5,7 @@
 //   node scripts/scrape.mjs
 //
 // Options (environment variables):
-//   PRI_LISTS      comma-separated list keys to fetch (default: p,s,ph,phs)
+//   PRI_LISTS      comma-separated list keys to fetch (default: p,s,phs)
 //   PRI_MAX_PAGES  stop after this many pages per list, for a quick test (default: all)
 //   PRI_PAUSE_MS   pause between two requests to the same list (default: 400)
 //   PRI_TIMEOUT_MS time allowed for one page (default: 180000; the site is slow)
@@ -28,7 +28,10 @@ const BASE = process.env.PRI_BASE_URL || BASE_URL;
 const TIMEOUT_MS = Number(process.env.PRI_TIMEOUT_MS || 180000);
 const PAUSE_MS = Number(process.env.PRI_PAUSE_MS || 400);
 const MAX_PAGES = Number(process.env.PRI_MAX_PAGES || 0);
-const WANTED = (process.env.PRI_LISTS || Object.keys(LISTS).join(','))
+// The full pharmaceutical list (ph, about 57,000 batches) needs over a minute per page on the
+// official site, so it is not copied by default; the site searches it live instead.
+const DEFAULT_LISTS = 'p,s,phs';
+const WANTED = (process.env.PRI_LISTS || DEFAULT_LISTS)
   .split(',')
   .map((s) => s.trim())
   .filter((key) => key in LISTS);
