@@ -167,6 +167,13 @@ a { color: var(--brand); }
 .results-head h2 { margin: 0; font: 700 1.05rem/1.3 var(--font-display); letter-spacing: -0.01em; }
 .sort { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 0.9rem; font-weight: 600; }
 .sort select { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; min-height: 38px; padding: 4px 8px; font-weight: 700; }
+.sizes { display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 12px; margin-inline: -16px; padding-inline: 16px; }
+.sizes::-webkit-scrollbar { display: none; }
+.sizes .lbl { flex: none; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-2); margin-right: 2px; }
+.szc { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; min-height: 36px; padding: 4px 12px; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.szc .n { color: var(--ink-2); font-weight: 600; font-size: 0.78rem; }
+.szc[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--on-brand); }
+.szc[aria-pressed="true"] .n { color: inherit; opacity: 0.8; }
 .note { margin: 0 0 12px; padding: 10px 14px; border-radius: 12px; background: var(--surface-2); color: var(--ink); font-size: 0.95rem; }
 .note button { border: 0; background: none; color: var(--brand); font-weight: 800; padding: 0; text-decoration: underline; }
 
@@ -256,6 +263,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
 .scan-box p { margin: 0; color: var(--ink-2); }
 
 @media (min-width: 900px) {
+  .sizes { flex-wrap: wrap; overflow: visible; margin-inline: 0; padding-inline: 0; }
   .layout { grid-template-columns: 250px minmax(0, 1fr); gap: 26px; align-items: start; }
   .cats { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 82px); flex-direction: column; overflow: visible; margin-inline: 0; padding-inline: 0; gap: 4px; max-height: calc(100vh - 110px); overflow-y: auto; }
   .chip { justify-content: space-between; border-color: transparent; background: none; border-radius: 10px; white-space: normal; text-align: left; }
@@ -333,7 +341,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     <label class="search" for="q">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
       <span class="sr" data-t="searchLabel">Search</span>
-      <input id="q" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Product, brand or barcode">
+      <input id="q" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Try “rice 5 kg” or a barcode">
       <button type="button" class="icon-btn" id="clear" hidden aria-label="Clear">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
       </button>
@@ -359,6 +367,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
           </select>
         </label>
       </div>
+      <div class="sizes" id="sizes" hidden></div>
       <p class="note" id="note" hidden></p>
       <div class="list" id="list">
         <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
@@ -413,9 +422,9 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       sub: 'Official maximum retail prices for {n} products and medicines in Mauritius and Rodrigues, from the Price Fixing Unit.',
       subPlain: 'Official maximum retail prices in Mauritius and Rodrigues, from the Price Fixing Unit.',
       tabShop: 'Groceries & home', tabMed: 'Medicines', islM: 'Mauritius', islR: 'Rodrigues',
-      searchLabel: 'Search', ph: 'Product, brand or barcode', phMed: 'Medicine name or batch number', scan: 'Scan', clear: 'Clear',
+      searchLabel: 'Search', ph: 'Try “rice 5 kg” or a barcode', size: 'Size', sizeNone: 'No product of {s} here.', phMed: 'Medicine name or batch number', scan: 'Scan', clear: 'Clear',
       all: 'All', subOnly: 'Subsidised', latest: 'Latest price updates', latestMed: 'Subsidised medicines',
-      nProducts: '{n} products', nMeds: '{n} medicines', nFor: '{n} results for “{q}”', nFor1: '1 result for “{q}”', noneHere: 'No maximum price in {island} for “{q}”.',
+      nProducts: '{n} products', nProduct1: '1 product', nMeds: '{n} medicines', nFor: '{n} results for “{q}”', nFor1: '1 result for “{q}”', noneHere: 'No maximum price in {island} for “{q}”.',
       sortLabel: 'Sort', sortAuto: 'Recommended', sortRecent: 'Latest update', sortLow: 'Price: low to high', sortHigh: 'Price: high to low', sortName: 'Name: A to Z',
       since: 'since {d}', from: 'from {d}', newFrom: 'Changes on {d}: Rs {p}',
       subsidised: 'Subsidised', subExplain: 'Subsidised: the Government pays part of the price. The amount shown is the most you should pay.',
@@ -451,9 +460,9 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       sub: 'Les prix de vente maximums officiels de {n} produits et médicaments à Maurice et à Rodrigues, publiés par la Price Fixing Unit.',
       subPlain: 'Les prix de vente maximums officiels à Maurice et à Rodrigues, publiés par la Price Fixing Unit.',
       tabShop: 'Courses et maison', tabMed: 'Médicaments', islM: 'Maurice', islR: 'Rodrigues',
-      searchLabel: 'Rechercher', ph: 'Produit ou code-barres', phMed: 'Nom du médicament ou numéro de lot', scan: 'Scanner', clear: 'Effacer',
+      searchLabel: 'Rechercher', ph: 'Essayez « riz 5 kg » ou un code-barres', size: 'Format', sizeNone: 'Aucun produit de {s} ici.', phMed: 'Nom du médicament ou numéro de lot', scan: 'Scanner', clear: 'Effacer',
       all: 'Tout', subOnly: 'Subventionnés', latest: 'Derniers prix mis à jour', latestMed: 'Médicaments subventionnés',
-      nProducts: '{n} produits', nMeds: '{n} médicaments', nFor: '{n} résultats pour « {q} »', nFor1: '1 résultat pour « {q} »', noneHere: 'Pas de prix maximum à {island} pour « {q} ».',
+      nProducts: '{n} produits', nProduct1: '1 produit', nMeds: '{n} médicaments', nFor: '{n} résultats pour « {q} »', nFor1: '1 résultat pour « {q} »', noneHere: 'Pas de prix maximum à {island} pour « {q} ».',
       sortLabel: 'Trier', sortAuto: 'Recommandé', sortRecent: 'Mise à jour récente', sortLow: 'Prix croissant', sortHigh: 'Prix décroissant', sortName: 'Nom : A à Z',
       since: 'depuis le {d}', from: 'à partir du {d}', newFrom: 'Change le {d} : Rs {p}',
       subsidised: 'Subventionné', subExplain: 'Subventionné : le Gouvernement paie une partie du prix. Le montant affiché est le maximum à payer.',
@@ -489,9 +498,9 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       sub: 'Pri maximum ofisiel pou {n} prodwi ek medsinn dan Moris ek Rodrig, dapre Price Fixing Unit.',
       subPlain: 'Pri maximum ofisiel dan Moris ek Rodrig, dapre Price Fixing Unit.',
       tabShop: 'Komision ek lakaz', tabMed: 'Medsinn', islM: 'Moris', islR: 'Rodrig',
-      searchLabel: 'Rode', ph: 'Prodwi ouswa kod-bar', phMed: 'Nom medsinn ouswa nimero lot', scan: 'Skann', clear: 'Efase',
+      searchLabel: 'Rode', ph: 'Seye “diri 5 kg” ouswa enn kod-bar', size: 'Grander', sizeNone: 'Pena prodwi {s} isi.', phMed: 'Nom medsinn ouswa nimero lot', scan: 'Skann', clear: 'Efase',
       all: 'Tou', subOnly: 'Sibvansione', latest: 'Dernie pri ki finn sanze', latestMed: 'Medsinn sibvansione',
-      nProducts: '{n} prodwi', nMeds: '{n} medsinn', nFor: '{n} rezilta pou “{q}”', nFor1: '1 rezilta pou “{q}”', noneHere: 'Pena pri maximum dan {island} pou “{q}”.',
+      nProducts: '{n} prodwi', nProduct1: '1 prodwi', nMeds: '{n} medsinn', nFor: '{n} rezilta pou “{q}”', nFor1: '1 rezilta pou “{q}”', noneHere: 'Pena pri maximum dan {island} pou “{q}”.',
       sortLabel: 'Triye', sortAuto: 'Rekomande', sortRecent: 'Dernie sanzman', sortLow: 'Pri: pli ba an premie', sortHigh: 'Pri: pli ot an premie', sortName: 'Nom: A ziska Z',
       since: 'depi {d}', from: 'apartir {d}', newFrom: 'Sanze le {d}: Rs {p}',
       subsidised: 'Sibvansione', subExplain: 'Sibvansione: Gouvernman pey enn parti pri-la. Montan ki ou trouve, se maximum ki ou bizin peye.',
@@ -596,8 +605,45 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   const money = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const count = (n) => n.toLocaleString('en-US');
 
+  // ---------------------------------------------------------------- pack sizes
+  // Names spell sizes many ways ("5KG", "5 KGS", "5000 G", "1,5L", "75CL"). Each is turned
+  // into one key in grams or millilitres, so "5 kg" typed by a shopper finds all of them.
+  const SIZE_RE = /(\d+(?:[.,]\d+)?)\s*(kgs?|kilos?|gms?|grs?|grams?|grammes?|g|mls?|ltrs?|litres?|liters?|lts?|l|cl)(?![a-z])/gi;
+  function sizeKey(num, unit) {
+    const n = Number.parseFloat(String(num).replace(',', '.'));
+    if (!(n > 0)) return '';
+    const u = unit.toLowerCase();
+    let kind = 'ml';
+    let v = n * 1000;
+    if (/^k/.test(u)) { kind = 'g'; v = n * 1000; }
+    else if (/^g/.test(u)) { kind = 'g'; v = n; }
+    else if (/^ml/.test(u)) v = n;
+    else if (u === 'cl') v = n * 10;
+    return `${Math.round(v * 100) / 100}${kind}`;
+  }
+  function sizesOf(item) {
+    if (item.sz) return item.sz;
+    const found = new Set();
+    for (const m of String(item.n).matchAll(SIZE_RE)) { const k = sizeKey(m[1], m[2]); if (k) found.add(k); }
+    item.sz = [...found];
+    return item.sz;
+  }
+  const sizeParts = (key) => { const m = /^([\d.]+)(g|ml)$/.exec(key); return m ? [m[2], Number(m[1])] : ['', 0]; };
+  function sizeLabel(key) {
+    const [kind, v] = sizeParts(key);
+    const n = (x) => String(Math.round(x * 1000) / 1000);
+    if (kind === 'g') return v >= 1000 ? `${n(v / 1000)} kg` : `${n(v)} g`;
+    return v >= 1000 ? `${n(v / 1000)} L` : `${n(v)} ml`;
+  }
+  // "rice 5 kg" -> { text: 'rice', sizes: ['5000g'] }
+  function splitSize(query) {
+    const sizes = [];
+    const text = String(query).replace(SIZE_RE, (all, num, unit) => { const k = sizeKey(num, unit); if (k) sizes.push(k); return k ? ' ' : all; });
+    return { text: text.replace(/\s+/g, ' ').trim(), sizes };
+  }
+
   const state = {
-    lang: 'en', island: 'm', tab: 'shop', q: '', cat: '', subOnly: false, cls: '', sort: 'auto', limit: PAGE, open: '',
+    lang: 'en', island: 'm', tab: 'shop', q: '', cat: '', subOnly: false, cls: '', size: '', sort: 'auto', limit: PAGE, open: '',
   };
   let G = null; // groceries and household products
   let M = null; // medicines kept on the page
@@ -793,11 +839,16 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const other = isl === 'm' ? 'r' : 'm';
     const source = state.tab === 'shop' ? G.items : M.items;
     for (const it of source) it.hitBatch = '';
-    const found = search(source, state.q);
+    const asked = state.tab === 'shop' ? splitSize(state.q) : { text: state.q, sizes: [] };
+    const found = search(source, asked.text);
     let items = found.items;
+    let sizePool = null;
     if (state.tab === 'shop') {
       if (state.subOnly) items = items.filter((it) => { const v = viewOf(it, isl) || viewOf(it, other); return v && v.sub; });
       if (state.cat) items = items.filter((it) => it.c === state.cat);
+      sizePool = items.filter((it) => viewOf(it, isl));
+      const wanted = [...asked.sizes, state.size].filter(Boolean);
+      if (wanted.length) items = items.filter((it) => { const sz = sizesOf(it); return wanted.every((w) => sz.includes(w)); });
     } else if (state.cls) {
       items = items.filter((it) => it.k === state.cls);
     }
@@ -809,7 +860,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     if (sort === 'low') sorted.sort((a, b) => viewOf(a, isl).price - viewOf(b, isl).price);
     if (sort === 'high') sorted.sort((a, b) => viewOf(b, isl).price - viewOf(a, isl).price);
     if (sort === 'name') sorted.sort((a, b) => a.n.localeCompare(b.n, undefined, { sensitivity: 'base' }));
-    return { items: sorted, kind: found.kind, elsewhere, other };
+    return { items: sorted, kind: found.kind, elsewhere, other, sizePool, askedSizes: asked.sizes, askedText: asked.text };
   }
 
   // ---------------------------------------------------------------- rendering
@@ -936,12 +987,13 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const noteEl = $('#note');
     const moreEl = $('#more');
     if (!G) return;
-    const { items, kind, elsewhere, other } = currentList();
+    const { items, kind, elsewhere, other, sizePool, askedSizes, askedText } = currentList();
     const q = state.q.trim();
+    renderSizes(sizePool, askedSizes, askedText);
     $('#count').textContent = q
       ? t(items.length === 1 ? 'nFor1' : 'nFor', { n: count(items.length), q })
       : (state.tab === 'shop'
-        ? (state.cat || state.subOnly ? t('nProducts', { n: count(items.length) }) : t('latest'))
+        ? (state.cat || state.subOnly || state.size ? (items.length === 1 ? t('nProduct1') : t('nProducts', { n: count(items.length) })) : t('latest'))
         : (state.cls ? t('nMeds', { n: count(items.length) }) : t('latestMed')));
 
     const notes = [];
@@ -952,7 +1004,8 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
 
     if (!items.length) {
       const digits = q.replace(/[\s-]/g, '');
-      const message = !q ? t('noneCat', { island: islandName(state.island) })
+      const sizeOnly = state.size && !elsewhere ? t('sizeNone', { s: sizeLabel(state.size) }) : '';
+      const message = sizeOnly || !q ? (sizeOnly || t('noneCat', { island: islandName(state.island) }))
         : elsewhere > 0 ? t('noneHere', { q, island: islandName(state.island) })
         : (kind === 'barcode' && /^\d{8,14}$/.test(digits) ? t('noneBarcode', { q: digits }) : t('none', { q }));
       listEl.innerHTML = `<div class="state"><strong>${esc(message)}</strong>${q && kind !== 'barcode' && !elsewhere ? `<span>${esc(t('noneHint'))}</span>` : ''}</div>`;
@@ -964,6 +1017,22 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       if (rest > 0) moreEl.textContent = t('more', { n: count(Math.min(PAGE, rest)) });
     }
     renderLive();
+  }
+
+  // Size buttons for what is on screen: shown once a category or a search narrows the list.
+  function renderSizes(pool, askedSizes, askedText) {
+    const el = $('#sizes');
+    const active = new Set([...askedSizes, state.size].filter(Boolean));
+    if (!pool || (!state.cat && !state.q.trim() && !state.subOnly && !active.size)) { el.hidden = true; el.innerHTML = ''; return; }
+    const counts = new Map();
+    for (const it of pool) for (const k of sizesOf(it)) counts.set(k, (counts.get(k) || 0) + 1);
+    let keys = [...counts.keys()].sort((a, b) => counts.get(b) - counts.get(a)).slice(0, 16);
+    for (const k of active) if (!keys.includes(k)) keys.push(k);
+    if (keys.length < 2 && !active.size) { el.hidden = true; el.innerHTML = ''; return; }
+    keys = keys.sort((a, b) => { const [ka, va] = sizeParts(a); const [kb, vb] = sizeParts(b); return ka === kb ? va - vb : (ka === 'g' ? -1 : 1); });
+    el.hidden = false;
+    el.dataset.text = askedText;
+    el.innerHTML = `<span class="lbl">${esc(t('size'))}</span>${keys.map((k) => `<button type="button" class="szc" data-size="${k}" data-asked="${askedSizes.includes(k) ? 1 : ''}" aria-pressed="${active.has(k)}"><span>${esc(sizeLabel(k))}</span>${counts.get(k) ? `<span class="n">${count(counts.get(k))}</span>` : ''}</button>`).join('')}`;
   }
 
   function renderStatic() {
@@ -1087,6 +1156,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     state.limit = PAGE;
     state.open = '';
     state.sort = 'auto';
+    state.size = '';
     render();
     scheduleLive();
   });
@@ -1094,11 +1164,28 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const b = e.target.closest('.chip');
     if (!b) return;
     if ('sub' in b.dataset) state.subOnly = !state.subOnly;
-    else if ('cat' in b.dataset) state.cat = b.dataset.cat;
+    else if ('cat' in b.dataset) { state.cat = b.dataset.cat; state.size = ''; }
     else if ('cls' in b.dataset) state.cls = b.dataset.cls;
     state.limit = PAGE;
     state.open = '';
     renderChips();
+    renderResults();
+  });
+  $('#sizes').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-size]');
+    if (!b) return;
+    const key = b.dataset.size;
+    if (b.dataset.asked) {
+      // The size came from what was typed: take it out of the search box.
+      const rest = $('#sizes').dataset.text || '';
+      $('#q').value = rest;
+      state.size = '';
+      setQuery(rest);
+      return;
+    }
+    state.size = state.size === key ? '' : key;
+    state.limit = PAGE;
+    state.open = '';
     renderResults();
   });
   $('#note').addEventListener('click', (e) => {
