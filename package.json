@@ -1,0 +1,15 @@
+{
+  "name": "pri",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Pri: find the official maximum retail prices in Mauritius and Rodrigues",
+  "type": "module",
+  "scripts": {
+    "scrape": "node scripts/scrape.mjs",
+    "build": "node scripts/build-data.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

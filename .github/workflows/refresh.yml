@@ -1,0 +1,67 @@
+name: Refresh prices
+
+# Pulls the official price lists from pfu.govmu.org and commits what changed.
+# Start it by hand from the Actions tab, or by editing .github/refresh-trigger.
+
+on:
+  workflow_dispatch:
+    inputs:
+      lists:
+        description: 'Lists to fetch (p, s, ph, phs)'
+        default: 'p,s,ph,phs'
+      max_pages:
+        description: 'Pages per list for a quick test (0 = everything)'
+        default: '0'
+  push:
+    branches: [main]
+    paths: ['.github/refresh-trigger']
+  # Nightly refresh, switched off until it is approved:
+  # schedule:
+  #   - cron: '15 22 * * *' # 02:15 in Mauritius
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-prices
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read options
+        env:
+          IN_LISTS: ${{ inputs.lists }}
+          IN_MAX_PAGES: ${{ inputs.max_pages }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ] && [ -f .github/refresh-trigger ]; then
+            IN_LISTS=$(sed -n 's/^lists=//p' .github/refresh-trigger | head -1)
+            IN_MAX_PAGES=$(sed -n 's/^max_pages=//p' .github/refresh-trigger | head -1)
+          fi
+          if printf '%s' "$IN_LISTS" | grep -Eq '^[a-z]+(,[a-z]+)*$'; then echo "PRI_LISTS=$IN_LISTS" >> "$GITHUB_ENV"; fi
+          if printf '%s' "$IN_MAX_PAGES" | grep -Eq '^[0-9]+$'; then echo "PRI_MAX_PAGES=$IN_MAX_PAGES" >> "$GITHUB_ENV"; fi
+          node --version
+
+      - name: Fetch the official lists
+        run: node scripts/scrape.mjs
+
+      - name: Build the site data
+        run: |
+          if [ -f scripts/build-data.mjs ]; then node scripts/build-data.mjs; fi
+
+      - name: Commit what changed
+        run: |
+          git config user.name "pri-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data site/data
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+          else
+            git commit -m "Refresh price data ($(date -u +%F))"
+            git pull --rebase --autostash
+            git push
+          fi
