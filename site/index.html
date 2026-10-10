@@ -423,7 +423,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       subPlain: 'Official maximum retail prices in Mauritius and Rodrigues, from the Price Fixing Unit.',
       tabShop: 'Groceries & home', tabMed: 'Medicines', islM: 'Mauritius', islR: 'Rodrigues',
       searchLabel: 'Search', ph: 'Try “rice 5 kg” or a barcode', size: 'Size', sizeNone: 'No product of {s} here.', phMed: 'Medicine name or batch number', scan: 'Scan', clear: 'Clear',
-      all: 'All', subOnly: 'Subsidised', latest: 'Latest price updates', latestMed: 'Subsidised medicines',
+      all: 'All', subOnly: 'Subsidised', latest: 'Latest price updates', latestMed: 'Medicines, latest price updates first', medLoading: 'Loading the medicines list…', medPartial: 'The full medicines list is still being copied ({n} of {t} batches so far). Searches also check the official list live.',
       nProducts: '{n} products', nProduct1: '1 product', nMeds: '{n} medicines', nFor: '{n} results for “{q}”', nFor1: '1 result for “{q}”', noneHere: 'No maximum price in {island} for “{q}”.',
       sortLabel: 'Sort', sortAuto: 'Recommended', sortRecent: 'Latest update', sortLow: 'Price: low to high', sortHigh: 'Price: high to low', sortName: 'Name: A to Z',
       since: 'since {d}', from: 'from {d}', newFrom: 'Changes on {d}: Rs {p}',
@@ -461,7 +461,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       subPlain: 'Les prix de vente maximums officiels à Maurice et à Rodrigues, publiés par la Price Fixing Unit.',
       tabShop: 'Courses et maison', tabMed: 'Médicaments', islM: 'Maurice', islR: 'Rodrigues',
       searchLabel: 'Rechercher', ph: 'Essayez « riz 5 kg » ou un code-barres', size: 'Format', sizeNone: 'Aucun produit de {s} ici.', phMed: 'Nom du médicament ou numéro de lot', scan: 'Scanner', clear: 'Effacer',
-      all: 'Tout', subOnly: 'Subventionnés', latest: 'Derniers prix mis à jour', latestMed: 'Médicaments subventionnés',
+      all: 'Tout', subOnly: 'Subventionnés', latest: 'Derniers prix mis à jour', latestMed: 'Médicaments, derniers prix d’abord', medLoading: 'Chargement de la liste des médicaments…', medPartial: 'La liste complète des médicaments est en cours de copie ({n} lots sur {t}). Les recherches consultent aussi la liste officielle en direct.',
       nProducts: '{n} produits', nProduct1: '1 produit', nMeds: '{n} médicaments', nFor: '{n} résultats pour « {q} »', nFor1: '1 résultat pour « {q} »', noneHere: 'Pas de prix maximum à {island} pour « {q} ».',
       sortLabel: 'Trier', sortAuto: 'Recommandé', sortRecent: 'Mise à jour récente', sortLow: 'Prix croissant', sortHigh: 'Prix décroissant', sortName: 'Nom : A à Z',
       since: 'depuis le {d}', from: 'à partir du {d}', newFrom: 'Change le {d} : Rs {p}',
@@ -499,7 +499,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       subPlain: 'Pri maximum ofisiel dan Moris ek Rodrig, dapre Price Fixing Unit.',
       tabShop: 'Komision ek lakaz', tabMed: 'Medsinn', islM: 'Moris', islR: 'Rodrig',
       searchLabel: 'Rode', ph: 'Seye “diri 5 kg” ouswa enn kod-bar', size: 'Grander', sizeNone: 'Pena prodwi {s} isi.', phMed: 'Nom medsinn ouswa nimero lot', scan: 'Skann', clear: 'Efase',
-      all: 'Tou', subOnly: 'Sibvansione', latest: 'Dernie pri ki finn sanze', latestMed: 'Medsinn sibvansione',
+      all: 'Tou', subOnly: 'Sibvansione', latest: 'Dernie pri ki finn sanze', latestMed: 'Medsinn, dernie pri an premie', medLoading: 'Lalis medsinn pe sarze…', medPartial: 'Lalis konple medsinn pe kopie ankor ({n} lor {t} lot ziska ler). Rod osi lor lalis ofisiel an direk.',
       nProducts: '{n} prodwi', nProduct1: '1 prodwi', nMeds: '{n} medsinn', nFor: '{n} rezilta pou “{q}”', nFor1: '1 rezilta pou “{q}”', noneHere: 'Pena pri maximum dan {island} pou “{q}”.',
       sortLabel: 'Triye', sortAuto: 'Rekomande', sortRecent: 'Dernie sanzman', sortLow: 'Pri: pli ba an premie', sortHigh: 'Pri: pli ot an premie', sortName: 'Nom: A ziska Z',
       since: 'depi {d}', from: 'apartir {d}', newFrom: 'Sanze le {d}: Rs {p}',
@@ -649,7 +649,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   let M = null; // medicines kept on the page
   let META = null;
   let TODAY = 0;
-  const live = { q: '', status: 'idle', items: [], total: 0, rows: 0, available: null, timer: 0, ctrl: null };
+  const live = { localCount: 0, q: '', status: 'idle', items: [], total: 0, rows: 0, available: null, timer: 0, ctrl: null };
 
   const t = (key, vars) => {
     let text = (I18N[state.lang] && I18N[state.lang][key]) ?? I18N.en[key] ?? key;
@@ -703,13 +703,28 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       if (!G.byCode.has(it.ek)) G.byCode.set(it.ek, []);
       G.byCode.get(it.ek).push(it);
     }
+    M = { items: [], loaded: false };
+    if (medicines) prepareMedicines(medicines);
+  }
+  function prepareMedicines(medicines) {
     M = {
-      items: (medicines ? medicines.items : []).map(([n, k, sub, b, batches], i) => ({
+      loaded: true,
+      items: medicines.items.map(([n, k, sub, b, batches], i) => ({
         id: `m${i}`, n, k: medicines.classes[k], sub, b, batches,
         text: `${norm(`${n} ${b}`)} ${(CLASSES[medicines.classes[k]] || CLASSES.other)[3]}`,
         codes: batches.map((x) => squash(x[1])), words: null, view: {},
       })),
     };
+  }
+  const phComplete = () => Boolean(META && META.lists && META.lists.ph && META.lists.ph.complete);
+  let medLoading = null;
+  function ensureMedicines() {
+    if (M.loaded || medLoading) return medLoading;
+    medLoading = fetch('data/medicines.json', { cache: 'no-cache' })
+      .then((res) => (res.ok ? res.json() : { classes: [], items: [] }))
+      .catch(() => ({ classes: [], items: [] }))
+      .then((data) => { prepareMedicines(data); medLoading = null; if (state.tab === 'med') { renderChips(); renderResults(); scheduleLive(); } });
+    return medLoading;
   }
 
   // What a shopper needs to know about a product on one island today:
@@ -987,7 +1002,18 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const noteEl = $('#note');
     const moreEl = $('#more');
     if (!G) return;
+    if (state.tab === 'med' && !M.loaded) {
+      ensureMedicines();
+      $('#count').textContent = t('medLoading');
+      $('#note').hidden = true;
+      $('#sizes').hidden = true;
+      $('#list').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+      $('#more').hidden = true;
+      $('#live').hidden = true;
+      return;
+    }
     const { items, kind, elsewhere, other, sizePool, askedSizes, askedText } = currentList();
+    live.localCount = items.length;
     const q = state.q.trim();
     renderSizes(sizePool, askedSizes, askedText);
     $('#count').textContent = q
@@ -998,6 +1024,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
 
     const notes = [];
     if (kind === 'fuzzy' && items.length) notes.push(esc(t('fuzzy')));
+    if (state.tab === 'med' && META && META.lists.ph && META.lists.ph.onSite && !phComplete() && !q) notes.push(esc(t('medPartial', { n: count(META.lists.ph.rows), t: count(META.lists.ph.officialTotal || 0) })));
     if (elsewhere > 0 && q) notes.push(`${esc(t('otherIsland', { n: count(elsewhere), island: islandName(other) }))} <button type="button" data-switch="${other}">${esc(t('switchTo', { island: islandName(other) }))}</button>`);
     noteEl.hidden = !notes.length;
     noteEl.innerHTML = notes.join('<br>');
@@ -1051,7 +1078,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     $('#sort').value = state.sort;
     if (G) {
       const products = G.items.length;
-      const meds = M.items.length;
+      const meds = (META && META.counts && META.counts.medicines) || M.items.length;
       $('#n-shop').textContent = count(products);
       $('#n-med').textContent = meds ? count(meds) : '';
       $('#sub').textContent = t('sub', { n: count(products + meds) });
@@ -1079,7 +1106,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   // ---------------------------------------------------------------- live medicine search (published site only)
   function renderLive() {
     const el = $('#live');
-    if (state.tab !== 'med') { el.hidden = true; return; }
+    if (state.tab !== 'med' || (phComplete() && live.localCount > 0)) { el.hidden = true; return; }
     el.hidden = false;
     const q = state.q.trim();
     let body = '';
@@ -1098,7 +1125,8 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     clearTimeout(live.timer);
     if (live.ctrl) live.ctrl.abort();
     const q = state.q.trim();
-    if (state.tab !== 'med' || live.available === false || norm(q).replace(/ /g, '').length < 3) return;
+    if (state.tab !== 'med' || !M.loaded || live.available === false || norm(q).replace(/ /g, '').length < 3) return;
+    if (phComplete() && live.localCount > 0) return;
     if (live.q === q && live.status === 'done') return;
     live.status = 'loading';
     live.timer = setTimeout(async () => {
@@ -1354,9 +1382,10 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         if (!res.ok) { if (optional) return null; throw new Error(`${name}: HTTP ${res.status}`); }
         return res.json();
       };
-      const [groceries, medicines, meta] = await Promise.all([get('groceries'), get('medicines', true), get('meta', true)]);
+      const [groceries, meta] = await Promise.all([get('groceries'), get('meta', true)]);
       META = meta;
-      prepare(groceries, medicines);
+      prepare(groceries, null);
+      if (state.tab === 'med') ensureMedicines();
       render();
       scheduleLive();
     } catch (err) {

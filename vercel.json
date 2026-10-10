@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "",
-  "buildCommand": "node scripts/scrape.mjs; node scripts/build-data.mjs",
+  "buildCommand": "node scripts/pharma.mjs & node scripts/scrape.mjs; wait; node scripts/build-data.mjs",
   "outputDirectory": "site",
   "functions": {
     "api/medicines.js": {

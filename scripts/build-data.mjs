@@ -73,7 +73,15 @@ async function main() {
       Object.entries(LISTS).map(([key, def]) => [
         key,
         raw[key]
-          ? { title: def.title, url: BASE_URL + def.path, onSite: true, fetchedAt: raw[key].fetchedAt, rows: raw[key].rows.length, latestEffective: latest(raw[key].rows, raw[key].headers) }
+          ? {
+              title: def.title,
+              url: BASE_URL + def.path,
+              onSite: true,
+              fetchedAt: raw[key].fetchedAt,
+              rows: raw[key].rows.length,
+              latestEffective: latest(raw[key].rows, raw[key].headers),
+              ...(key === 'ph' ? { complete: Boolean(raw.ph.complete), officialTotal: raw.ph.reportedTotal || null } : {}),
+            }
           : { title: def.title, url: BASE_URL + def.path, onSite: false },
       ]),
     ),
