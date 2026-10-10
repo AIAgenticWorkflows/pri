@@ -30,7 +30,7 @@ export const POLICY = {
   phs: { topEvery: 3 * HOUR, fullEvery: 7 * 24 * HOUR, keepPasses: 2, concurrency: 1, slices: false, prune: true },
   // The full medicines list: 57,000 batches, a minute per page. Pulled by name searches,
   // completed once by a slow read-through, then kept current from the top only.
-  ph: { topEvery: 20 * HOUR, fullEvery: Infinity, keepPasses: 2, concurrency: 2, slices: true, prune: false },
+  ph: { topEvery: 20 * HOUR, fullEvery: Infinity, keepPasses: 2, concurrency: 1, slices: true, prune: false },
 };
 
 // Words that appear in thousands of medicine names: searching them would be slow and
@@ -135,9 +135,9 @@ export class Collector {
 
   // ---- top of the list ------------------------------------------------------------
   topDue(now = Date.now()) {
-    // An empty store is filled by a read-through, except for the sliced list, which starts
-    // from the newest pages to learn names to search.
-    if (!this.store.rows.length) return Boolean(this.policy.slices);
+    // An empty store is filled by a read-through (or, for the medicines list, by name
+    // searches): reading its slow unfiltered first page would gain nothing.
+    if (!this.store.rows.length) return false;
     return !this.store.topAt || now - Date.parse(this.store.topAt) > this.policy.topEvery;
   }
 
@@ -200,7 +200,13 @@ export class Collector {
     let searched = 0;
     let rowsFound = 0;
     while (!this.outOfTime()) {
-      const { ordered, uncoveredNames } = this.nextTokens(extraNames);
+      const { ordered, uncoveredNames, totalNames } = this.nextTokens(extraNames);
+      if (!totalNames) {
+        // No names yet to take words from (the subsidised medicines list is still empty):
+        // try again on a later run rather than calling the searches finished.
+        this.stats.steps.push('searches: waiting for medicine names to search');
+        return { done: false, searched, rowsFound };
+      }
       if (!ordered.length) {
         this.store.slicesDone = true;
         this.stats.steps.push(`searches: nothing left to search (${uncoveredNames} names without a word to search)`);
@@ -251,6 +257,8 @@ export class Collector {
   passDue(now = Date.now()) {
     if (this.store.resumePage > 0) return true;
     if (this.policy.slices && this.store.complete) return false;
+    // The slow page walk of the medicines list only starts once the searches are done.
+    if (this.policy.slices && !this.store.slicesDone) return false;
     if (!this.store.fullPassAt) return true;
     return now - Date.parse(this.store.fullPassAt) > this.policy.fullEvery;
   }

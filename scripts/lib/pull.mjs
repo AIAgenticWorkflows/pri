@@ -79,10 +79,30 @@ export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseM
     }
   }
 
-  // 2. The full medicines list, through name searches.
+  // A store marked "searches done" while still empty came from an older version.
+  if (collectors.ph && !collectors.ph.store.rows.length) collectors.ph.store.slicesDone = false;
+
+  const runPassFor = async (key) => {
+    try {
+      await collectors[key].runPass();
+    } catch (err) {
+      say(`${key}: read-through failed: ${err.message}`);
+    }
+    await save(key);
+  };
+
+  // 2. Complete read-throughs of the smaller lists: resumed ones first, then whichever is due.
+  const due = wanted.filter((key) => key !== 'ph' && collectors[key].passDue());
+  due.sort((a, b) => (collectors[b].store.resumePage > 0) - (collectors[a].store.resumePage > 0));
+  for (const key of due) {
+    if (outOfTime()) break;
+    await runPassFor(key);
+  }
+
+  // 3. The full medicines list, through name searches taken from both medicine lists.
   if (collectors.ph && !collectors.ph.store.slicesDone && !outOfTime()) {
-    const phs = collectors.phs;
-    const nameCol = phs && phs.store.headers ? phs.store.headers.findIndex((h) => /commodity name/i.test(h)) : -1;
+    const phs = collectors.phs || { store: (await storage.readJson('stores/phs.json')) || emptyStore('phs') };
+    const nameCol = phs.store.headers ? phs.store.headers.findIndex((h) => /commodity name/i.test(h)) : -1;
     const extra = nameCol >= 0 ? phs.store.rows.map((row) => row[nameCol]) : [];
     try {
       await collectors.ph.runSlices(extra);
@@ -92,18 +112,8 @@ export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseM
     await save('ph');
   }
 
-  // 3. Complete read-throughs: resumed ones first, then whichever is due.
-  const due = wanted.filter((key) => collectors[key].passDue());
-  due.sort((a, b) => (collectors[b].store.resumePage > 0) - (collectors[a].store.resumePage > 0));
-  for (const key of due) {
-    if (outOfTime()) break;
-    try {
-      await collectors[key].runPass();
-    } catch (err) {
-      say(`${key}: read-through failed: ${err.message}`);
-    }
-    await save(key);
-  }
+  // 3b. Then, once, a slow page walk of the medicines list to catch anything the searches missed.
+  if (collectors.ph && collectors.ph.passDue() && !outOfTime()) await runPassFor('ph');
 
   // 4. The files the page loads.
   const stores = {};

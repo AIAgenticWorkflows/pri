@@ -136,11 +136,12 @@ test('a whole run: seeds, top of each list, searches, outputs, and the state fil
     const groceriesOut = await readFile(path.join(dir, 'data', 'groceries.json'), 'utf8');
     assert.match(groceriesOut, /SUB 0001/);
 
-    // A second run straight away has nothing due and changes nothing.
+    // A second run straight away only looks at the top of the medicines list (filled by
+    // searches, never read from the top yet) and changes nothing.
     const requests = mock.requests();
     const second = await runPull({ storage, deadlineAt: soon(60000), base: mock.url, pauseMs: 0, log: quiet, seed });
     assert.equal(second.lists.ph.rows, 58);
-    assert.ok(mock.requests() - requests <= 2, `made ${mock.requests() - requests} requests`);
+    assert.ok(mock.requests() - requests <= 3, `made ${mock.requests() - requests} requests`);
   } finally {
     mock.server.close();
   }
