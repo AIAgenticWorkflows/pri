@@ -1,0 +1,3 @@
+# Changed once a day by a scheduled task. Each push to main makes Vercel rebuild the
+# site, and every build reads the official price lists afresh from pfu.govmu.org.
+last-request: 2026-10-10T17:45Z

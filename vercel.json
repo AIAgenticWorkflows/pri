@@ -5,16 +5,19 @@
   "buildCommand": "node scripts/scrape.mjs; node scripts/build-data.mjs",
   "outputDirectory": "site",
   "functions": {
-    "api/medicines.js": { "maxDuration": 30 },
-    "api/refresh.js": { "maxDuration": 30 }
+    "api/medicines.js": {
+      "maxDuration": 30
+    }
   },
-  "crons": [
-    { "path": "/api/refresh", "schedule": "15 22 * * *" }
-  ],
   "headers": [
     {
       "source": "/data/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"
+        }
+      ]
     }
   ]
 }
