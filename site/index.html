@@ -1002,7 +1002,11 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     noteEl.hidden = !notes.length;
     noteEl.innerHTML = notes.join('<br>');
 
-    if (!items.length) {
+    if (!items.length && state.tab === 'med' && live.available !== false && norm(q).replace(/ /g, '').length >= 3) {
+      // Not a subsidised medicine: the live search of the full official list below answers instead.
+      listEl.innerHTML = '';
+      moreEl.hidden = true;
+    } else if (!items.length) {
       const digits = q.replace(/[\s-]/g, '');
       const sizeOnly = state.size && !elsewhere ? t('sizeNone', { s: sizeLabel(state.size) }) : '';
       const message = sizeOnly || !q ? (sizeOnly || t('noneCat', { island: islandName(state.island) }))

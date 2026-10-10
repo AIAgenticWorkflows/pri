@@ -10,6 +10,7 @@
 import { BASE_URL, LISTS, parsePage } from '../scripts/lib/pfu.mjs';
 import { MEDICINE_CLASSES, buildMedicines } from '../scripts/lib/model.mjs';
 
+const MAX_PAGES = 6;
 const USER_AGENT = 'Mozilla/5.0 (compatible; PriBot/1.0; +https://www.aplica.biz)';
 
 /** Letters, digits and the few signs medicine names use; at least 3 letters or digits. */
@@ -25,10 +26,19 @@ export function cleanQuery(raw) {
 
 export async function searchMedicines(q, { base = process.env.PRI_BASE_URL || BASE_URL, timeoutMs = 12000 } = {}) {
   const url = `${base}${LISTS.ph.path}?field_commodity_name_value=${encodeURIComponent(q)}`;
-  const res = await fetch(url, { headers: { 'user-agent': USER_AGENT, accept: 'text/html' }, signal: AbortSignal.timeout(timeoutMs) });
-  if (!res.ok) throw new Error(`official list answered HTTP ${res.status}`);
-  const page = parsePage(await res.text());
-  const rows = page.hasTable ? page.rows : []; // no table means no match
+  const get = async (n) => {
+    const res = await fetch(n ? `${url}&page=${n}` : url, { headers: { 'user-agent': USER_AGENT, accept: 'text/html' }, signal: AbortSignal.timeout(timeoutMs) });
+    if (!res.ok) throw new Error(`official list answered HTTP ${res.status}`);
+    return parsePage(await res.text());
+  };
+  const page = await get(0);
+  const rows = page.hasTable ? page.rows.slice() : []; // no table means no match
+  // A name search returns 100 rows a page; read up to MAX_PAGES so every strength shows.
+  const more = page.hasTable ? Math.min(page.lastPage, MAX_PAGES - 1) : 0;
+  if (more > 0) {
+    const pages = await Promise.all(Array.from({ length: more }, (_, i) => get(i + 1).catch(() => null)));
+    for (const extra of pages) if (extra && extra.hasTable) rows.push(...extra.rows);
+  }
   const { items } = buildMedicines([{ list: 'ph', headers: page.headers, rows }]);
   const classIndex = new Map(MEDICINE_CLASSES.map((id, i) => [id, i]));
   return {
