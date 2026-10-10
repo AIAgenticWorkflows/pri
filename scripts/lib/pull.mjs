@@ -10,7 +10,7 @@ const ORDER = ['p', 's', 'phs', 'ph'];
 
 const LOCK_MS = 10 * 60 * 1000;
 
-export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseMs, timeoutMs, log = console.log, seed = async () => null, by = 'run' }) {
+export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseMs, timeoutMs, log = console.log, seed = async () => null, by = 'run', force = false }) {
   const started = Date.now();
   const say = (msg) => log(`${new Date().toISOString().slice(11, 19)} ${msg}`);
   const wanted = ORDER.filter((key) => lists.includes(key) && key in LISTS);
@@ -25,8 +25,8 @@ export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseM
     return state;
   };
   const existing = (await storage.readJson('state.json')) || {};
-  if (existing.lock && Date.now() - Date.parse(existing.lock.at) < LOCK_MS) {
-    throw new Error(`another pull has been running since ${existing.lock.at}; try again in a few minutes`);
+  if (!force && existing.lock && Date.now() - Date.parse(existing.lock.at) < LOCK_MS) {
+    throw new Error(`another pull has been running since ${existing.lock.at} (${existing.lock.by}); try again in a few minutes, or, if you stopped it yourself, set PRI_FORCE=1`);
   }
   await writeState((state) => {
     state.lock = { id: lockId, at: new Date().toISOString(), by };

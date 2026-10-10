@@ -27,6 +27,24 @@ const seeds = fileStorage(path.join(ROOT, 'site', 'seed'));
 const minutes = Number(process.env.PRI_MINUTES || 4);
 const lists = (process.env.PRI_LISTS || 'p,s,phs,ph').split(',').map((s) => s.trim());
 
+// Ctrl+C: let go of the lock so the next run can start at once. Progress is already saved.
+let stopping = false;
+process.on('SIGINT', async () => {
+  if (stopping) process.exit(130);
+  stopping = true;
+  console.log('\nstopping: releasing the lock (press Ctrl+C again to quit at once)');
+  try {
+    const state = await storage.readJson('state.json');
+    if (state && state.lock && state.lock.by === 'command line') {
+      state.lock = null;
+      await storage.writeText('state.json', `${JSON.stringify(state, null, 2)}\n`);
+    }
+  } catch (err) {
+    console.error(`could not release the lock: ${err.message}`);
+  }
+  process.exit(130);
+});
+
 runPull({
   storage,
   deadlineAt: Date.now() + minutes * 60 * 1000,
@@ -35,6 +53,7 @@ runPull({
   pauseMs: process.env.PRI_PAUSE_MS ? Number(process.env.PRI_PAUSE_MS) : undefined,
   seed: (key) => seeds.readJson(`${key}.json`),
   by: 'command line',
+  force: process.env.PRI_FORCE === '1',
 })
   .then((summary) => {
     console.log(`\nstorage: ${storage.kind}; outputs: data/groceries.json, data/medicines.json, data/meta.json`);
