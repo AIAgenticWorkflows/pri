@@ -44,15 +44,17 @@ test('parsePage keeps empty cells, decodes entities and reports a missing table'
   assert.equal(isoDate(''), '');
 });
 
-async function scrapeInto(mockUrl, env = {}) {
+async function scrapeInto(mockUrl, env = {}, dir = null) {
   // Run the scraper from a throwaway copy so the real data folder is not touched.
-  const dir = await mkdtemp(path.join(tmpdir(), 'pri-test-'));
-  await cp(path.join(ROOT, 'scripts'), path.join(dir, 'scripts'), { recursive: true });
+  if (!dir) {
+    dir = await mkdtemp(path.join(tmpdir(), 'pri-test-'));
+    await cp(path.join(ROOT, 'scripts'), path.join(dir, 'scripts'), { recursive: true });
+  }
   const result = await run('node', [path.join(dir, 'scripts', 'scrape.mjs')], {
-    env: { ...process.env, PRI_BASE_URL: mockUrl, PRI_PAUSE_MS: '0', PRI_TIMEOUT_MS: '5000', ...env },
+    env: { ...process.env, PRI_BASE_URL: mockUrl, PRI_PAUSE_MS: '0', PRI_TIMEOUT_MS: '5000', PRI_PREVIOUS_URL: '', VERCEL_PROJECT_PRODUCTION_URL: '', ...env },
   }).catch((err) => err);
   const read = async (name) => JSON.parse(await readFile(path.join(dir, 'data', 'raw', name), 'utf8'));
-  return { result, read };
+  return { result, read, dir };
 }
 
 test('scraper reads every page, drops exact duplicates and survives a broken list', async () => {
@@ -64,9 +66,10 @@ test('scraper reads every page, drops exact duplicates and survives a broken lis
     assert.equal(result.code, undefined, result.stderr);
     const p = await read('p.json');
     assert.equal(p.reportedTotal, 251);
-    assert.equal(p.pages, 3);
+    assert.equal(p.passes, 2);
     assert.equal(p.rowCount, 250);
-    assert.equal(p.duplicateRowsDropped, 1);
+    assert.equal(p.rowsSeenThisBuild, 250);
+    assert.equal(p.build, 1);
     assert.equal(p.changedDuringRun, false);
     assert.deepEqual(p.headers, HEADERS);
     assert.equal(new Set(p.rows.map((r) => r[2])).size, 250);
@@ -108,6 +111,57 @@ test('a quick test run is saved apart from the real data', async () => {
     assert.equal(partial.partial, true);
     assert.equal(partial.rowCount, 100);
     await assert.rejects(read('p.json'));
+  } finally {
+    mock.server.close();
+  }
+});
+
+test('rows missed by one read-through are kept from earlier builds, then dropped once they are really gone', async () => {
+  const full = makeRows(250);
+  const lists = { '/max-retail-prices-p': full };
+  const mock = await startMock(lists);
+  try {
+    // Build 1 sees everything.
+    const first = await scrapeInto(mock.url, { PRI_LISTS: 'p', PRI_KEEP_BUILDS: '3' });
+    assert.equal(first.result.code, undefined, first.result.stderr);
+    assert.equal((await first.read('p.json')).rowCount, 250);
+    const stored = JSON.parse(await readFile(path.join(first.dir, 'site', 'data', 'p-store.json'), 'utf8'));
+    assert.equal(stored.rows.length, 250);
+    assert.equal(stored.seen.every((n) => n === 1), true);
+
+    // The site stops showing one row (missed by the paging, or really withdrawn).
+    lists['/max-retail-prices-p'] = full.filter((r) => r[2] !== 'ITEM 0042');
+    let p = (await scrapeInto(mock.url, { PRI_LISTS: 'p', PRI_KEEP_BUILDS: '3' }, first.dir), await first.read('p.json'));
+    assert.equal(p.build, 2);
+    assert.equal(p.rowCount, 250);
+    assert.equal(p.rowsCarried, 1);
+    await scrapeInto(mock.url, { PRI_LISTS: 'p', PRI_KEEP_BUILDS: '3' }, first.dir);
+    p = await first.read('p.json');
+    assert.equal(p.build, 3);
+    assert.equal(p.rowCount, 250);
+    // Third build without it: gone for good.
+    await scrapeInto(mock.url, { PRI_LISTS: 'p', PRI_KEEP_BUILDS: '3' }, first.dir);
+    p = await first.read('p.json');
+    assert.equal(p.build, 4);
+    assert.equal(p.rowCount, 249);
+    assert.equal(p.rowsDropped, 1);
+    assert.equal(p.rows.some((r) => r[2] === 'ITEM 0042'), false);
+  } finally {
+    mock.server.close();
+  }
+});
+
+test('a read-through that runs out of time keeps every earlier row', async () => {
+  const lists = { '/max-retail-prices-p': makeRows(250) };
+  const mock = await startMock(lists);
+  try {
+    const first = await scrapeInto(mock.url, { PRI_LISTS: 'p' });
+    lists['/max-retail-prices-p'] = makeRows(250).filter((r) => r[2] !== 'ITEM 0042');
+    await scrapeInto(mock.url, { PRI_LISTS: 'p', PRI_KEEP_BUILDS: '1', PRI_BUDGET_MS: '1' }, first.dir);
+    const p = await first.read('p.json');
+    assert.equal(p.partial, true);
+    assert.equal(p.rowCount, 250);
+    assert.equal(p.rowsDropped, 0);
   } finally {
     mock.server.close();
   }

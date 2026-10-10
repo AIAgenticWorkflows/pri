@@ -80,12 +80,15 @@ async function main() {
               fetchedAt: raw[key].fetchedAt,
               rows: raw[key].rows.length,
               latestEffective: latest(raw[key].rows, raw[key].headers),
-              ...(key === 'ph' ? { complete: Boolean(raw.ph.complete), officialTotal: raw.ph.reportedTotal || null } : {}),
+              officialTotal: raw[key].reportedTotal || null,
+              ...(key === 'ph' ? { complete: Boolean(raw.ph.complete) } : {}),
             }
           : { title: def.title, url: BASE_URL + def.path, onSite: false },
       ]),
     ),
     counts: {
+      groceryRows: groceries.stats.rows,
+      groceryRowsSkipped: groceries.stats.noName + groceries.stats.noPrice + groceries.stats.noDate,
       products: groceries.stats.products,
       subsidisedProducts: groceries.stats.subsidisedProducts,
       medicines: medicines.stats.medicines,

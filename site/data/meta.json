@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-10T17:48:32.352Z",
+  "generatedAt": "2026-10-10T18:31:25.709Z",
   "lists": {
     "p": {
       "title": "Max Retail Prices",
@@ -7,7 +7,8 @@
       "onSite": true,
       "fetchedAt": "2026-10-08T13:34:29.864Z",
       "rows": 4312,
-      "latestEffective": "2026-10-09"
+      "latestEffective": "2026-10-09",
+      "officialTotal": 4714
     },
     "s": {
       "title": "Subsidised Max Retail Prices",
@@ -15,7 +16,8 @@
       "onSite": true,
       "fetchedAt": "2026-10-08T13:25:00.000Z",
       "rows": 1964,
-      "latestEffective": "2026-10-09"
+      "latestEffective": "2026-10-09",
+      "officialTotal": 1962
     },
     "ph": {
       "title": "Max Retail Prices (Pharmaceutical)",
@@ -29,6 +31,8 @@
     }
   },
   "counts": {
+    "groceryRows": 6276,
+    "groceryRowsSkipped": 0,
     "products": 5801,
     "subsidisedProducts": 1876,
     "medicines": 0,

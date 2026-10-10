@@ -391,6 +391,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       <h2 data-t="aboutTitle">Where these prices come from</h2>
       <p data-t="aboutBody">They are copied from the public lists of the Price Fixing Unit. A price applies from the date shown. If this page and the official list disagree, the official list is right.</p>
       <ul class="sources" id="sources"></ul>
+      <p id="rows-note" hidden></p>
     </div>
   </section>
 </main>
@@ -448,7 +449,8 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       helpTitle: 'Paid more than the maximum?', helpBody: 'Keep your receipt and tell the Consumer Affairs Unit of the Ministry of Commerce and Consumer Protection.',
       hotline: 'Hotline', email: 'Email',
       aboutTitle: 'Where these prices come from', aboutBody: 'They are copied from the public lists of the Price Fixing Unit. A price applies from the date shown. If this page and the official list disagree, the official list is right.',
-      rows: '{n} rows', liveList: 'searched live',
+      rows: '{n} rows', rowsOf: '{n} of {t} official rows', liveList: 'searched live',
+      rowsNote: 'The {rows} rows of the two grocery lists become {products} products here: a product approved more than once appears as one product with its price history.', rowsJunk: ' {junk} rows with no product name or price are left out.',
       footer: 'Pri Max is an independent page by Aplica. It is not a government website.', updated: 'Official lists read on {d}.',
       newer: 'Newer entry for this barcode', sameCode: '{n} other entries on the official lists carry this barcode.', showAll: 'Show them all',
       scanTitle: 'Point the camera at the barcode', scanClose: 'Close', scanStarting: 'Starting the camera…', scanLooking: 'Looking for a barcode…',
@@ -486,7 +488,8 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       helpTitle: 'Vous avez payé plus que le maximum ?', helpBody: 'Gardez votre reçu et informez la Consumer Affairs Unit du ministère du Commerce et de la Protection des consommateurs.',
       hotline: 'Hotline', email: 'E-mail',
       aboutTitle: 'D’où viennent ces prix', aboutBody: 'Ils sont copiés des listes publiques de la Price Fixing Unit. Un prix s’applique à partir de la date indiquée. En cas de différence avec la liste officielle, c’est la liste officielle qui fait foi.',
-      rows: '{n} lignes', liveList: 'recherche en direct',
+      rows: '{n} lignes', rowsOf: '{n} lignes sur {t} officielles', liveList: 'recherche en direct',
+      rowsNote: 'Les {rows} lignes des deux listes d’épicerie deviennent {products} produits ici : un produit approuvé plusieurs fois apparaît comme un seul produit avec l’historique de ses prix.', rowsJunk: ' {junk} lignes sans nom de produit ou sans prix sont laissées de côté.',
       footer: 'Pri Max est une page indépendante réalisée par Aplica. Ce n’est pas un site du gouvernement.', updated: 'Listes officielles lues le {d}.',
       newer: 'Entrée plus récente pour ce code-barres', sameCode: '{n} autres entrées des listes officielles portent ce code-barres.', showAll: 'Les afficher',
       scanTitle: 'Visez le code-barres avec la caméra', scanClose: 'Fermer', scanStarting: 'Démarrage de la caméra…', scanLooking: 'Recherche d’un code-barres…',
@@ -524,7 +527,8 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       helpTitle: 'Ou finn pey plis ki maximum?', helpBody: 'Gard ou resi ek inform Consumer Affairs Unit, Minister Komers ek Proteksion Konsomater.',
       hotline: 'Hotline', email: 'Email',
       aboutTitle: 'Kot sa bann pri-la sorti', aboutBody: 'Zot kopie depi bann lalis piblik Price Fixing Unit. Enn pri aplike apartir dat ki montre. Si sa paz-la ek lalis ofisiel pa parey, se lalis ofisiel ki bon.',
-      rows: '{n} lalign', liveList: 'rode an direk',
+      rows: '{n} lalign', rowsOf: '{n} lor {t} lalign ofisiel', liveList: 'rode an direk',
+      rowsNote: 'Bann {rows} lalign lor de lalis komision vinn {products} prodwi isi: enn prodwi ki finn aprouve plizir fwa paret kouma enn sel prodwi avek so bann pri avan.', rowsJunk: ' {junk} lalign san nom ouswa san pri pa montre.',
       footer: 'Pri Max se enn paz indepandan ki Aplica finn fer. Li pa enn sit gouvernman.', updated: 'Bann lalis ofisiel lir le {d}.',
       newer: 'Ena enn pli nouvo pou sa kod-bar la', sameCode: '{n} lezot lantre lor bann lalis ofisiel ena sa mem kod-bar la.', showAll: 'Montre zot tou',
       scanTitle: 'Viz kod-bar ar kamera', scanClose: 'Ferme', scanStarting: 'Kamera pe demare…', scanLooking: 'Pe rod enn kod-bar…',
@@ -1089,8 +1093,12 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       const order = ['p', 's', 'ph', 'phs'];
       $('#sources').innerHTML = order.filter((k) => META.lists[k]).map((k) => {
         const l = META.lists[k];
-        return `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.title)}</a><span>${esc(l.onSite ? t('rows', { n: count(l.rows) }) : t('liveList'))}</span></li>`;
+        const rows = l.onSite ? (l.officialTotal ? t('rowsOf', { n: count(l.rows), t: count(l.officialTotal) }) : t('rows', { n: count(l.rows) })) : t('liveList');
+        return `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.title)}</a><span>${esc(rows)}</span></li>`;
       }).join('');
+      const c = META.counts || {};
+      $('#rows-note').hidden = !c.groceryRows;
+      if (c.groceryRows) $('#rows-note').textContent = t('rowsNote', { rows: count(c.groceryRows), products: count(c.products) }) + (c.groceryRowsSkipped ? t('rowsJunk', { junk: count(c.groceryRowsSkipped) }) : '');
       const stamps = order.map((k) => META.lists[k] && META.lists[k].fetchedAt).filter(Boolean).sort();
       $('#updated').textContent = stamps.length ? t('updated', { d: fmtStamp(stamps[stamps.length - 1]) }) : '';
     }
