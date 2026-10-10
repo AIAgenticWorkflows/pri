@@ -1,6 +1,6 @@
 // Loads KEY=value lines from .env.local (and .env) in the project folder into
 // process.env, so a token pasted once into a file is picked up by every run.
-// Variables already set in the terminal win. Returns the names of the files read.
+// Values in the file win over the terminal. Returns the names of the files read.
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -28,7 +28,8 @@ export function loadEnv(dir, files = ['.env.local', '.env']) {
     if (!existsSync(file)) continue;
     const values = parseEnv(readFileSync(file, 'utf8'));
     for (const [key, value] of Object.entries(values)) {
-      if (process.env[key] === undefined || process.env[key] === '') process.env[key] = value;
+      // The file wins over a value left in the terminal or in Windows settings.
+      if (value !== '') process.env[key] = value;
     }
     loaded.push(name);
   }
