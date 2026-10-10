@@ -8,10 +8,37 @@ import { LISTS } from './pfu.mjs';
 
 const ORDER = ['p', 's', 'phs', 'ph'];
 
-export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseMs, timeoutMs, log = console.log, seed = async () => null }) {
+const LOCK_MS = 10 * 60 * 1000;
+
+export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseMs, timeoutMs, log = console.log, seed = async () => null, by = 'run' }) {
   const started = Date.now();
   const say = (msg) => log(`${new Date().toISOString().slice(11, 19)} ${msg}`);
   const wanted = ORDER.filter((key) => lists.includes(key) && key in LISTS);
+
+  // Only one pull at a time: a long run on a laptop and the site's own daily run must
+  // not write over each other. The lock is refreshed while the work goes on.
+  const lockId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  const writeState = async (change) => {
+    const state = (await storage.readJson('state.json')) || { runs: 0 };
+    change(state);
+    await storage.writeText('state.json', `${JSON.stringify(state, null, 2)}\n`);
+    return state;
+  };
+  const existing = (await storage.readJson('state.json')) || {};
+  if (existing.lock && Date.now() - Date.parse(existing.lock.at) < LOCK_MS) {
+    throw new Error(`another pull has been running since ${existing.lock.at}; try again in a few minutes`);
+  }
+  await writeState((state) => {
+    state.lock = { id: lockId, at: new Date().toISOString(), by };
+  });
+  let lastHeartbeat = Date.now();
+  const heartbeat = async () => {
+    if (Date.now() - lastHeartbeat < 90000) return;
+    lastHeartbeat = Date.now();
+    await writeState((state) => {
+      state.lock = { id: lockId, at: new Date().toISOString(), by };
+    });
+  };
 
   const collectors = {};
   for (const key of wanted) {
@@ -21,7 +48,19 @@ export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseM
       store = (await seed(key)) || emptyStore(key);
       from = store.rows && store.rows.length ? 'seed' : 'nothing';
     }
-    collectors[key] = new Collector({ key, store, deadlineAt, base, pauseMs, timeoutMs, log: say });
+    collectors[key] = new Collector({
+      key,
+      store,
+      deadlineAt,
+      base,
+      pauseMs,
+      timeoutMs,
+      log: say,
+      onProgress: async () => {
+        await save(key);
+        await heartbeat();
+      },
+    });
     say(`${key}: ${collectors[key].store.rows.length} rows from ${from}`);
   }
   const save = async (key) => storage.writeText(`stores/${key}.json`, serialiseStore(collectors[key].finish()));
@@ -80,11 +119,11 @@ export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseM
     lists: Object.fromEntries(wanted.map((key) => [key, { rows: collectors[key].store.rows.length, ...collectors[key].stats, steps: collectors[key].stats.steps }])),
     counts: out.meta.counts,
   };
-  const state = (await storage.readJson('state.json')) || { runs: 0 };
-  state.runs = (state.runs || 0) + 1;
-  state.lastRun = summary;
-  state.lock = null;
-  await storage.writeText('state.json', `${JSON.stringify(state, null, 2)}\n`);
+  await writeState((state) => {
+    state.runs = (state.runs || 0) + 1;
+    state.lastRun = summary;
+    if (!state.lock || state.lock.id === lockId) state.lock = null;
+  });
   for (const key of wanted) say(`${key}: ${summary.lists[key].rows} rows; ${collectors[key].stats.steps.join('; ') || 'nothing to do'}`);
   say(`done in ${summary.seconds} s: ${out.meta.counts.products} products, ${out.meta.counts.medicines} medicines`);
   return summary;

@@ -57,7 +57,8 @@ export function emptyStore(key) {
 }
 
 export class Collector {
-  constructor({ key, store, deadlineAt, base = BASE_URL, pauseMs = 300, timeoutMs = 180000, log = () => {}, maxSliceRows = 2500 }) {
+  constructor({ key, store, deadlineAt, base = BASE_URL, pauseMs = 300, timeoutMs = 180000, log = () => {}, maxSliceRows = 2500, onProgress = null }) {
+    this.onProgress = onProgress; // called now and then during long work, so progress can be saved
     this.key = key;
     this.policy = POLICY[key] || POLICY.p;
     this.path = LISTS[key].path;
@@ -229,11 +230,12 @@ export class Collector {
           fresh += page.rows.filter((row) => this.add(row)).length;
         }
         rowsFound += fresh;
-        if (complete) tokens[token] = { done: true, total, fresh, at: new Date().toISOString() };
-        else {
+        if (!complete) {
           this.stats.steps.push(`searches: ${searched} done, ${rowsFound} rows found, stopped during "${token}"`);
           return { done: false, searched, rowsFound };
         }
+        tokens[token] = { done: true, total, fresh, at: new Date().toISOString() };
+        if (this.onProgress && searched % 10 === 0) await this.onProgress();
       } catch (err) {
         if (/out of time/.test(err.message)) break;
         tokens[token] = { failed: true, error: String(err.message).slice(0, 120), at: new Date().toISOString() };
@@ -282,6 +284,10 @@ export class Collector {
         for (const row of page.rows) this.add(row, pass);
       }
       if (this.pauseMs) await sleep(this.pauseMs);
+      if (this.onProgress && n % 10 < policy.concurrency) {
+        store.resumePage = n; // so a saved copy can carry on from here
+        await this.onProgress();
+      }
     }
     store.resumePage = 0;
     store.fullPassAt = new Date().toISOString();

@@ -3,9 +3,12 @@
 // files the page loads. Run it as often as you like; each run picks up where the
 // last one stopped.
 //
-//   node scripts/pull.mjs                 all lists, up to 4 minutes
-//   PRI_MINUTES=60 node scripts/pull.mjs  a long run (for the first copy of the medicines list)
-//   PRI_LISTS=p,s node scripts/pull.mjs   some lists only
+//   node scripts/pull.mjs                  all lists, up to 4 minutes
+//   PRI_MINUTES=720 node scripts/pull.mjs  a long run, e.g. overnight for the first full copy
+//   PRI_LISTS=p,s node scripts/pull.mjs    some lists only
+//
+// Progress is saved every couple of minutes; if the run is stopped, the next one
+// carries on from there.
 //
 // With BLOB_READ_WRITE_TOKEN set, the hosted site's Blob storage is used instead of
 // data/store/, which is how a GitHub Action or any other machine can feed the site.
@@ -28,6 +31,7 @@ runPull({
   base: process.env.PRI_BASE_URL,
   pauseMs: process.env.PRI_PAUSE_MS ? Number(process.env.PRI_PAUSE_MS) : undefined,
   seed: (key) => seeds.readJson(`${key}.json`),
+  by: 'command line',
 })
   .then((summary) => {
     console.log(`\nstorage: ${storage.kind}; outputs: data/groceries.json, data/medicines.json, data/meta.json`);
