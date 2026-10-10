@@ -39,14 +39,32 @@ too (rate-limited to once every 20 minutes unless it sends `CRON_SECRET`).
 ### Vercel setup
 
 - Storage: create a Blob store and connect it to the project
-  (`BLOB_READ_WRITE_TOKEN` is added automatically).
+  (`BLOB_READ_WRITE_TOKEN` is added to the project automatically).
 - Optional: `CRON_SECRET` environment variable, so scheduled calls skip the rate limit.
+
+### The first full copy
+
+The daily four-minute runs would take weeks to walk the whole medicines list, so
+the first copy is best made from any computer that can run Node for a few hours:
+
+1. In Vercel open the project, then Storage, then the Blob store, then its
+   ".env.local" tab, and press "Copy Snippet".
+2. Paste the snippet into a file named `.env.local` in the project folder
+   (it is ignored by git). It looks like `BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."`.
+3. `npm install`, then `npm run check` (shows whether the storage answers and
+   what is in it), then `PRI_MINUTES=720 npm run pull`
+   (PowerShell: `$env:PRI_MINUTES="720"; npm run pull`).
+
+The run can be stopped and restarted at any time; progress is saved every couple of
+minutes, and the hosted site's daily run carries on from the same storage.
 
 ## Commands
 
 ```
 npm test          # against a local stand-in for the official site
-npm run pull      # pull for four minutes into data/store/ (PRI_MINUTES=60 for longer)
+npm run check     # test the Blob token and show what is in storage
+npm run pull      # pull for four minutes (PRI_MINUTES=720 for a long run);
+                  # into Blob with BLOB_READ_WRITE_TOKEN, otherwise into data/store/
 npm run build     # rebuild site/seed-data from site/seed
 npm run dev       # preview on http://localhost:4173
 ```

@@ -3,6 +3,7 @@
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { cleanToken } from './env.mjs';
 
 export function fileStorage(dir) {
   const file = (name) => path.join(dir, name);
@@ -29,8 +30,12 @@ export function fileStorage(dir) {
 
 // Vercel Blob, through its SDK. Files keep a fixed name (no random suffix) so the site
 // can always find them, and are public because the data itself is public.
-export function blobStorage(token = process.env.BLOB_READ_WRITE_TOKEN) {
+export function blobStorage(rawToken = process.env.BLOB_READ_WRITE_TOKEN) {
+  const token = cleanToken(rawToken);
   if (!token) throw new Error('BLOB_READ_WRITE_TOKEN is not set: connect a Blob store to the project');
+  if (!token.startsWith('vercel_blob_rw_')) {
+    throw new Error(`BLOB_READ_WRITE_TOKEN does not look like a Blob read-write token (it should start with vercel_blob_rw_, yours starts with ${JSON.stringify(token.slice(0, 8))}); run "npm run check"`);
+  }
   let sdk;
   const load = async () => sdk || (sdk = await import('@vercel/blob'));
   const urls = new Map();
@@ -70,5 +75,5 @@ export function blobStorage(token = process.env.BLOB_READ_WRITE_TOKEN) {
 }
 
 export function storageFromEnv(dir) {
-  return process.env.BLOB_READ_WRITE_TOKEN ? blobStorage() : fileStorage(dir);
+  return cleanToken(process.env.BLOB_READ_WRITE_TOKEN) ? blobStorage() : fileStorage(dir);
 }

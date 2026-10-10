@@ -5,6 +5,7 @@
   "description": "Pri: find the official maximum retail prices in Mauritius and Rodrigues",
   "type": "module",
   "scripts": {
+    "check": "node scripts/check.mjs",
     "pull": "node scripts/pull.mjs",
     "build": "node scripts/build-data.mjs",
     "dev": "node scripts/dev-server.mjs",

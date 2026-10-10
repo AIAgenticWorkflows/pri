@@ -10,15 +10,18 @@
 // Progress is saved every couple of minutes; if the run is stopped, the next one
 // carries on from there.
 //
-// With BLOB_READ_WRITE_TOKEN set, the hosted site's Blob storage is used instead of
-// data/store/, which is how a GitHub Action or any other machine can feed the site.
+// With BLOB_READ_WRITE_TOKEN set (in the terminal or in a .env.local file in the
+// project folder), the hosted site's Blob storage is used instead of data/store/,
+// which is how any machine can feed the site. "npm run check" tests the token.
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadEnv } from './lib/env.mjs';
 import { runPull } from './lib/pull.mjs';
 import { fileStorage, storageFromEnv } from './lib/storage.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+loadEnv(ROOT);
 const storage = storageFromEnv(path.join(ROOT, 'data', 'store'));
 const seeds = fileStorage(path.join(ROOT, 'site', 'seed'));
 const minutes = Number(process.env.PRI_MINUTES || 4);
