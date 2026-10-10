@@ -23,11 +23,10 @@ export default async function handler(req, res) {
   };
   if (!process.env.BLOB_READ_WRITE_TOKEN) return fallback();
   try {
-    const url = await blobStorage().publicUrl(`data/${file}`);
-    if (!url) return fallback();
-    const upstream = await fetch(url, { signal: AbortSignal.timeout(30000) });
-    if (!upstream.ok) return fallback();
-    const body = Buffer.from(await upstream.arrayBuffer());
+    // Works for public and private stores alike (private ones are read with the token).
+    const text = await blobStorage().readText(`data/${file}`);
+    if (text === null) return fallback();
+    const body = Buffer.from(text);
     res.statusCode = 200;
     res.setHeader('content-type', 'application/json; charset=utf-8');
     res.setHeader('cache-control', 'public, max-age=120, s-maxage=900, stale-while-revalidate=86400');

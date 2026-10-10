@@ -47,26 +47,59 @@ export function blobStorage(rawToken = process.env.BLOB_READ_WRITE_TOKEN) {
     if (hit) urls.set(name, hit.url);
     return hit ? hit.url : null;
   };
+  // Stores are created either public or private. Private ones need the token to
+  // read; their URLs contain ".private.". Writes try the store's kind, learnt from
+  // the first write (or PRI_BLOB_ACCESS), and switch if Vercel says otherwise.
+  let access = process.env.PRI_BLOB_ACCESS === 'private' ? 'private' : process.env.PRI_BLOB_ACCESS === 'public' ? 'public' : null;
+  const fetchBlob = async (url) => {
+    const isPrivate = /\.private\.blob\.vercel-storage\.com/.test(url);
+    const target = new URL(url);
+    if (isPrivate) target.searchParams.set('cache', '0');
+    else target.searchParams.set('t', String(Date.now()));
+    return fetch(target, {
+      headers: isPrivate ? { authorization: `Bearer ${token}` } : { 'cache-control': 'no-cache' },
+      signal: AbortSignal.timeout(60000),
+    });
+  };
+  const readText = async (name) => {
+    const url = await find(name);
+    if (!url) return null;
+    const res = await fetchBlob(url);
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`blob ${name}: HTTP ${res.status}`);
+    return res.text();
+  };
   return {
     kind: 'blob',
+    readText,
     async readJson(name) {
-      const url = await find(name);
-      if (!url) return null;
-      const res = await fetch(`${url}?t=${Date.now()}`, { headers: { 'cache-control': 'no-cache' }, signal: AbortSignal.timeout(60000) });
-      if (res.status === 404) return null;
-      if (!res.ok) throw new Error(`blob ${name}: HTTP ${res.status}`);
-      return res.json();
+      const text = await readText(name);
+      return text === null ? null : JSON.parse(text);
     },
     async writeText(name, text) {
       const { put } = await load();
-      const out = await put(name, text, {
-        token,
-        access: 'public',
-        addRandomSuffix: false,
-        allowOverwrite: true,
-        contentType: 'application/json; charset=utf-8',
-        cacheControlMaxAge: 60,
-      });
+      const attempt = (mode) =>
+        put(name, text, {
+          token,
+          access: mode,
+          addRandomSuffix: false,
+          allowOverwrite: true,
+          contentType: 'application/json; charset=utf-8',
+          cacheControlMaxAge: 60,
+        });
+      let out;
+      try {
+        out = await attempt(access || 'public');
+      } catch (err) {
+        const msg = String(err && err.message);
+        // e.g. "Cannot use public access on a private store. The store is configured with private access."
+        const tried = access || 'public';
+        const other = tried === 'public' && /private (store|access)/i.test(msg) ? 'private' : tried === 'private' && /public (store|access)/i.test(msg) ? 'public' : null;
+        if (!other) throw err;
+        out = await attempt(other);
+        access = other;
+      }
+      if (!access) access = 'public';
       urls.set(name, out.url);
       return out.url;
     },
