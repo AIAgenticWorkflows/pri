@@ -1,23 +1,23 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "",
-  "buildCommand": "node scripts/pharma.mjs & node scripts/scrape.mjs; wait; node scripts/build-data.mjs",
+  "buildCommand": "node scripts/build-data.mjs",
   "outputDirectory": "site",
   "functions": {
-    "api/medicines.js": {
-      "maxDuration": 30
-    }
+    "api/pull.js": { "maxDuration": 300 },
+    "api/medicines.js": { "maxDuration": 30 },
+    "api/data.js": { "maxDuration": 15 }
   },
+  "rewrites": [
+    { "source": "/data/:file", "destination": "/api/data?file=:file" }
+  ],
+  "crons": [
+    { "path": "/api/pull", "schedule": "15 22 * * *" }
+  ],
   "headers": [
     {
-      "source": "/data/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"
-        }
-      ]
+      "source": "/seed-data/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=300, s-maxage=3600" }]
     }
   ]
 }
