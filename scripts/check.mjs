@@ -126,6 +126,6 @@ if (meta && meta.lists) {
     say(`  ${key.padEnd(4)} ${bits.join('; ')}`);
   }
   if (meta.counts) {
-    say(`site: ${meta.counts.products.toLocaleString('en-GB')} products (${meta.counts.subsidisedProducts.toLocaleString('en-GB')} subsidised), ${meta.counts.medicines.toLocaleString('en-GB')} medicines, ${meta.counts.medicineBatches.toLocaleString('en-GB')} batches`);
+    say(`site: ${meta.counts.products.toLocaleString('en-GB')} products (${meta.counts.subsidisedProducts.toLocaleString('en-GB')} subsidised), ${meta.counts.medicines.toLocaleString('en-GB')} medicines, ${meta.counts.medicineBatches.toLocaleString('en-GB')} batches${meta.counts.medicinesWithBarcode !== undefined ? `, ${meta.counts.medicinesWithBarcode.toLocaleString('en-GB')} medicines with a barcode` : ''}`);
   }
 }

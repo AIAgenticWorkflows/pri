@@ -452,7 +452,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       sub: 'Official maximum retail prices for {n} products and medicines in Mauritius and Rodrigues, from the Price Fixing Unit.',
       subPlain: 'Official maximum retail prices in Mauritius and Rodrigues, from the Price Fixing Unit.',
       tabShop: 'Groceries & home', tabMed: 'Medicines', islM: 'Mauritius', islR: 'Rodrigues',
-      searchLabel: 'Search', ph: 'Try “rice 5 kg” or a barcode', size: 'Size', sizeNone: 'No product of {s} here.', phMed: 'Medicine name or batch number', scan: 'Scan', clear: 'Clear',
+      searchLabel: 'Search', ph: 'Try “rice 5 kg” or a barcode', size: 'Size', sizeNone: 'No product of {s} here.', phMed: 'Medicine name, batch number or barcode', scan: 'Scan', clear: 'Clear',
       all: 'All', subOnly: 'Subsidised', latest: 'Latest price updates', latestMed: 'Medicines, latest price updates first', medLoading: 'Loading the medicines list…', medPartial: 'The full medicines list is still being copied ({n} of {t} batches so far). Searches also check the official list live.',
       nProducts: '{n} products', nProduct1: '1 product', nMeds: '{n} medicines', nFor: '{n} results for “{q}”', nFor1: '1 result for “{q}”', noneHere: 'No maximum price in {island} for “{q}”.',
       sortLabel: 'Sort', sortAuto: 'Recommended', sortRecent: 'Latest update', sortLow: 'Price: low to high', sortHigh: 'Price: high to low', sortName: 'Name: A to Z',
@@ -480,6 +480,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       more: 'Show {n} more',
       none: 'Nothing matches “{q}”.', noneHint: 'Check the spelling, try the brand, or type the numbers under the barcode.',
       noneBarcode: 'Barcode {q} is not on the official lists. The product may not be price-controlled.',
+      noneBarcodeMed: 'Barcode {q} is not recorded for any medicine on the official lists. Type the medicine name or the batch number printed on the box instead.',
       noneCat: 'No product here with a maximum price in {island}.',
       otherIsland: '{n} matching products have a maximum price in {island} only.', switchTo: 'Show {island}',
       fuzzy: 'No exact match, so these are close spellings.',
@@ -495,7 +496,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       rowsNote: 'The {rows} rows of the two grocery lists become {products} products here: a product approved more than once appears as one product with its price history.', rowsJunk: ' {junk} rows with no product name or price are left out.',
       footer: 'Pri Max is an independent page by Aplica. It is not a government website.', updated: 'Official lists read on {d}.',
       newer: 'Newer entry for this barcode', sameCode: '{n} other entries on the official lists carry this barcode.', showAll: 'Show them all',
-      scanTitle: 'Point the camera at the barcode', scanClose: 'Close', scanStarting: 'Starting the camera…', scanLooking: 'Looking for a barcode…',
+      scanTitle: 'Point the camera at the barcode', scanTitleMed: 'Point the camera at the barcode or the small square code on the box', scanClose: 'Close', scanStarting: 'Starting the camera…', scanLooking: 'Looking for a barcode…',
       scanNoCam: 'The camera is not available here. Type the numbers under the barcode instead.',
       scanDenied: 'Camera access was refused. Allow it in your browser settings, or type the numbers under the barcode.',
     },
@@ -504,7 +505,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       sub: 'Les prix de vente maximums officiels de {n} produits et médicaments à Maurice et à Rodrigues, publiés par la Price Fixing Unit.',
       subPlain: 'Les prix de vente maximums officiels à Maurice et à Rodrigues, publiés par la Price Fixing Unit.',
       tabShop: 'Courses et maison', tabMed: 'Médicaments', islM: 'Maurice', islR: 'Rodrigues',
-      searchLabel: 'Rechercher', ph: 'Essayez « riz 5 kg » ou un code-barres', size: 'Format', sizeNone: 'Aucun produit de {s} ici.', phMed: 'Nom du médicament ou numéro de lot', scan: 'Scanner', clear: 'Effacer',
+      searchLabel: 'Rechercher', ph: 'Essayez « riz 5 kg » ou un code-barres', size: 'Format', sizeNone: 'Aucun produit de {s} ici.', phMed: 'Nom du médicament, numéro de lot ou code-barres', scan: 'Scanner', clear: 'Effacer',
       all: 'Tout', subOnly: 'Subventionnés', latest: 'Derniers prix mis à jour', latestMed: 'Médicaments, derniers prix d’abord', medLoading: 'Chargement de la liste des médicaments…', medPartial: 'La liste complète des médicaments est en cours de copie ({n} lots sur {t}). Les recherches consultent aussi la liste officielle en direct.',
       nProducts: '{n} produits', nProduct1: '1 produit', nMeds: '{n} médicaments', nFor: '{n} résultats pour « {q} »', nFor1: '1 résultat pour « {q} »', noneHere: 'Pas de prix maximum à {island} pour « {q} ».',
       sortLabel: 'Trier', sortAuto: 'Recommandé', sortRecent: 'Mise à jour récente', sortLow: 'Prix croissant', sortHigh: 'Prix décroissant', sortName: 'Nom : A à Z',
@@ -532,6 +533,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       more: 'Afficher {n} de plus',
       none: 'Aucun résultat pour « {q} ».', noneHint: 'Vérifiez l’orthographe, essayez la marque ou tapez les chiffres sous le code-barres.',
       noneBarcode: 'Le code-barres {q} ne figure pas sur les listes officielles. Le prix de ce produit n’est peut-être pas contrôlé.',
+      noneBarcodeMed: 'Le code-barres {q} n’est associé à aucun médicament sur les listes officielles. Tapez plutôt le nom du médicament ou le numéro de lot imprimé sur la boîte.',
       noneCat: 'Aucun produit ici avec un prix maximum à {island}.',
       otherIsland: '{n} produits correspondants ont un prix maximum à {island} seulement.', switchTo: 'Afficher {island}',
       fuzzy: 'Pas de correspondance exacte. Voici des orthographes proches.',
@@ -547,7 +549,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       rowsNote: 'Les {rows} lignes des deux listes d’épicerie deviennent {products} produits ici : un produit approuvé plusieurs fois apparaît comme un seul produit avec l’historique de ses prix.', rowsJunk: ' {junk} lignes sans nom de produit ou sans prix sont laissées de côté.',
       footer: 'Pri Max est une page indépendante réalisée par Aplica. Ce n’est pas un site du gouvernement.', updated: 'Listes officielles lues le {d}.',
       newer: 'Entrée plus récente pour ce code-barres', sameCode: '{n} autres entrées des listes officielles portent ce code-barres.', showAll: 'Les afficher',
-      scanTitle: 'Visez le code-barres avec la caméra', scanClose: 'Fermer', scanStarting: 'Démarrage de la caméra…', scanLooking: 'Recherche d’un code-barres…',
+      scanTitle: 'Visez le code-barres avec la caméra', scanTitleMed: 'Visez le code-barres ou le petit code carré sur la boîte', scanClose: 'Fermer', scanStarting: 'Démarrage de la caméra…', scanLooking: 'Recherche d’un code-barres…',
       scanNoCam: 'La caméra n’est pas disponible ici. Tapez plutôt les chiffres sous le code-barres.',
       scanDenied: 'L’accès à la caméra a été refusé. Autorisez-le dans les réglages du navigateur, ou tapez les chiffres sous le code-barres.',
     },
@@ -556,7 +558,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       sub: 'Pri maximum ofisiel pou {n} prodwi ek medsinn dan Moris ek Rodrig, dapre Price Fixing Unit.',
       subPlain: 'Pri maximum ofisiel dan Moris ek Rodrig, dapre Price Fixing Unit.',
       tabShop: 'Komision ek lakaz', tabMed: 'Medsinn', islM: 'Moris', islR: 'Rodrig',
-      searchLabel: 'Rode', ph: 'Seye “diri 5 kg” ouswa enn kod-bar', size: 'Grander', sizeNone: 'Pena prodwi {s} isi.', phMed: 'Nom medsinn ouswa nimero lot', scan: 'Skann', clear: 'Efase',
+      searchLabel: 'Rode', ph: 'Seye “diri 5 kg” ouswa enn kod-bar', size: 'Grander', sizeNone: 'Pena prodwi {s} isi.', phMed: 'Nom medsinn, nimero lot ouswa kod-bar', scan: 'Skann', clear: 'Efase',
       all: 'Tou', subOnly: 'Sibvansione', latest: 'Dernie pri ki finn sanze', latestMed: 'Medsinn, dernie pri an premie', medLoading: 'Lalis medsinn pe sarze…', medPartial: 'Lalis konple medsinn pe kopie ankor ({n} lor {t} lot ziska ler). Rod osi lor lalis ofisiel an direk.',
       nProducts: '{n} prodwi', nProduct1: '1 prodwi', nMeds: '{n} medsinn', nFor: '{n} rezilta pou “{q}”', nFor1: '1 rezilta pou “{q}”', noneHere: 'Pena pri maximum dan {island} pou “{q}”.',
       sortLabel: 'Triye', sortAuto: 'Rekomande', sortRecent: 'Dernie sanzman', sortLow: 'Pri: pli ba an premie', sortHigh: 'Pri: pli ot an premie', sortName: 'Nom: A ziska Z',
@@ -584,6 +586,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       more: 'Montre {n} anplis',
       none: 'Pena nanye pou “{q}”.', noneHint: 'Verifie lortograf, seye mark-la, ouswa tap bann sif anba kod-bar.',
       noneBarcode: 'Kod-bar {q} pa lor bann lalis ofisiel. Kapav pri sa prodwi-la pa kontrole.',
+      noneBarcodeMed: 'Kod-bar {q} pa anrezistre pou okenn medsinn lor bann lalis ofisiel. Tap nom medsinn-la ouswa nimero lot ki ekrir lor bwat-la.',
       noneCat: 'Pena prodwi isi ki ena enn pri maximum dan {island}.',
       otherIsland: '{n} prodwi ki koresponn ena enn pri maximum dan {island} selman.', switchTo: 'Montre {island}',
       fuzzy: 'Pena exakteman sa. Ala bann lortograf ki pre.',
@@ -599,7 +602,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       rowsNote: 'Bann {rows} lalign lor de lalis komision vinn {products} prodwi isi: enn prodwi ki finn aprouve plizir fwa paret kouma enn sel prodwi avek so bann pri avan.', rowsJunk: ' {junk} lalign san nom ouswa san pri pa montre.',
       footer: 'Pri Max se enn paz indepandan ki Aplica finn fer. Li pa enn sit gouvernman.', updated: 'Bann lalis ofisiel lir le {d}.',
       newer: 'Ena enn pli nouvo pou sa kod-bar la', sameCode: '{n} lezot lantre lor bann lalis ofisiel ena sa mem kod-bar la.', showAll: 'Montre zot tou',
-      scanTitle: 'Viz kod-bar ar kamera', scanClose: 'Ferme', scanStarting: 'Kamera pe demare…', scanLooking: 'Pe rod enn kod-bar…',
+      scanTitle: 'Viz kod-bar ar kamera', scanTitleMed: 'Viz kod-bar ouswa ti kod kare lor bwat-la', scanClose: 'Ferme', scanStarting: 'Kamera pe demare…', scanLooking: 'Pe rod enn kod-bar…',
       scanNoCam: 'Kamera pa disponib isi. Tap plito bann sif anba kod-bar.',
       scanDenied: 'Akse kamera finn refize. Otoriz li dan reglaz ou navigater, ouswa tap bann sif anba kod-bar.',
     },
@@ -806,8 +809,8 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   function prepareMedicines(medicines) {
     M = {
       loaded: true,
-      items: medicines.items.map(([n, k, sub, b, batches], i) => ({
-        id: `m${i}`, n, k: medicines.classes[k], sub, b, batches,
+      items: medicines.items.map(([n, k, sub, b, batches, eans], i) => ({
+        id: `m${i}`, n, k: medicines.classes[k], sub, b, batches, eans: eans || [],
         text: `${norm(`${n} ${b}`)} ${(CLASSES[medicines.classes[k]] || CLASSES.other)[3]}`,
         codes: batches.map((x) => squash(x[1])), words: null, view: {},
       })),
@@ -909,6 +912,11 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const q = norm(query);
     if (!q) return { items: pool, kind: 'all' };
     const digits = query.replace(/[\s-]/g, '');
+    if (state.tab === 'med' && /^\d{8,14}$/.test(digits)) {
+      const key = digits.replace(/^0+/, '');
+      const hits = pool.filter((it) => it.eans && it.eans.includes(key));
+      if (hits.length) return { items: hits, kind: 'barcode' };
+    }
     if (state.tab === 'shop' && /^\d{4,14}$/.test(digits)) {
       const key = digits.replace(/^0+/, '');
       const exact = pool.filter((it) => it.ek && it.ek === key);
@@ -1172,7 +1180,11 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     noteEl.hidden = !notes.length;
     noteEl.innerHTML = notes.join('<br>');
 
-    if (!items.length && state.tab === 'med' && live.available !== false && norm(q).replace(/ /g, '').length >= 3) {
+    const medCode = state.tab === 'med' && /^\d{8,14}$/.test(q.replace(/[\s-]/g, ''));
+    if (!items.length && medCode) {
+      listEl.innerHTML = `<div class="state"><strong>${esc(t('noneBarcodeMed', { q: q.replace(/[\s-]/g, '') }))}</strong></div>`;
+      moreEl.hidden = true;
+    } else if (!items.length && state.tab === 'med' && live.available !== false && norm(q).replace(/ /g, '').length >= 3) {
       // Not a subsidised medicine: the live search of the full official list below answers instead.
       listEl.innerHTML = '';
       moreEl.hidden = true;
@@ -1217,7 +1229,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     for (const b of $$('.lang [data-lang]')) b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
     $('#q').placeholder = t(state.tab === 'shop' ? 'ph' : 'phMed');
     $('#clear').setAttribute('aria-label', t('clear'));
-    $('#scan').hidden = state.tab !== 'shop';
     $('#sort').value = state.sort;
     renderAccount();
     if (!$('#auth').hidden) renderAuth();
@@ -1276,6 +1287,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const q = state.q.trim();
     if (state.tab !== 'med' || !M.loaded || live.available === false || norm(q).replace(/ /g, '').length < 3) return;
     if (phComplete() && live.localCount > 0) return;
+    if (/^\d{8,14}$/.test(q.replace(/[\s-]/g, ''))) return; // a barcode: names only on the official search
     if (live.q === q && live.status === 'done') return;
     live.status = 'loading';
     live.timer = setTimeout(async () => {
@@ -1676,10 +1688,52 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     $('#scan-video').srcObject = null;
     $('#scanner').hidden = true;
   }
-  function foundCode(code) {
+  // The square DataMatrix codes on medicine boxes follow GS1: (01) product code,
+  // (17) expiry, (10) batch number, (21) serial number. A plain barcode is just digits.
+  function readGs1(raw) {
+    const text = String(raw || '').replace(/^\](d2|C1|Q3|e0)/, ''); // symbology prefix
+    const GS = '\u001d';
+    const out = {};
+    if (/^\d{8,14}$/.test(text)) return { gtin: text };
+    const fixed = { '00': 18, '01': 14, '02': 14, 11: 6, 12: 6, 13: 6, 15: 6, 16: 6, 17: 6 };
+    // Bracketed form "(01)0123...(17)...(10)ABC"
+    if (/^\(\d{2,4}\)/.test(text)) {
+      for (const m of text.matchAll(/\((\d{2,4})\)([^(]*)/g)) out[m[1]] = m[2];
+    } else {
+      let i = 0;
+      while (i < text.length) {
+        if (text[i] === GS) { i++; continue; }
+        const ai = text.slice(i, i + 2);
+        if (!/^\d\d$/.test(ai)) break;
+        i += 2;
+        if (fixed[ai]) { out[ai] = text.slice(i, i + fixed[ai]); i += fixed[ai]; continue; }
+        const end = text.indexOf(GS, i);
+        out[ai] = text.slice(i, end < 0 ? text.length : end);
+        i = end < 0 ? text.length : end + 1;
+      }
+    }
+    if (out['01']) out.gtin = out['01'];
+    if (out['10']) out.batch = out['10'].trim();
+    return out.gtin || out.batch ? out : null;
+  }
+  async function foundCode(code) {
     stopScanner();
-    $('#q').value = code;
-    setQuery(code);
+    const gs1 = readGs1(code);
+    let query = String(code).replace(/[^\x20-\x7e]/g, '').trim();
+    if (gs1) {
+      const gtin = gs1.gtin ? gs1.gtin.replace(/^0+(?=\d{8,13}$)/, '') : '';
+      if (state.tab === 'med') {
+        if (!M.loaded) await ensureMedicines();
+        const batchKey = gs1.batch ? squash(gs1.batch) : '';
+        const byBatch = batchKey && M.items.some((it) => it.codes.includes(batchKey));
+        const byCode = gtin && M.items.some((it) => it.eans.includes(gtin.replace(/^0+/, '')));
+        query = byBatch ? gs1.batch : byCode ? gtin : (gs1.batch || gtin);
+      } else {
+        query = gtin || query;
+      }
+    }
+    $('#q').value = query;
+    setQuery(query);
   }
   function loadScript(src) {
     return new Promise((resolve, reject) => {
@@ -1696,6 +1750,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     $('#scanner').hidden = false;
     scanner.open = true;
     msg.textContent = t('scanStarting');
+    $('#scan-title').textContent = t(state.tab === 'med' ? 'scanTitleMed' : 'scanTitle');
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { msg.textContent = t('scanNoCam'); return; }
     try {
       scanner.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } }, audio: false });
@@ -1709,7 +1764,11 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     msg.textContent = t('scanLooking');
     if ('BarcodeDetector' in window) {
       let detector = null;
-      try { detector = new window.BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] }); } catch { detector = null; }
+      try {
+        const wanted = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'data_matrix', 'code_128'];
+        const supported = window.BarcodeDetector.getSupportedFormats ? await window.BarcodeDetector.getSupportedFormats() : wanted;
+        detector = new window.BarcodeDetector({ formats: wanted.filter((f) => supported.includes(f)) });
+      } catch { detector = null; }
       if (detector) {
         let busy = false;
         scanner.timer = setInterval(async () => {
@@ -1727,7 +1786,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     // Phones without the built-in detector (iPhone): load a reader on demand.
     try {
       if (!window.ZXing) await loadScript('https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js');
-      const hints = new Map([[window.ZXing.DecodeHintType.POSSIBLE_FORMATS, [window.ZXing.BarcodeFormat.EAN_13, window.ZXing.BarcodeFormat.EAN_8, window.ZXing.BarcodeFormat.UPC_A, window.ZXing.BarcodeFormat.UPC_E]]]);
+      const hints = new Map([[window.ZXing.DecodeHintType.POSSIBLE_FORMATS, [window.ZXing.BarcodeFormat.EAN_13, window.ZXing.BarcodeFormat.EAN_8, window.ZXing.BarcodeFormat.UPC_A, window.ZXing.BarcodeFormat.UPC_E, window.ZXing.BarcodeFormat.DATA_MATRIX, window.ZXing.BarcodeFormat.CODE_128]]]);
       scanner.reader = new window.ZXing.BrowserMultiFormatReader(hints);
       scanner.reader.decodeFromStream(scanner.stream, video, (result) => { if (result && scanner.open) foundCode(result.getText()); });
     } catch {

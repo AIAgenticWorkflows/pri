@@ -333,7 +333,7 @@ const CLASS_TAIL = new RegExp(`[\\s\\-–(,'"]*(?:\\b(?:ANTI|ANIT)[\\s-]*)?${CLA
  * One item per medicine name, each with its approved batches, newest first.
  */
 export function buildMedicines(rawLists) {
-  const stats = { rows: 0, noName: 0, noPrice: 0, noDate: 0, medicines: 0, batches: 0 };
+  const stats = { rows: 0, noName: 0, noPrice: 0, noDate: 0, medicines: 0, batches: 0, withBarcode: 0 };
   const byKey = new Map();
   for (const { list, headers, rows } of rawLists) {
     const c = columns(headers);
@@ -360,7 +360,7 @@ export function buildMedicines(rawLists) {
       const key = `${sub}|${squash(name)}`;
       let item = byKey.get(key);
       if (!item) {
-        item = { name, cls, sub, brand: '', batches: [], latest: 0 };
+        item = { name, cls, sub, brand: '', batches: [], latest: 0, eans: [] };
         byKey.set(key, item);
       }
       if (date > item.latest) {
@@ -370,6 +370,11 @@ export function buildMedicines(rawLists) {
       }
       const brand = tidyBrand(row[c.brand], full);
       if (brand && !item.brand && squash(brand) !== squash(name) && !/^(tablets?|capsules?)$/i.test(brand)) item.brand = brand;
+      const ean = c.ean >= 0 ? cleanEan(row[c.ean]) : '';
+      if (ean && validEan(ean)) {
+        const short = ean.replace(/^0+/, '');
+        if (!item.eans.includes(short)) item.eans.push(short);
+      }
       const batch = String(row[c.batch] || '').trim();
       if (!item.batches.some((b) => b[0] === date && b[1] === batch && b[2] === m && b[3] === r)) item.batches.push([date, batch, m, r]);
     }
@@ -378,6 +383,7 @@ export function buildMedicines(rawLists) {
   for (const item of items) {
     item.batches.sort((a, b) => b[0] - a[0] || (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0));
     stats.batches += item.batches.length;
+    if (item.eans.length) stats.withBarcode++;
   }
   items.sort((a, b) => b.latest - a.latest || (fold(a.name) < fold(b.name) ? -1 : 1));
   stats.medicines = items.length;

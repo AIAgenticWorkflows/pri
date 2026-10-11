@@ -39,7 +39,7 @@ export function buildOutputs(stores, { generatedAt = new Date().toISOString() } 
   const medicinesText = lines(
     { v: 1, generatedAt, classes: MEDICINE_CLASSES },
     'items',
-    medicines.items.map((m) => [m.name, classIndex.get(m.cls), m.sub, m.brand, m.batches]),
+    medicines.items.map((m) => (m.eans.length ? [m.name, classIndex.get(m.cls), m.sub, m.brand, m.batches, m.eans] : [m.name, classIndex.get(m.cls), m.sub, m.brand, m.batches])),
   );
 
   const meta = {
@@ -79,6 +79,7 @@ export function buildOutputs(stores, { generatedAt = new Date().toISOString() } 
       subsidisedProducts: groceries.stats.subsidisedProducts,
       medicines: medicines.stats.medicines,
       medicineBatches: medicines.stats.batches,
+      medicinesWithBarcode: medicines.stats.withBarcode,
     },
   };
 
