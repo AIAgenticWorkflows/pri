@@ -97,7 +97,7 @@ storage = blobStorage(token);
 
 say(`storage: reachable, ${blobs.length} file${blobs.length === 1 ? '' : 's'} in the store`);
 if (!blobs.length) {
-  say('', 'The store is empty. Start the first copy with:', '  npm run pull            (4 minutes, to try it)', '  PRI_MINUTES=720 npm run pull   (a long run, for the first full copy)');
+  say('', 'The store is empty. Start the first copy with:', '  npm run pull                              (4 minutes, to try it)', '  PowerShell:  $env:PRI_MINUTES="720"; npm run pull', '  cmd:         set PRI_MINUTES=720 && npm run pull', '  Mac/Linux:   PRI_MINUTES=720 npm run pull');
   process.exit(0);
 }
 
