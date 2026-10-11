@@ -234,16 +234,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
 .btn:hover { border-color: var(--ink-2); }
 .btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .more { margin-top: 14px; width: 100%; }
-.basket { display: grid; gap: 10px; }
-.bline { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
-.bline .bq { font-weight: 800; font-size: 0.95rem; grid-column: 1 / -1; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
-.bline .bq button { border: 0; background: none; color: var(--brand); font-weight: 700; padding: 0; cursor: pointer; font-size: 0.85rem; text-decoration: underline; }
-.bline select { min-width: 0; width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font-weight: 600; padding: 4px 8px; font-size: 0.92rem; }
-.bline .bprice { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
-.bline.missing { border-style: dashed; color: var(--ink-2); }
-.bline .sub-tag { color: var(--sub-ink); background: var(--sub-bg); border-radius: 6px; padding: 1px 6px; font-size: 0.75rem; font-weight: 800; }
-.btotal { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 14px; border-radius: var(--radius); background: var(--ink); color: var(--bg); font-weight: 800; font-size: 1.05rem; }
-.btotal small { display: block; font-weight: 600; font-size: 0.8rem; opacity: 0.8; }
 .state { padding: 28px 16px; text-align: center; color: var(--ink-2); background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius); display: grid; gap: 8px; justify-items: center; }
 .state strong { color: var(--ink); font-size: 1.05rem; }
 .skeleton { height: 78px; border-radius: var(--radius); background: var(--surface-2); }
@@ -437,7 +427,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       sub: 'Official maximum retail prices for {n} products and medicines in Mauritius and Rodrigues, from the Price Fixing Unit.',
       subPlain: 'Official maximum retail prices in Mauritius and Rodrigues, from the Price Fixing Unit.',
       tabShop: 'Groceries & home', tabMed: 'Medicines', islM: 'Mauritius', islR: 'Rodrigues',
-      searchLabel: 'Search', ph: 'rice 5 kg, oil 2 L… or a barcode', size: 'Size', sizeNone: 'No product of {s} here.', phMed: 'Medicine name or batch number', scan: 'Scan', clear: 'Clear',
+      searchLabel: 'Search', ph: 'Try “rice 5 kg” or a barcode', size: 'Size', sizeNone: 'No product of {s} here.', phMed: 'Medicine name or batch number', scan: 'Scan', clear: 'Clear',
       all: 'All', subOnly: 'Subsidised', latest: 'Latest price updates', latestMed: 'Medicines, latest price updates first', medLoading: 'Loading the medicines list…', medPartial: 'The full medicines list is still being copied ({n} of {t} batches so far). Searches also check the official list live.',
       nProducts: '{n} products', nProduct1: '1 product', nMeds: '{n} medicines', nFor: '{n} results for “{q}”', nFor1: '1 result for “{q}”', noneHere: 'No maximum price in {island} for “{q}”.',
       sortLabel: 'Sort', sortAuto: 'Recommended', sortRecent: 'Latest update', sortLow: 'Price: low to high', sortHigh: 'Price: high to low', sortName: 'Name: A to Z',
@@ -447,9 +437,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       barcode: 'Barcode', officialCat: 'Official category', history: 'Approved prices', date: 'From', list: 'List', regular: 'Regular', none0: 'not set',
       check: 'Price on the shelf', within: 'Within the maximum: Rs {x} below it.', exact: 'Exactly the maximum price.',
       over: 'Rs {x} above the maximum ({pc}% more). Keep the receipt and report it.',
-      basketCount: 'Your list: {n} products', basketIntro: 'Each line shows the closest match. Pick the exact product from the menu; the total is the most you should pay.',
-      basketTotal: 'Maximum total', basketFound: '{n} of {t} found, prices for {island}', basketNone: 'Not found on the official lists', basketDetails: 'See all',
-      basketSource: 'Maximum prices from the official Price Fixing Unit lists.',
       reportTitle: 'Report it to the Consumer Affairs Unit', reportShop: 'Shop name and town', reportWa: 'Report on WhatsApp', reportCall: 'Call 185',
       reportHint: 'WhatsApp opens with the message filled in. Add a photo of the shelf price and of the receipt before sending.',
       reportMsgHead: 'Price above the official maximum', reportMsgProduct: 'Product', reportMsgPaid: 'Price charged', reportMsgMax: 'Official maximum ({island})', reportMsgShop: 'Shop', reportMsgSource: 'Official list', reportMsgDate: 'Date',
@@ -482,7 +469,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       sub: 'Les prix de vente maximums officiels de {n} produits et médicaments à Maurice et à Rodrigues, publiés par la Price Fixing Unit.',
       subPlain: 'Les prix de vente maximums officiels à Maurice et à Rodrigues, publiés par la Price Fixing Unit.',
       tabShop: 'Courses et maison', tabMed: 'Médicaments', islM: 'Maurice', islR: 'Rodrigues',
-      searchLabel: 'Rechercher', ph: 'riz 5 kg, huile 2 L… ou un code-barres', size: 'Format', sizeNone: 'Aucun produit de {s} ici.', phMed: 'Nom du médicament ou numéro de lot', scan: 'Scanner', clear: 'Effacer',
+      searchLabel: 'Rechercher', ph: 'Essayez « riz 5 kg » ou un code-barres', size: 'Format', sizeNone: 'Aucun produit de {s} ici.', phMed: 'Nom du médicament ou numéro de lot', scan: 'Scanner', clear: 'Effacer',
       all: 'Tout', subOnly: 'Subventionnés', latest: 'Derniers prix mis à jour', latestMed: 'Médicaments, derniers prix d’abord', medLoading: 'Chargement de la liste des médicaments…', medPartial: 'La liste complète des médicaments est en cours de copie ({n} lots sur {t}). Les recherches consultent aussi la liste officielle en direct.',
       nProducts: '{n} produits', nProduct1: '1 produit', nMeds: '{n} médicaments', nFor: '{n} résultats pour « {q} »', nFor1: '1 résultat pour « {q} »', noneHere: 'Pas de prix maximum à {island} pour « {q} ».',
       sortLabel: 'Trier', sortAuto: 'Recommandé', sortRecent: 'Mise à jour récente', sortLow: 'Prix croissant', sortHigh: 'Prix décroissant', sortName: 'Nom : A à Z',
@@ -492,9 +479,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       barcode: 'Code-barres', officialCat: 'Catégorie officielle', history: 'Prix approuvés', date: 'À partir du', list: 'Liste', regular: 'Ordinaire', none0: 'non fixé',
       check: 'Prix affiché en rayon', within: 'Dans la limite : Rs {x} de moins que le maximum.', exact: 'Exactement le prix maximum.',
       over: 'Rs {x} au-dessus du maximum ({pc} % de plus). Gardez le reçu et signalez-le.',
-      basketCount: 'Votre liste : {n} produits', basketIntro: 'Chaque ligne montre le produit le plus proche. Choisissez le produit exact dans le menu ; le total est le maximum à payer.',
-      basketTotal: 'Total maximum', basketFound: '{n} sur {t} trouvés, prix pour {island}', basketNone: 'Introuvable sur les listes officielles', basketDetails: 'Tout voir',
-      basketSource: 'Prix maximum selon les listes officielles de la Price Fixing Unit.',
       reportTitle: 'Signaler à la Consumer Affairs Unit', reportShop: 'Nom du magasin et localité', reportWa: 'Signaler sur WhatsApp', reportCall: 'Appeler le 185',
       reportHint: 'WhatsApp s’ouvre avec le message déjà rempli. Ajoutez une photo du prix en rayon et du reçu avant d’envoyer.',
       reportMsgHead: 'Prix au-dessus du maximum officiel', reportMsgProduct: 'Produit', reportMsgPaid: 'Prix demandé', reportMsgMax: 'Maximum officiel ({island})', reportMsgShop: 'Magasin', reportMsgSource: 'Liste officielle', reportMsgDate: 'Date',
@@ -527,7 +511,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       sub: 'Pri maximum ofisiel pou {n} prodwi ek medsinn dan Moris ek Rodrig, dapre Price Fixing Unit.',
       subPlain: 'Pri maximum ofisiel dan Moris ek Rodrig, dapre Price Fixing Unit.',
       tabShop: 'Komision ek lakaz', tabMed: 'Medsinn', islM: 'Moris', islR: 'Rodrig',
-      searchLabel: 'Rode', ph: 'diri 5 kg, dilwil 2 L… ouswa enn kod-bar', size: 'Grander', sizeNone: 'Pena prodwi {s} isi.', phMed: 'Nom medsinn ouswa nimero lot', scan: 'Skann', clear: 'Efase',
+      searchLabel: 'Rode', ph: 'Seye “diri 5 kg” ouswa enn kod-bar', size: 'Grander', sizeNone: 'Pena prodwi {s} isi.', phMed: 'Nom medsinn ouswa nimero lot', scan: 'Skann', clear: 'Efase',
       all: 'Tou', subOnly: 'Sibvansione', latest: 'Dernie pri ki finn sanze', latestMed: 'Medsinn, dernie pri an premie', medLoading: 'Lalis medsinn pe sarze…', medPartial: 'Lalis konple medsinn pe kopie ankor ({n} lor {t} lot ziska ler). Rod osi lor lalis ofisiel an direk.',
       nProducts: '{n} prodwi', nProduct1: '1 prodwi', nMeds: '{n} medsinn', nFor: '{n} rezilta pou “{q}”', nFor1: '1 rezilta pou “{q}”', noneHere: 'Pena pri maximum dan {island} pou “{q}”.',
       sortLabel: 'Triye', sortAuto: 'Rekomande', sortRecent: 'Dernie sanzman', sortLow: 'Pri: pli ba an premie', sortHigh: 'Pri: pli ot an premie', sortName: 'Nom: A ziska Z',
@@ -537,9 +521,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       barcode: 'Kod-bar', officialCat: 'Kategori ofisiel', history: 'Pri ki finn aprouve', date: 'Apartir', list: 'Lalis', regular: 'Normal', none0: 'pa fixe',
       check: 'Pri lor reyon', within: 'Dan limit: Rs {x} pli ba ki maximum.', exact: 'Exakteman pri maximum.',
       over: 'Rs {x} plis ki maximum ({pc}% anplis). Gard ou resi ek sinyal li.',
-      basketCount: 'Ou lalis: {n} prodwi', basketIntro: 'Sak liy montre prodwi ki pli pros. Swazir prodwi egzak dan meni-la; total-la se maximum ki ou bizin peye.',
-      basketTotal: 'Total maximum', basketFound: '{n} lor {t} trouve, pri pou {island}', basketNone: 'Pa lor lalis ofisiel', basketDetails: 'Get tou',
-      basketSource: 'Pri maximum dapre lalis ofisiel Price Fixing Unit.',
       reportTitle: 'Sinyal li ar Consumer Affairs Unit', reportShop: 'Nom laboutik ek landrwa', reportWa: 'Sinyal lor WhatsApp', reportCall: 'Apel 185',
       reportHint: 'WhatsApp pou ouver avek mesaz-la deza ranpli. Azout enn foto pri lor reyon ek enn foto ou resi avan ou avoye.',
       reportMsgHead: 'Pri plis ki maximum ofisiel', reportMsgProduct: 'Prodwi', reportMsgPaid: 'Pri ki zot finn demande', reportMsgMax: 'Maximum ofisiel ({island})', reportMsgShop: 'Laboutik', reportMsgSource: 'Lalis ofisiel', reportMsgDate: 'Dat',
@@ -690,7 +671,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   }
 
   const state = {
-    lang: 'en', island: 'm', tab: 'shop', q: '', cat: '', subOnly: false, cls: '', size: '', sort: 'auto', limit: PAGE, open: '', picks: {},
+    lang: 'en', island: 'm', tab: 'shop', q: '', cat: '', subOnly: false, cls: '', size: '', sort: 'auto', limit: PAGE, open: '',
   };
   let G = null; // groceries and household products
   let M = null; // medicines kept on the page
@@ -1079,92 +1060,11 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     }
   }
 
-  // ---------------------------------------------------------------- shopping list
-  // Several products in the search box, separated by commas ("diri 5 kg, 2 dilwil 2 L, dile"):
-  // one line per product with its best match, a choice of the others, and the total.
-  const BASKET_SPLIT = /\s*(?:[,;+\n]|\s(?:ek|et|and)\s(?=\d))\s*/i;
-  function basketParts(q) {
-    if (state.tab !== 'shop') return null;
-    const parts = String(q).split(BASKET_SPLIT).map((p) => p.trim()).filter((p) => norm(p));
-    return parts.length >= 2 ? parts : null;
-  }
-  function basketLine(part) {
-    let qty = 1;
-    let text = part;
-    const lead = /^(\d{1,2})\s*[x×*]?\s+(.+)$/i.exec(text);
-    if (lead && !new RegExp(`^${SIZE_RE.source}`, 'i').test(text)) { qty = Number(lead[1]); text = lead[2]; }
-    const tail = /^(.+?)\s*[x×*]\s*(\d{1,2})$/i.exec(text);
-    if (tail) { qty = Number(tail[2]); text = tail[1]; }
-    qty = Math.max(1, Math.min(qty, 99));
-    const asked = splitSize(text);
-    const found = search(G.items, asked.text);
-    let items = found.items.filter((it) => viewOf(it, state.island));
-    if (asked.sizes.length) {
-      const sized = items.filter((it) => { const sz = sizesOf(it); return asked.sizes.every((w) => sz.includes(w)); });
-      if (sized.length) items = sized;
-    }
-    if (!found.ranked) items = items.slice().sort((a, b) => viewOf(b, state.island).date - viewOf(a, state.island).date);
-    return { part, text, qty, choices: items.slice(0, 12) };
-  }
-  function basketPick(line) {
-    const key = norm(line.part);
-    const id = state.picks[key];
-    return line.choices.find((it) => it.id === id) || line.choices[0] || null;
-  }
-  function basketShare(lines) {
-    let total = 0;
-    const rows = [];
-    for (const line of lines) {
-      const it = basketPick(line);
-      if (!it) continue;
-      const v = viewOf(it, state.island);
-      total += v.price * line.qty;
-      rows.push(`${line.qty} × ${it.n}: Rs ${money(v.price * line.qty)}`);
-    }
-    return `${rows.join('\n')}\n${t('basketTotal')} (${islandName(state.island)}): Rs ${money(total)}\n${t('basketSource')}`;
-  }
-  function renderBasket(parts) {
-    const lines = parts.map(basketLine);
-    let total = 0;
-    let found = 0;
-    const html = lines.map((line, i) => {
-      const pick = basketPick(line);
-      const label = `${line.qty > 1 ? `${line.qty} × ` : ''}${line.text}`;
-      if (!pick) {
-        return `<div class="bline missing"><div class="bq">${esc(label)}</div><span>${esc(t('basketNone'))}</span><span class="bprice">–</span></div>`;
-      }
-      found++;
-      const v = viewOf(pick, state.island);
-      total += v.price * line.qty;
-      const options = line.choices.map((it) => {
-        const ov = viewOf(it, state.island);
-        return `<option value="${it.id}"${it === pick ? ' selected' : ''}>${esc(it.n)} · Rs ${money(ov.price)}${ov.sub ? ` · ${esc(t('subsidised'))}` : ''}</option>`;
-      }).join('');
-      return `<div class="bline">
-        <div class="bq">${esc(label)}${v.sub ? `<span class="sub-tag">${esc(t('subsidised'))}</span>` : ''}<button type="button" data-basketq="${esc(line.part)}">${esc(t('basketDetails'))}</button></div>
-        <select data-pick="${esc(norm(line.part))}" aria-label="${esc(line.text)}">${options}</select>
-        <span class="bprice">Rs ${money(v.price * line.qty)}</span>
-      </div>`;
-    }).join('');
-    $('#count').textContent = t('basketCount', { n: count(lines.length) });
-    $('#note').hidden = false;
-    $('#note').innerHTML = esc(t('basketIntro'));
-    $('#sizes').hidden = true;
-    $('#more').hidden = true;
-    $('#live').hidden = true;
-    $('#list').innerHTML = `<div class="basket">${html}
-      <div class="btotal"><span>${esc(t('basketTotal'))}<small>${esc(t('basketFound', { n: found, t: lines.length, island: islandName(state.island) }))}</small></span><span>Rs ${money(total)}</span></div>
-      <div class="actions"><a class="btn" href="https://wa.me/?text=${encodeURIComponent(basketShare(lines))}" target="_blank" rel="noopener">${esc(t('whatsapp'))}</a></div>
-    </div>`;
-  }
-
   function renderResults() {
     const listEl = $('#list');
     const noteEl = $('#note');
     const moreEl = $('#more');
     if (!G) return;
-    const parts = basketParts(state.q);
-    if (parts) { renderBasket(parts); return; }
     if (state.tab === 'med' && !M.loaded) {
       ensureMedicines();
       $('#count').textContent = t('medLoading');
@@ -1416,13 +1316,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       else fallback();
       return;
     }
-    const partBtn = e.target.closest('[data-basketq]');
-    if (partBtn) {
-      $('#q').value = partBtn.dataset.basketq;
-      setQuery(partBtn.dataset.basketq);
-      window.scrollTo({ top: 0, behavior: 'auto' });
-      return;
-    }
     const codeBtn = e.target.closest('[data-code]');
     if (codeBtn) {
       $('#q').value = codeBtn.dataset.code;
@@ -1446,13 +1339,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       if (node && item) node.outerHTML = itemHtml(item);
     }
   }
-  function onBasketChange(e) {
-    const key = e.target.dataset && e.target.dataset.pick;
-    if (key === undefined) return;
-    state.picks[key] = e.target.value;
-    renderResults();
-  }
-  $('#list').addEventListener('change', onBasketChange);
   function onListInput(e) {
     const check = e.target.dataset.check;
     if (check) {
