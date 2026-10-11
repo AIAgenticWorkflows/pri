@@ -10,7 +10,7 @@ export function authConfig(env = process.env) {
   const url = env.SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL || '';
   const anonKey = env.SUPABASE_ANON_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
   const allowed = ['google', 'facebook', 'apple', 'email'];
-  const providers = String(env.PRI_AUTH_PROVIDERS || 'google,email')
+  const providers = String(env.PRI_AUTH_PROVIDERS || 'email')
     .split(',')
     .map((p) => p.trim().toLowerCase())
     .filter((p) => allowed.includes(p));
