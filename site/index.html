@@ -456,7 +456,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       all: 'All', subOnly: 'Subsidised', latest: 'Latest price updates', latestMed: 'Medicines, latest price updates first', medLoading: 'Loading the medicines list…', medPartial: 'The full medicines list is still being copied ({n} of {t} batches so far). Searches also check the official list live.',
       nProducts: '{n} products', nProduct1: '1 product', nMeds: '{n} medicines', nFor: '{n} results for “{q}”', nFor1: '1 result for “{q}”', noneHere: 'No maximum price in {island} for “{q}”.',
       sortLabel: 'Sort', sortAuto: 'Recommended', sortRecent: 'Latest update', sortLow: 'Price: low to high', sortHigh: 'Price: high to low', sortName: 'Name: A to Z',
-      since: 'since {d}', from: 'from {d}', newFrom: 'Changes on {d}: Rs {p}',
+      effDate: 'Effective date', since: 'since {d}', from: 'from {d}', newFrom: 'Changes on {d}: Rs {p}',
       subsidised: 'Subsidised', subExplain: 'Subsidised: the Government pays part of the price. The amount shown is the most you should pay.',
       wasSub: 'This product was on the subsidised list before. Its latest price is on the regular list.',
       barcode: 'Barcode', officialCat: 'Official category', history: 'Approved prices', date: 'From', list: 'List', regular: 'Regular', none0: 'not set',
@@ -476,7 +476,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       reportHint: 'WhatsApp opens with the message filled in. Add a photo of the shelf price and of the receipt before sending.',
       reportMsgHead: 'Price above the official maximum', reportMsgProduct: 'Product', reportMsgPaid: 'Price charged', reportMsgMax: 'Official maximum ({island})', reportMsgShop: 'Shop', reportMsgSource: 'Official list', reportMsgDate: 'Date',
       copy: 'Copy', copied: 'Copied', whatsapp: 'Share on WhatsApp', official: 'See it on the official list',
-      shareText: '{name}: maximum price Rs {p} in {island}, from the official list of the Price Fixing Unit.',
+      shareText: '{name}: maximum price Rs {p} in {island}.',
       more: 'Show {n} more',
       none: 'Nothing matches “{q}”.', noneHint: 'Check the spelling, try the brand, or type the numbers under the barcode.',
       noneBarcode: 'Barcode {q} is not on the official lists. The product may not be price-controlled.',
@@ -508,7 +508,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       all: 'Tout', subOnly: 'Subventionnés', latest: 'Derniers prix mis à jour', latestMed: 'Médicaments, derniers prix d’abord', medLoading: 'Chargement de la liste des médicaments…', medPartial: 'La liste complète des médicaments est en cours de copie ({n} lots sur {t}). Les recherches consultent aussi la liste officielle en direct.',
       nProducts: '{n} produits', nProduct1: '1 produit', nMeds: '{n} médicaments', nFor: '{n} résultats pour « {q} »', nFor1: '1 résultat pour « {q} »', noneHere: 'Pas de prix maximum à {island} pour « {q} ».',
       sortLabel: 'Trier', sortAuto: 'Recommandé', sortRecent: 'Mise à jour récente', sortLow: 'Prix croissant', sortHigh: 'Prix décroissant', sortName: 'Nom : A à Z',
-      since: 'depuis le {d}', from: 'à partir du {d}', newFrom: 'Change le {d} : Rs {p}',
+      effDate: 'Date d’effet', since: 'depuis le {d}', from: 'à partir du {d}', newFrom: 'Change le {d} : Rs {p}',
       subsidised: 'Subventionné', subExplain: 'Subventionné : le Gouvernement paie une partie du prix. Le montant affiché est le maximum à payer.',
       wasSub: 'Ce produit figurait auparavant sur la liste subventionnée. Son dernier prix est sur la liste ordinaire.',
       barcode: 'Code-barres', officialCat: 'Catégorie officielle', history: 'Prix approuvés', date: 'À partir du', list: 'Liste', regular: 'Ordinaire', none0: 'non fixé',
@@ -528,7 +528,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       reportHint: 'WhatsApp s’ouvre avec le message déjà rempli. Ajoutez une photo du prix en rayon et du reçu avant d’envoyer.',
       reportMsgHead: 'Prix au-dessus du maximum officiel', reportMsgProduct: 'Produit', reportMsgPaid: 'Prix demandé', reportMsgMax: 'Maximum officiel ({island})', reportMsgShop: 'Magasin', reportMsgSource: 'Liste officielle', reportMsgDate: 'Date',
       copy: 'Copier', copied: 'Copié', whatsapp: 'Partager sur WhatsApp', official: 'Voir sur la liste officielle',
-      shareText: '{name} : prix maximum Rs {p} à {island}, selon la liste officielle de la Price Fixing Unit.',
+      shareText: '{name} : prix maximum Rs {p} à {island}.',
       more: 'Afficher {n} de plus',
       none: 'Aucun résultat pour « {q} ».', noneHint: 'Vérifiez l’orthographe, essayez la marque ou tapez les chiffres sous le code-barres.',
       noneBarcode: 'Le code-barres {q} ne figure pas sur les listes officielles. Le prix de ce produit n’est peut-être pas contrôlé.',
@@ -560,7 +560,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       all: 'Tou', subOnly: 'Sibvansione', latest: 'Dernie pri ki finn sanze', latestMed: 'Medsinn, dernie pri an premie', medLoading: 'Lalis medsinn pe sarze…', medPartial: 'Lalis konple medsinn pe kopie ankor ({n} lor {t} lot ziska ler). Rod osi lor lalis ofisiel an direk.',
       nProducts: '{n} prodwi', nProduct1: '1 prodwi', nMeds: '{n} medsinn', nFor: '{n} rezilta pou “{q}”', nFor1: '1 rezilta pou “{q}”', noneHere: 'Pena pri maximum dan {island} pou “{q}”.',
       sortLabel: 'Triye', sortAuto: 'Rekomande', sortRecent: 'Dernie sanzman', sortLow: 'Pri: pli ba an premie', sortHigh: 'Pri: pli ot an premie', sortName: 'Nom: A ziska Z',
-      since: 'depi {d}', from: 'apartir {d}', newFrom: 'Sanze le {d}: Rs {p}',
+      effDate: 'Dat effektif', since: 'depi {d}', from: 'apartir {d}', newFrom: 'Sanze le {d}: Rs {p}',
       subsidised: 'Sibvansione', subExplain: 'Sibvansione: Gouvernman pey enn parti pri-la. Montan ki ou trouve, se maximum ki ou bizin peye.',
       wasSub: 'Sa prodwi-la ti lor lalis sibvansione avan. So dernie pri lor lalis normal.',
       barcode: 'Kod-bar', officialCat: 'Kategori ofisiel', history: 'Pri ki finn aprouve', date: 'Apartir', list: 'Lalis', regular: 'Normal', none0: 'pa fixe',
@@ -580,7 +580,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       reportHint: 'WhatsApp pou ouver avek mesaz-la deza ranpli. Azout enn foto pri lor reyon ek enn foto ou resi avan ou avoye.',
       reportMsgHead: 'Pri plis ki maximum ofisiel', reportMsgProduct: 'Prodwi', reportMsgPaid: 'Pri ki zot finn demande', reportMsgMax: 'Maximum ofisiel ({island})', reportMsgShop: 'Laboutik', reportMsgSource: 'Lalis ofisiel', reportMsgDate: 'Dat',
       copy: 'Kopie', copied: 'Finn kopie', whatsapp: 'Partaz lor WhatsApp', official: 'Get li lor lalis ofisiel',
-      shareText: '{name}: pri maximum Rs {p} dan {island}, dapre lalis ofisiel Price Fixing Unit.',
+      shareText: '{name}: pri maximum Rs {p} dan {island}.',
       more: 'Montre {n} anplis',
       none: 'Pena nanye pou “{q}”.', noneHint: 'Verifie lortograf, seye mark-la, ouswa tap bann sif anba kod-bar.',
       noneBarcode: 'Kod-bar {q} pa lor bann lalis ofisiel. Kapav pri sa prodwi-la pa kontrole.',
@@ -1009,8 +1009,13 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     box.hidden = !over;
     if (over) $(`#rw-${id}`).href = reportLink(item, paid, ($(`[data-shop="${id}"]`) || {}).value || '');
   }
+  // A link back to this product on this site: by barcode when it has one, else by name.
+  function shareLink(item) {
+    const q = !item.batches && item.e ? item.e : item.n;
+    return `${location.origin}${location.pathname}?q=${encodeURIComponent(q)}${item.batches ? '#medicines' : ''}`;
+  }
   function shareText(item, view) {
-    return t('shareText', { name: item.n, p: money(view.price), island: islandName(state.island) });
+    return `${t('shareText', { name: item.n, p: money(view.price), island: islandName(state.island) })}\n${shareLink(item)}`;
   }
 
   function groceryDetail(item, view) {
@@ -1018,6 +1023,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const r = groceryView(item, 'r');
     const everSub = item.h.some((h) => h[1] === 1);
     const facts = [
+      `<div><dt>${esc(t('effDate'))}</dt><dd>${esc(fmtDate(view.date))}</dd></div>`,
       `<div><dt>${esc(t('islM'))}</dt><dd>${m ? `Rs ${money(m.price)}` : esc(t('none0'))}</dd></div>`,
       `<div><dt>${esc(t('islR'))}</dt><dd>${r ? `Rs ${money(r.price)}` : esc(t('none0'))}</dd></div>`,
       item.e ? `<div><dt>${esc(t('barcode'))}</dt><dd class="mono">${esc(item.e)}</dd></div>` : '',
@@ -1761,7 +1767,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   if (location.hash === '#medicines') state.tab = 'med';
   try {
     const q = new URLSearchParams(location.search).get('q');
-    if (q) { state.q = q.slice(0, 80); $('#q').value = state.q; $('#clear').hidden = false; }
+    if (q) { state.q = q.slice(0, 200); $('#q').value = state.q; $('#clear').hidden = false; }
   } catch { /* no query string here */ }
   render();
   load();
