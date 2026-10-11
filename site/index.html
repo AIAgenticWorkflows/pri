@@ -142,11 +142,11 @@ a { color: var(--brand); }
 .seg button { border: 0; background: none; border-radius: 9px; min-height: 40px; padding: 6px 14px; font-weight: 700; color: var(--ink-2); display: inline-flex; align-items: center; gap: 8px; }
 .seg button[aria-selected="true"], .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(28, 39, 64, 0.14); }
 #tab-lists { color: var(--brand); }
-#tab-lists[aria-selected="true"] { background: var(--brand); color: #fff; }
+#tab-lists[aria-selected="true"] { background: var(--brand); color: var(--on-brand); }
 #tab-lists .n { color: inherit; opacity: 0.85; }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 30; width: min(calc(100% - 32px), 440px); background: var(--ink); color: var(--bg); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; box-shadow: 0 8px 24px rgba(8, 13, 24, 0.3); font-weight: 700; }
 .toast span { flex: 1 1 auto; min-width: 0; }
-.toast button { border: 0; background: var(--brand); color: #fff; border-radius: 10px; min-height: 40px; padding: 6px 14px; font-weight: 800; white-space: nowrap; }
+.toast button { border: 0; background: var(--brand); color: var(--on-brand); border-radius: 10px; min-height: 40px; padding: 6px 14px; font-weight: 800; white-space: nowrap; }
 #tabs .short { display: none; }
 @media (max-width: 480px) { #tabs { width: 100%; } #tabs button { flex: 1 1 auto; justify-content: center; padding-inline: 8px; white-space: nowrap; } #tabs .n, #tabs .long { display: none; } #tabs .short { display: inline; } }
 .seg .n { font-size: 0.75rem; font-weight: 700; color: var(--ink-2); font-variant-numeric: tabular-nums; }
@@ -197,16 +197,16 @@ a { color: var(--brand); }
 .quick-add { align-self: center; margin-right: 10px; width: 52px; min-height: 52px; border-radius: 14px; border: 2px solid var(--brand); background: var(--surface); color: var(--brand); display: grid; place-items: center; gap: 0; padding: 4px 0; font-weight: 800; cursor: pointer; }
 .quick-add b { font-size: 1.35rem; line-height: 1; }
 .quick-add small { font-size: 0.66rem; letter-spacing: 0.02em; }
-.quick-add.on { background: var(--brand); color: #fff; }
-.listbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--brand); color: #fff; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 12px; box-shadow: 0 -6px 18px rgba(8, 13, 24, 0.18); }
+.quick-add.on { background: var(--brand); color: var(--on-brand); }
+.listbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 15; background: var(--brand); color: var(--on-brand); padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 12px; box-shadow: 0 -6px 18px rgba(8, 13, 24, 0.18); }
 .listbar .lb-text { flex: 1 1 auto; min-width: 0; display: grid; line-height: 1.25; }
 .listbar .lb-text strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .listbar .lb-text span { font-size: 0.85rem; opacity: 0.9; }
-.listbar button { border: 0; background: #fff; color: var(--brand); border-radius: 10px; min-height: 42px; padding: 6px 16px; font-weight: 800; white-space: nowrap; }
+.listbar button { border: 0; background: var(--on-brand); color: var(--brand); border-radius: 10px; min-height: 42px; padding: 6px 16px; font-weight: 800; white-space: nowrap; }
 body.has-listbar { padding-bottom: 76px; }
 body.has-listbar .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
 .promo { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: var(--radius); background: var(--surface); border: 2px solid var(--brand); }
-.promo .ico { width: 44px; height: 44px; border-radius: 12px; background: var(--brand); color: #fff; display: grid; place-items: center; font-size: 1.4rem; font-weight: 800; flex: none; }
+.promo .ico { width: 44px; height: 44px; border-radius: 12px; background: var(--brand); color: var(--on-brand); display: grid; place-items: center; font-size: 1.4rem; font-weight: 800; flex: none; }
 .promo div { flex: 1 1 auto; min-width: 0; display: grid; gap: 2px; }
 .promo div span { color: var(--ink-2); font-size: 0.9rem; }
 .promo .btn { flex: none; }
@@ -292,10 +292,10 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
 
 .top-right { display: flex; align-items: center; gap: 8px; }
 .acct { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; min-height: 38px; padding: 4px 14px 4px 6px; font-weight: 700; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
-.acct .av { width: 28px; height: 28px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 0.85rem; }
+.acct .av { width: 28px; height: 28px; border-radius: 50%; background: var(--brand); color: var(--on-brand); display: grid; place-items: center; font-weight: 800; font-size: 0.85rem; }
 .acct.out { padding-left: 14px; }
 @media (max-width: 480px) { .acct:not(.out) { padding: 4px; } .acct:not(.out) span:not(.av) { display: none; } .acct.out { padding-inline: 12px; } }
-.chip.is-saved[aria-pressed="true"] { background: var(--brand); color: #fff; border-color: var(--brand); }
+.chip.is-saved[aria-pressed="true"] { background: var(--brand); color: var(--on-brand); border-color: var(--brand); }
 .chip.is-saved .star { color: inherit; }
 .saved-mark { color: var(--brand); font-weight: 800; margin-right: 4px; }
 .lists { display: grid; gap: 10px; }
@@ -303,7 +303,11 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
 .list-card:hover { border-color: var(--ink-2); }
 .list-card .grow, .pick .grow { flex: 1 1 auto; min-width: 0; display: grid; gap: 2px; }
 .list-card .grow span { color: var(--ink-2); font-size: 0.88rem; }
-.list-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.list-tools { display: flex; flex-wrap: wrap; gap: 4px 18px; justify-content: center; padding-top: 4px; }
+.linkbtn { border: 0; background: none; padding: 8px 4px; font-weight: 700; color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.linkbtn.danger { color: var(--over); }
+.actions.one { grid-template-columns: 1fr; }
+.actions.one .btn { width: 100%; justify-content: center; box-sizing: border-box; }
 .new-list { display: flex; gap: 8px; flex-wrap: wrap; }
 .new-list input { flex: 1 1 180px; min-width: 0; min-height: 46px; border: 2px solid var(--line); border-radius: 12px; padding: 4px 12px; font-size: 1rem; background: var(--bg); color: var(--ink); }
 .new-list .btn { width: auto; }
@@ -320,7 +324,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
 .bline .x { width: 36px; height: 36px; border-radius: 50%; border: 0; background: none; color: var(--ink-2); font-size: 1.4rem; line-height: 1; cursor: pointer; }
 .bline.missing { border-style: dashed; color: var(--ink-2); grid-template-columns: 1fr auto; }
 .bline .sub-tag { color: var(--sub-ink); background: var(--sub-bg); border-radius: 6px; padding: 1px 6px; font-size: 0.75rem; font-weight: 800; }
-.btotal { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 14px; border-radius: var(--radius); background: var(--ink); color: var(--bg); font-weight: 800; font-size: 1.05rem; }
+.btotal { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; white-space: normal; padding: 14px; border-radius: var(--radius); background: var(--ink); color: var(--bg); font-weight: 800; font-size: 1.05rem; }
 .btotal small { display: block; font-weight: 600; font-size: 0.8rem; opacity: 0.8; }
 .btn.danger { color: var(--over); border-color: var(--over); }
 .btn.saved { border-color: var(--brand); color: var(--brand); }
@@ -351,6 +355,8 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   .chip.is-sub { margin-bottom: 6px; }
   .item-head { padding: 16px 18px; }
   .detail { padding: 16px 18px; }
+  .layout.no-cats { grid-template-columns: minmax(0, 1fr); }
+  .layout.no-cats .lists { max-width: 760px; }
 }
 @media (max-width: 560px) {
   .top { padding-block: 10px 2px; }
@@ -374,6 +380,74 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   .skeleton { animation: pulse 1.4s ease-in-out infinite; }
   @keyframes pulse { 50% { opacity: 0.55; } }
 }
+
+/* Phones: the price first, everything within thumb reach, no sideways scrolling. */
+.lists { grid-template-columns: minmax(0, 1fr); }
+.lists > * { min-width: 0; }
+@media (max-width: 560px) {
+  .intro h1 { font-size: 1.3rem; max-width: none; }
+  .intro p { font-size: 0.86rem; line-height: 1.4; }
+  .controls { padding-block: 10px 4px; }
+  #island button { min-height: 34px; padding-inline: 12px; font-size: 0.88rem; }
+  .sort select { min-height: 36px; font-size: 0.85rem; padding: 2px 6px; }
+  .results-head h2 { font-size: 1rem; }
+
+  /* Product cards: name across the full width, price and date on one line below. */
+  .item-head { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 12px 4px 12px 14px; }
+  .item-name { font-size: 0.98rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .item.is-open .item-name { -webkit-line-clamp: unset; display: block; }
+  .item-price { display: flex; align-items: center; gap: 10px; justify-items: start; }
+  .item-price .when { font-size: 0.8rem; }
+  .quick-add { width: 48px; min-height: 48px; margin-right: 10px; border-radius: 12px; }
+
+  /* Details: two columns of facts, full-width actions. */
+  .detail { padding: 14px; gap: 12px; }
+  .facts { grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .actions .btn { justify-content: center; text-align: center; padding-inline: 8px; }
+  .actions .btn.wa { grid-column: 1 / -1; }
+  .check-row .money { width: 100%; box-sizing: border-box; }
+  .money input { width: 100%; }
+
+  /* Lists: one product per card, quantity and line total on one row. */
+  .bline { grid-template-columns: minmax(0, 1fr) auto; position: relative; padding: 12px 44px 12px 14px; }
+  .bline .bq { grid-column: 1 / -1; }
+  .bline .qty { gap: 6px; }
+  .bline .qty button { width: 38px; height: 38px; }
+  .bline .x { position: absolute; top: 6px; right: 4px; }
+  .bline.missing { padding-right: 44px; }
+  .btotal { position: sticky; bottom: calc(8px + env(safe-area-inset-bottom, 0px)); z-index: 3; }
+  .new-list .btn { flex: 1 1 100%; justify-content: center; }
+
+  /* Invitation: text first, button underneath. */
+  .promo { flex-wrap: wrap; position: relative; padding-right: 40px; }
+  .promo div { flex: 1 1 calc(100% - 60px); }
+  .promo .btn { flex: 1 1 100%; justify-content: center; }
+  .promo .x { position: absolute; top: 6px; right: 6px; }
+
+  /* Dialogs open from the bottom, like the rest of the phone. */
+  #auth { place-items: end center; padding: 0; }
+  #auth .auth-box { width: 100%; border-radius: 20px 20px 0 0; padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px)); max-height: 88vh; }
+
+  .listbar { padding-inline: 14px; }
+  .foot { padding-bottom: 8px; }
+}
+@media (max-width: 360px) {
+  .brand span { white-space: nowrap; }
+  .top { gap: 8px; }
+  .top-right { gap: 6px; }
+  .lang button { padding-inline: 4px; min-width: 32px; }
+  .brand { font-size: 1.1rem; gap: 6px; }
+  .brand svg { width: 26px; height: 26px; }
+  .acct.out { white-space: nowrap; padding-inline: 10px; font-size: 0.82rem; }
+  #tabs button { font-size: 0.86rem; padding-inline: 6px; gap: 4px; }
+  .bline .each { display: none; }
+  .btotal > span:last-child { white-space: nowrap; }
+  .item-price { flex-wrap: wrap; gap: 4px 10px; }
+}
+@keyframes pri-pop { 0% { transform: translateY(8px); opacity: 0.4; } 100% { transform: none; opacity: 1; } }
+.listbar.pop { animation: pri-pop 0.25s ease-out; }
+
 </style>
 </head>
 <body>
@@ -1157,8 +1231,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   function actionsHtml(item, view) {
     const text = shareText(item, view);
     return `<div class="actions">
-      <a class="btn" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">${esc(t('whatsapp'))}</a>
-      ${auth.config ? `<button type="button" class="btn${inAnyList(item) ? ' saved' : ''}" data-addlist="${item.id}">${esc(inAnyList(item) ? t('inLists', { n: listsWith(item).length }) : t('addToList'))}</button>` : ''}
+      <a class="btn wa" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">${esc(t('whatsapp'))}</a>
       <button type="button" class="btn" data-copy="${item.id}">${esc(t('copy'))}</button>
       <a class="btn" href="${esc(officialLink(item, view))}" target="_blank" rel="noopener">${esc(t('official'))}</a>
     </div>`;
@@ -1231,6 +1304,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     $('.sort').hidden = Boolean(state.listsView);
     if (auth.config) renderListBar();
     $('#cats').hidden = Boolean(state.listsView);
+    $('.layout').classList.toggle('no-cats', Boolean(state.listsView));
     if (state.listsView && renderListsView()) return;
     if (state.tab === 'med' && !M.loaded) {
       ensureMedicines();
@@ -1489,7 +1563,15 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     if (show) {
       const list = withItems.find((l) => l.id === auth.lastListId) || withItems[withItems.length - 1];
       const tt = listTotals(list);
-      bar.innerHTML = `<span class="lb-text"><strong>✓ ${esc(list.name)}</strong><span>${esc(t('listSummary', { n: count(list.items.length) }))} · Rs ${money(tt.total)}</span></span><button type="button" data-barlist="${esc(list.id)}">${esc(t('viewList'))}</button>`;
+      const flash = auth.flash && Date.now() - auth.flash.at < 2500 ? auth.flash.text : '';
+      bar.innerHTML = `<span class="lb-text"><strong>✓ ${esc(flash || list.name)}</strong><span>${esc(nProducts(list.items.length))} · Rs ${money(tt.total)}</span></span><button type="button" data-barlist="${esc(list.id)}">${esc(t('viewList'))}</button>`;
+      if (flash) {
+        bar.classList.remove('pop');
+        void bar.offsetWidth;
+        bar.classList.add('pop');
+        clearTimeout(renderListBar.timer);
+        renderListBar.timer = setTimeout(() => { if (auth.flash && Date.now() - auth.flash.at >= 2500) renderListBar(); }, 2600);
+      }
     }
     const promo = $('#promo');
     let dismissed = false;
@@ -1531,6 +1613,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     openAuth('', false, 'pick');
   }
 
+  const nProducts = (n) => (n === 1 ? t('nProduct1') : t('nProducts', { n: count(n) }));
   let toastTimer = 0;
   function showToast(text, listId) {
     const el = $('#toast');
@@ -1595,7 +1678,8 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       list.items.push(row);
       refreshListViews();
       auth.lastListId = list.id;
-      showToast(t('addedTo', { list: list.name }), list.id);
+      auth.flash = { text: t('addedTo', { list: list.name }), at: Date.now() };
+      if (!document.body.classList.contains('has-listbar') || state.listsView) showToast(t('addedTo', { list: list.name }), list.id);
       const { error } = await db().from('list_items').upsert(row, { onConflict: 'list_id,item_key' });
       if (error) failed(error);
     }
@@ -1660,7 +1744,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       $('#count').textContent = t('myLists');
       const cards = auth.lists.map((l) => {
         const tt = listTotals(l);
-        return `<button type="button" class="list-card" data-openlist="${l.id}"><span class="grow"><strong>${esc(l.name)}</strong><span>${esc(t('listSummary', { n: count(l.items.length) }))}</span></span><span class="bprice">Rs ${money(tt.total)}</span></button>`;
+        return `<button type="button" class="list-card" data-openlist="${l.id}"><span class="grow"><strong>${esc(l.name)}</strong><span>${esc(nProducts(l.items.length))}</span></span><span class="bprice">Rs ${money(tt.total)}</span></button>`;
       }).join('');
       listEl.innerHTML = `<div class="lists">
         ${cards || `<div class="state"><strong>${esc(t('noListsYet'))}</strong><span>${esc(t('listsHow'))}</span></div>`}
@@ -1688,12 +1772,12 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       </div>`;
     }).join('');
     listEl.innerHTML = `<div class="lists">
-      <div class="list-tools"><button type="button" class="btn" data-openlist="all">← ${esc(t('myLists'))}</button>
-        <button type="button" class="btn" data-rename="${list.id}">${esc(t('renameList'))}</button>
-        <button type="button" class="btn danger" data-dellist="${list.id}">${esc(t('deleteList'))}</button></div>
+      <div class="list-top"><button type="button" class="btn" data-openlist="all">← ${esc(t('myLists'))}</button></div>
       ${lines || `<div class="state"><strong>${esc(t('listEmpty'))}</strong><span>${esc(t('listsHow'))}</span></div>`}
       ${list.items.length ? `<div class="btotal"><span>${esc(t('listTotal'))}<small>${esc(t('listTotalNote', { island: islandName(state.island) }))}${totals.missing ? ` ${esc(t('listMissing', { n: totals.missing }))}` : ''}</small></span><span>Rs ${money(totals.total)}</span></div>
-      <div class="actions"><a class="btn" href="https://wa.me/?text=${encodeURIComponent(listShareText(list, totals))}" target="_blank" rel="noopener">${esc(t('whatsapp'))}</a></div>` : ''}
+      <div class="actions one"><a class="btn wa" href="https://wa.me/?text=${encodeURIComponent(listShareText(list, totals))}" target="_blank" rel="noopener">${esc(t('whatsapp'))}</a></div>` : ''}
+      <div class="list-tools"><button type="button" class="linkbtn" data-rename="${list.id}">${esc(t('renameList'))}</button>
+        <button type="button" class="linkbtn danger" data-dellist="${list.id}">${esc(t('deleteList'))}</button></div>
     </div>`;
     return true;
   }
