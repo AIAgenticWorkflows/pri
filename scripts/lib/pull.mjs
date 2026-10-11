@@ -9,6 +9,7 @@ import { LISTS } from './pfu.mjs';
 const ORDER = ['p', 's', 'phs', 'ph'];
 
 const LOCK_MS = 10 * 60 * 1000;
+const SAVE_EVERY_MS = Number(process.env.PRI_SAVE_MINUTES || 3) * 60 * 1000;
 
 export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseMs, timeoutMs, log = console.log, seed = async () => null, by = 'run', force = false }) {
   const started = Date.now();
@@ -33,7 +34,7 @@ export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseM
   });
   let lastHeartbeat = Date.now();
   const heartbeat = async () => {
-    if (Date.now() - lastHeartbeat < 90000) return;
+    if (Date.now() - lastHeartbeat < 4 * 60000) return;
     lastHeartbeat = Date.now();
     await writeState((state) => {
       state.lock = { id: lockId, at: new Date().toISOString(), by };
@@ -41,6 +42,7 @@ export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseM
   };
 
   const collectors = {};
+  const lastSaved = {};
   for (const key of wanted) {
     let store = await storage.readJson(`stores/${key}.json`);
     let from = 'storage';
@@ -56,14 +58,19 @@ export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseM
       pauseMs,
       timeoutMs,
       log: say,
+      // Progress is saved at most every few minutes: each save is a paid write on Blob.
       onProgress: async () => {
+        if (Date.now() - (lastSaved[key] || started) < SAVE_EVERY_MS) return;
         await save(key);
         await heartbeat();
       },
     });
     say(`${key}: ${collectors[key].store.rows.length} rows from ${from}`);
   }
-  const save = async (key) => storage.writeText(`stores/${key}.json`, serialiseStore(collectors[key].finish()));
+  const save = async (key) => {
+    lastSaved[key] = Date.now();
+    return storage.writeText(`stores/${key}.json`, serialiseStore(collectors[key].finish()));
+  };
   const outOfTime = () => deadlineAt - Date.now() < 15000;
 
   // 1. New rows at the top of each list.

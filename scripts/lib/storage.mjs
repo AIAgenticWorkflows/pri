@@ -39,18 +39,14 @@ export function blobStorage(rawToken = process.env.BLOB_READ_WRITE_TOKEN) {
   let sdk;
   const load = async () => sdk || (sdk = await import('@vercel/blob'));
   const urls = new Map();
-  const find = async (name) => {
-    if (urls.has(name)) return urls.get(name);
-    const { list } = await load();
-    const { blobs } = await list({ prefix: name, limit: 5, token });
-    const hit = blobs.find((b) => b.pathname === name);
-    if (hit) urls.set(name, hit.url);
-    return hit ? hit.url : null;
-  };
-  // Stores are created either public or private. Private ones need the token to
-  // read; their URLs contain ".private.". Writes try the store's kind, learnt from
-  // the first write (or PRI_BLOB_ACCESS), and switch if Vercel says otherwise.
+  // Reading never goes through the Blob API: a file's address follows from the store ID
+  // in the token, and fetching it is a plain download, not one of the "advanced
+  // operations" the free plan counts. Only writing uses the API.
+  // Stores are either public or private (private ones are read with the token); the
+  // kind is learnt from the first read or write, or set with PRI_BLOB_ACCESS.
+  const storeId = token.split('_')[3] || '';
   let access = process.env.PRI_BLOB_ACCESS === 'private' ? 'private' : process.env.PRI_BLOB_ACCESS === 'public' ? 'public' : null;
+  const urlFor = (kind, name) => `https://${storeId}.${kind}.blob.vercel-storage.com/${name.split('/').map(encodeURIComponent).join('/')}`;
   const fetchBlob = async (url) => {
     const isPrivate = /\.private\.blob\.vercel-storage\.com/.test(url);
     const target = new URL(url);
@@ -62,13 +58,19 @@ export function blobStorage(rawToken = process.env.BLOB_READ_WRITE_TOKEN) {
     });
   };
   const readText = async (name) => {
-    const url = await find(name);
-    if (!url) return null;
-    const res = await fetchBlob(url);
-    if (res.status === 404) return null;
-    if (!res.ok) throw new Error(`blob ${name}: HTTP ${res.status}`);
-    return res.text();
+    const kinds = access ? [access] : ['private', 'public'];
+    for (const kind of kinds) {
+      const res = await fetchBlob(urls.get(name) || urlFor(kind, name));
+      if (res.ok) {
+        if (!access) access = kind;
+        return res.text();
+      }
+      if ([400, 401, 403, 404].includes(res.status)) continue;
+      throw new Error(`blob ${name}: HTTP ${res.status}`);
+    }
+    return null;
   };
+  const find = async (name) => urls.get(name) || urlFor(access || 'private', name);
   return {
     kind: 'blob',
     readText,
