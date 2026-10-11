@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pri Max</title>
 <meta name="description" content="Check the official maximum retail price of groceries, household goods and medicines in Mauritius and Rodrigues.">
 <meta name="theme-color" content="#19689d">
+<script>try { if (localStorage.getItem('pri.theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) { /* light */ }</script>
 <link rel="canonical" href="https://pri.aplica.biz/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Pri Max">
@@ -546,6 +547,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
 <footer class="foot">
   <div class="wrap">
     <p id="updated"></p>
+    <p><button type="button" class="linkbtn" id="theme"></button></p>
     <p><span data-t="footer">Pri Max is an independent page by Aplica. It is not a government website.</span> <a href="https://www.aplica.biz" target="_blank" rel="noopener">aplica.biz</a></p>
   </div>
 </footer>
@@ -593,7 +595,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       listSummary: '{n} products', listsHow: 'To add products, search for them and press “Add to a list”.', listEmpty: 'This list is empty.',
       listTotal: 'Maximum total', listTotalNote: 'Most you should pay in {island}.', listMissing: '{n} not counted.',
       listNotHere: 'No price for {island}.', listGone: 'No longer on the official lists.', renameList: 'Rename', deleteList: 'Delete list', deleteListSure: 'Tap again to delete',
-      listError: 'That change could not be saved. Please try again.', addedTo: 'Added to {list}', viewList: 'View list', listWord: 'List',
+      listError: 'That change could not be saved. Please try again.', addedTo: 'Added to {list}', viewList: 'View list', themeDark: 'Dark mode', themeLight: 'Light mode', listWord: 'List',
       authTitle: 'Sign in to make your lists', authBody: 'Make shopping lists of the products and medicines you buy, see their maximum total, and find them on any phone or computer.',
       signInToList: 'Sign in to add this product to a list. You will be brought straight back to it.',
       continueWith: 'Continue with {p}', or: 'or', emailPh: 'Your email address', emailLink: 'Email me a sign-in link',
@@ -651,7 +653,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       listSummary: '{n} produits', listsHow: 'Pour ajouter des produits, recherchez-les puis appuyez sur « Ajouter à une liste ».', listEmpty: 'Cette liste est vide.',
       listTotal: 'Total maximum', listTotalNote: 'Le maximum à payer à {island}.', listMissing: '{n} non compté(s).',
       listNotHere: 'Pas de prix pour {island}.', listGone: 'N’est plus sur les listes officielles.', renameList: 'Renommer', deleteList: 'Supprimer la liste', deleteListSure: 'Appuyez encore pour supprimer',
-      listError: 'Cette modification n’a pas pu être enregistrée. Réessayez.', addedTo: 'Ajouté à {list}', viewList: 'Voir la liste', listWord: 'Liste',
+      listError: 'Cette modification n’a pas pu être enregistrée. Réessayez.', addedTo: 'Ajouté à {list}', viewList: 'Voir la liste', themeDark: 'Mode sombre', themeLight: 'Mode clair', listWord: 'Liste',
       authTitle: 'Connectez-vous pour créer vos listes', authBody: 'Faites des listes de courses avec les produits et médicaments que vous achetez, voyez leur total maximum, et retrouvez-les sur tous vos appareils.',
       signInToList: 'Connectez-vous pour ajouter ce produit à une liste. Vous y reviendrez directement.',
       continueWith: 'Continuer avec {p}', or: 'ou', emailPh: 'Votre adresse e-mail', emailLink: 'Recevoir un lien de connexion',
@@ -709,7 +711,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       listSummary: '{n} prodwi', listsHow: 'Pou azout prodwi, rod zot ek pes “Azout dan enn lalis”.', listEmpty: 'Sa lalis-la vid.',
       listTotal: 'Total maximum', listTotalNote: 'Maximum ki ou bizin peye dan {island}.', listMissing: '{n} pa konte.',
       listNotHere: 'Pena pri pou {island}.', listGone: 'Pa lor lalis ofisiel aster.', renameList: 'Sanz nom', deleteList: 'Efas lalis', deleteListSure: 'Pes ankor pou efase',
-      listError: 'Sa sanzman-la pa finn kapav sove. Reseye.', addedTo: 'Finn azout dan {list}', viewList: 'Get lalis', listWord: 'Lalis',
+      listError: 'Sa sanzman-la pa finn kapav sove. Reseye.', addedTo: 'Finn azout dan {list}', viewList: 'Get lalis', themeDark: 'Mod nwar', themeLight: 'Mod kler', listWord: 'Lalis',
       authTitle: 'Konekte pou fer ou bann lalis', authBody: 'Fer lalis komisionn avek bann prodwi ek medsinn ki ou aste, get zot total maximum, ek retrouv zot lor nenport ki telefonn ouswa lordinater.',
       signInToList: 'Konekte pou azout sa prodwi-la dan enn lalis. Ou pou retourn direk lor la.',
       continueWith: 'Kontinie avek {p}', or: 'ouswa', emailPh: 'Ou ladres email', emailLink: 'Avoy mwa enn lien pou konekte',
@@ -1372,6 +1374,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     $('#clear').setAttribute('aria-label', t('clear'));
     $('#sort').value = state.sort;
     renderAccount();
+    renderTheme();
     if (!$('#auth').hidden) renderAuth();
     if (G) {
       const products = G.items.length;
@@ -2252,6 +2255,18 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       $('#retry').addEventListener('click', () => { $('#list').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>'; load(); });
     }
   }
+
+  // Light by default; dark only when chosen here (remembered on this phone).
+  function renderTheme() {
+    const dark = document.documentElement.dataset.theme === 'dark';
+    $('#theme').textContent = dark ? `☀ ${t('themeLight')}` : `☾ ${t('themeDark')}`;
+  }
+  $('#theme').addEventListener('click', () => {
+    const dark = document.documentElement.dataset.theme !== 'dark';
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    try { localStorage.setItem('pri.theme', dark ? 'dark' : 'light'); } catch { /* fine */ }
+    renderTheme();
+  });
 
   TODAY = todayInMauritius();
   const savedLang = store.get('pri.lang', '');
