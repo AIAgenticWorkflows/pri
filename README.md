@@ -48,8 +48,8 @@ Sign-in uses Supabase (free plan is enough to start). Without it, the page works
 before and simply shows no sign-in button.
 
 1. Create a project at supabase.com. In SQL Editor, run `supabase/schema.sql`.
-2. Authentication, URL Configuration: set Site URL to the site's address and add it to
-   Redirect URLs (also `http://localhost:4173` for local testing).
+2. Authentication, URL Configuration: set Site URL to `https://pri.aplica.biz` and add it to
+   Redirect URLs (also `https://pri-ashy.vercel.app` and `http://localhost:4173` for testing).
 3. Authentication, Providers: turn on the ones wanted. Google needs an OAuth client from
    Google Cloud Console; Facebook an app from developers.facebook.com; Apple an Apple
    Developer account. Email links work out of the box.
