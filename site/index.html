@@ -217,6 +217,10 @@ a { color: var(--brand); }
 .verdict { margin: 0; padding: 10px 12px; border-radius: 10px; font-weight: 700; }
 .verdict.ok { background: var(--ok-bg); color: var(--ok); }
 .verdict.over { background: var(--over-bg); color: var(--over); }
+.report { display: grid; gap: 8px; padding: 12px; border: 2px solid var(--over); border-radius: 12px; }
+.report strong { font-size: 0.95rem; }
+.report .field { width: 100%; }
+.btn.wa { background: #1f7a4d; color: #fff; border-color: #1f7a4d; }
 .tablewrap { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
 th, td { text-align: left; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
@@ -432,7 +436,10 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       wasSub: 'This product was on the subsidised list before. Its latest price is on the regular list.',
       barcode: 'Barcode', officialCat: 'Official category', history: 'Approved prices', date: 'From', list: 'List', regular: 'Regular', none0: 'not set',
       check: 'Price on the shelf', within: 'Within the maximum: Rs {x} below it.', exact: 'Exactly the maximum price.',
-      over: 'Rs {x} above the maximum ({pc}% more). Keep the receipt and report it on 185.',
+      over: 'Rs {x} above the maximum ({pc}% more). Keep the receipt and report it.',
+      reportTitle: 'Report it to the Consumer Affairs Unit', reportShop: 'Shop name and town', reportWa: 'Report on WhatsApp', reportCall: 'Call 185',
+      reportHint: 'WhatsApp opens with the message filled in. Add a photo of the shelf price and of the receipt before sending.',
+      reportMsgHead: 'Price above the official maximum', reportMsgProduct: 'Product', reportMsgPaid: 'Price charged', reportMsgMax: 'Official maximum ({island})', reportMsgShop: 'Shop', reportMsgSource: 'Official list', reportMsgDate: 'Date',
       copy: 'Copy', copied: 'Copied', whatsapp: 'Share on WhatsApp', official: 'See it on the official list',
       shareText: '{name}: maximum price Rs {p} in {island}, from the official list of the Price Fixing Unit.',
       more: 'Show {n} more',
@@ -471,7 +478,10 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       wasSub: 'Ce produit figurait auparavant sur la liste subventionnée. Son dernier prix est sur la liste ordinaire.',
       barcode: 'Code-barres', officialCat: 'Catégorie officielle', history: 'Prix approuvés', date: 'À partir du', list: 'Liste', regular: 'Ordinaire', none0: 'non fixé',
       check: 'Prix affiché en rayon', within: 'Dans la limite : Rs {x} de moins que le maximum.', exact: 'Exactement le prix maximum.',
-      over: 'Rs {x} au-dessus du maximum ({pc} % de plus). Gardez le reçu et signalez-le au 185.',
+      over: 'Rs {x} au-dessus du maximum ({pc} % de plus). Gardez le reçu et signalez-le.',
+      reportTitle: 'Signaler à la Consumer Affairs Unit', reportShop: 'Nom du magasin et localité', reportWa: 'Signaler sur WhatsApp', reportCall: 'Appeler le 185',
+      reportHint: 'WhatsApp s’ouvre avec le message déjà rempli. Ajoutez une photo du prix en rayon et du reçu avant d’envoyer.',
+      reportMsgHead: 'Prix au-dessus du maximum officiel', reportMsgProduct: 'Produit', reportMsgPaid: 'Prix demandé', reportMsgMax: 'Maximum officiel ({island})', reportMsgShop: 'Magasin', reportMsgSource: 'Liste officielle', reportMsgDate: 'Date',
       copy: 'Copier', copied: 'Copié', whatsapp: 'Partager sur WhatsApp', official: 'Voir sur la liste officielle',
       shareText: '{name} : prix maximum Rs {p} à {island}, selon la liste officielle de la Price Fixing Unit.',
       more: 'Afficher {n} de plus',
@@ -510,7 +520,10 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       wasSub: 'Sa prodwi-la ti lor lalis sibvansione avan. So dernie pri lor lalis normal.',
       barcode: 'Kod-bar', officialCat: 'Kategori ofisiel', history: 'Pri ki finn aprouve', date: 'Apartir', list: 'Lalis', regular: 'Normal', none0: 'pa fixe',
       check: 'Pri lor reyon', within: 'Dan limit: Rs {x} pli ba ki maximum.', exact: 'Exakteman pri maximum.',
-      over: 'Rs {x} plis ki maximum ({pc}% anplis). Gard ou resi ek sinyal li lor 185.',
+      over: 'Rs {x} plis ki maximum ({pc}% anplis). Gard ou resi ek sinyal li.',
+      reportTitle: 'Sinyal li ar Consumer Affairs Unit', reportShop: 'Nom laboutik ek landrwa', reportWa: 'Sinyal lor WhatsApp', reportCall: 'Apel 185',
+      reportHint: 'WhatsApp pou ouver avek mesaz-la deza ranpli. Azout enn foto pri lor reyon ek enn foto ou resi avan ou avoye.',
+      reportMsgHead: 'Pri plis ki maximum ofisiel', reportMsgProduct: 'Prodwi', reportMsgPaid: 'Pri ki zot finn demande', reportMsgMax: 'Maximum ofisiel ({island})', reportMsgShop: 'Laboutik', reportMsgSource: 'Lalis ofisiel', reportMsgDate: 'Dat',
       copy: 'Kopie', copied: 'Finn kopie', whatsapp: 'Partaz lor WhatsApp', official: 'Get li lor lalis ofisiel',
       shareText: '{name}: pri maximum Rs {p} dan {island}, dapre lalis ofisiel Price Fixing Unit.',
       more: 'Montre {n} anplis',
@@ -541,8 +554,8 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   const CATS = {
     rice: ['Rice', 'Riz', 'Diri', 'rice riz diri'],
     pasta: ['Pasta', 'Pâtes', 'Pasta', 'pasta pates'],
-    pulses: ['Lentils & pulses', 'Lentilles et grains secs', 'Lanti ek grin sek', 'pulses grains secs grin sek'],
-    oil: ['Cooking oil', 'Huile', 'Delwil', 'oil huile delwil'],
+    pulses: ['Lentils & pulses', 'Lentilles et grains secs', 'Lanti ek grin sek', 'pulses grains secs grin sek dholl dal lanti'],
+    oil: ['Cooking oil', 'Huile', 'Delwil', 'oil huile delwil dilwil lwil'],
     'milk-powder': ['Milk powder', 'Lait en poudre', 'Dile an poud', 'milk lait dile powder poudre poud'],
     'infant-milk': ['Infant milk', 'Lait infantile', 'Dile baba', 'infant milk lait dile baby bebe baba formula'],
     'infant-food': ['Baby food', 'Aliments pour bébé', 'Manze baba', 'baby bebe baba infant food aliment manze'],
@@ -574,6 +587,17 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     ['adult', 'adulte', 'adultes', 'adilt'], ['spaghetti', 'spaghettis', 'spageti'], ['macaroni', 'macaronis', 'makaroni'], ['pasta', 'pates'],
     ['soya', 'soja', 'soybean'], ['sunflower', 'tournesol'], ['cereal', 'cereals', 'cereale', 'cereales', 'sereal'], ['vegetable', 'vegetables', 'legume', 'legumes', 'legim'],
     ['frozen', 'surgele', 'surgeles', 'konzle'], ['pad', 'pads', 'serviette', 'serviettes', 'serviet'], ['softener', 'adoucissant', 'assouplissant'],
+    // Kreol words people type for everyday shopping (several spellings are in use).
+    ['sugar', 'sucre', 'disik'], ['flour', 'farine', 'lafarinn', 'farinn', 'lafarine'], ['egg', 'eggs', 'oeuf', 'oeufs', 'dizef', 'zef'],
+    ['bread', 'pain', 'dipin'], ['salt', 'sel'], ['coffee', 'cafe', 'kafe'], ['tea', 'the', 'dite'],
+    ['oil', 'huile', 'delwil', 'dilwil', 'lwil', 'diluil'], ['milk', 'lait', 'dile', 'dilet'], ['rice', 'riz', 'diri'], ['butter', 'beurre', 'diber', 'dibber'],
+    ['dholl', 'dhal', 'dal', 'dhol', 'lentil', 'lentils', 'lentille', 'lentilles', 'lanti', 'lantiy'],
+    ['noodle', 'noodles', 'nouille', 'nouilles', 'mine', 'minn'], ['biscuit', 'biscuits', 'biskwi'], ['jam', 'confiture', 'konfitir'],
+    ['sauce', 'sos', 'lasos'], ['ketchup', 'ketsap'], ['vinegar', 'vinaigre', 'vineg'], ['mayonnaise', 'mayonez', 'mayo'],
+    ['yoghurt', 'yogurt', 'yaourt', 'yaout'], ['juice', 'jus'], ['syrup', 'sirop', 'sirro', 'lasirop'], ['salted', 'sale', 'sal'],
+    ['cod', 'morue', 'lamori', 'lamorie'], ['sausage', 'sausages', 'saucisse', 'saucisses', 'sosis'], ['chilli', 'chili', 'piment', 'pima'],
+    ['bleach', 'javel', 'zavel', 'lazavel'], ['toothpaste', 'dentifrice', 'dantifris'], ['shampoo', 'shampooing', 'sampwen', 'sampoing'],
+    ['gas', 'gaz', 'lpg', 'bonbonn'], ['can', 'canned', 'conserve', 'bwat'], ['animal', 'animaux', 'zanimo'], ['dog', 'chien', 'lisien'], ['cat', 'chat'],
   ];
   const STOP = new Set(['de', 'du', 'des', 'la', 'le', 'les', 'en', 'au', 'aux', 'et', 'a', 'of', 'in', 'and', 'with', 'for', 'the', 'ek', 'dan', 'pou']);
   const SYN = new Map();
@@ -888,6 +912,32 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const base = view.sub ? LISTS.s : LISTS.p;
     return item.e ? `${base}?field_ean_code_ap_value=${encodeURIComponent(item.e)}` : `${base}?field_commodity_name_value=${encodeURIComponent(item.n)}`;
   }
+  // A complaint to the Consumer Affairs Unit (WhatsApp 5942 8888), filled in with what the
+  // shopper saw; they attach the photos themselves in WhatsApp.
+  const CAU_WHATSAPP = '23059428888';
+  function reportLink(item, paid, shop) {
+    const view = viewOf(item);
+    const lines = [
+      t('reportMsgHead'),
+      `${t('reportMsgProduct')}: ${item.n}${item.b ? ` (${item.b})` : ''}`,
+      item.e ? `${t('barcode')}: ${item.e}` : '',
+      `${t('reportMsgPaid')}: Rs ${money(paid)}`,
+      `${t('reportMsgMax', { island: islandName(state.island) })}: Rs ${money(view.price)} (${t('since', { d: fmtDate(view.date) })})`,
+      `${t('reportMsgShop')}: ${shop.trim() || '…'}`,
+      `${t('reportMsgDate')}: ${fmtDate(todayInMauritius())}`,
+      `${t('reportMsgSource')}: ${officialLink(item, view)}`,
+    ].filter(Boolean);
+    return `https://wa.me/${CAU_WHATSAPP}?text=${encodeURIComponent(lines.join('\n'))}`;
+  }
+  function updateReport(id) {
+    const box = $(`#r-${id}`);
+    if (!box) return;
+    const item = findItem(id);
+    const paid = Number.parseFloat(($(`#chk-${id}`) || {}).value);
+    const over = Number.isFinite(paid) && paid > viewOf(item).price;
+    box.hidden = !over;
+    if (over) $(`#rw-${id}`).href = reportLink(item, paid, ($(`[data-shop="${id}"]`) || {}).value || '');
+  }
   function shareText(item, view) {
     return t('shareText', { name: item.n, p: money(view.price), island: islandName(state.island) });
   }
@@ -913,6 +963,15 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         <label for="chk-${item.id}">${esc(t('check'))}</label>
         <div class="check-row"><span class="money"><span>Rs</span><input id="chk-${item.id}" data-check="${item.id}" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"></span></div>
         <p class="verdict" id="v-${item.id}" hidden></p>
+        <div class="report" id="r-${item.id}" hidden>
+          <strong>${esc(t('reportTitle'))}</strong>
+          <input class="field" type="text" data-shop="${item.id}" placeholder="${esc(t('reportShop'))}" autocomplete="off">
+          <div class="actions">
+            <a class="btn wa" id="rw-${item.id}" href="#" target="_blank" rel="noopener">${esc(t('reportWa'))}</a>
+            <a class="btn" href="tel:185">${esc(t('reportCall'))}</a>
+          </div>
+          <p class="hint">${esc(t('reportHint'))}</p>
+        </div>
       </div>
       ${history}
       ${actionsHtml(item, view)}
@@ -1287,13 +1346,18 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       const view = viewOf(item);
       const out = $(`#v-${check}`);
       const value = Number.parseFloat(e.target.value);
-      if (!Number.isFinite(value) || value <= 0) { out.hidden = true; return; }
+      if (!Number.isFinite(value) || value <= 0) { out.hidden = true; updateReport(check); return; }
       const diff = Math.round((value - view.price) * 100) / 100;
       out.hidden = false;
       out.className = `verdict ${diff > 0 ? 'over' : 'ok'}`;
       out.textContent = diff > 0
         ? t('over', { x: money(diff), pc: (Math.round((diff / view.price) * 1000) / 10).toLocaleString('en-US') })
         : diff === 0 ? t('exact') : t('within', { x: money(-diff) });
+      updateReport(check);
+      return;
+    }
+    if (e.target.dataset.shop) {
+      updateReport(e.target.dataset.shop);
       return;
     }
     const filter = e.target.dataset.batchfilter;
