@@ -3,7 +3,7 @@
 // store exists, or for a file the pull has not written yet, the copy built into the
 // site at deploy time (/seed-data/) is used instead.
 
-import { blobStorage } from '../scripts/lib/storage.mjs';
+import { hostedStorage, supabaseConfig } from '../scripts/lib/storage.mjs';
 
 const FILES = new Set(['groceries.json', 'medicines.json', 'meta.json']);
 
@@ -21,10 +21,10 @@ export default async function handler(req, res) {
     res.setHeader('location', `/seed-data/${file}`);
     res.end();
   };
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return fallback();
+  if (!supabaseConfig() && !process.env.BLOB_READ_WRITE_TOKEN) return fallback();
   try {
     // Works for public and private stores alike (private ones are read with the token).
-    const text = await blobStorage().readText(`data/${file}`);
+    const text = await hostedStorage().readText(`data/${file}`);
     if (text === null) return fallback();
     const body = Buffer.from(text);
     res.statusCode = 200;

@@ -43,3 +43,15 @@ export function cleanToken(value) {
     .replace(/^["']+|["']+$/g, '')
     .trim();
 }
+
+// The Supabase integration names its variables in different ways (a prefix such as
+// STORAGE_, NEXT_PUBLIC_, or the newer "publishable" and "secret" keys), so any variable
+// whose name ends the right way is accepted.
+export function findEnv(env, endings) {
+  for (const ending of endings) {
+    const exact = Object.keys(env).filter((k) => k === ending);
+    const prefixed = Object.keys(env).filter((k) => k !== ending && k.endsWith(`_${ending}`)).sort();
+    for (const k of [...exact, ...prefixed]) if (env[k]) return { name: k, value: cleanToken(env[k]) };
+  }
+  return null;
+}

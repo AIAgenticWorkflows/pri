@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     if (!user || !user.id) return send(401, { error: 'bad-token' });
     const del = await fetch(`${cfg.supabaseUrl}/auth/v1/admin/users/${encodeURIComponent(user.id)}`, {
       method: 'DELETE',
-      headers: { apikey: serviceKey, authorization: `Bearer ${serviceKey}` },
+      headers: serviceKey.startsWith('sb_') ? { apikey: serviceKey } : { apikey: serviceKey, authorization: `Bearer ${serviceKey}` },
       signal: AbortSignal.timeout(10000),
     });
     if (!del.ok) return send(502, { error: 'delete-failed', status: del.status });

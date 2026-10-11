@@ -3,7 +3,7 @@
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { cleanToken } from './env.mjs';
+import { cleanToken, findEnv } from './env.mjs';
 
 export function fileStorage(dir) {
   const file = (name) => path.join(dir, name);
@@ -109,6 +109,97 @@ export function blobStorage(rawToken = process.env.BLOB_READ_WRITE_TOKEN) {
   };
 }
 
+// Supabase Storage: one public bucket holding the same files. Reads are plain downloads
+// from the public address; writes use the service key, which stays on the server or on
+// the computer running the pull. No per-operation allowance to run out of.
+export function supabaseConfig(env = process.env) {
+  const url = findEnv(env, ['SUPABASE_URL']);
+  const key = findEnv(env, ['SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_SECRET_KEY']);
+  return url && key ? { url: url.value.replace(/\/+$/, ''), key: key.value } : null;
+}
+
+export function supabaseStorage({ url, key } = supabaseConfig() || {}, bucket = process.env.PRI_BUCKET || 'pri-data') {
+  if (!url || !key) throw new Error('Supabase is not set up: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are needed');
+  const path = (name) => name.split('/').map(encodeURIComponent).join('/');
+  // Newer Supabase secret keys (sb_secret_...) go in the apikey header only; the older
+  // service_role key is a token and also goes in Authorization.
+  const headers = key.startsWith('sb_') ? { apikey: key } : { apikey: key, authorization: `Bearer ${key}` };
+  let bucketReady = false;
+  const ensureBucket = async () => {
+    if (bucketReady) return;
+    const res = await fetch(`${url}/storage/v1/bucket`, {
+      method: 'POST',
+      headers: { ...headers, 'content-type': 'application/json' },
+      body: JSON.stringify({ id: bucket, name: bucket, public: true, file_size_limit: 50 * 1024 * 1024 }),
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!res.ok && res.status !== 409 && !/already exists|Duplicate/i.test(await res.text())) throw new Error(`could not create the storage bucket "${bucket}" (HTTP ${res.status})`);
+    bucketReady = true;
+  };
+  const publicUrl = async (name) => `${url}/storage/v1/object/public/${bucket}/${path(name)}`;
+  const readText = async (name) => {
+    // Read through the API with the key: always the latest copy, never a cached one.
+    const res = await fetch(`${url}/storage/v1/object/authenticated/${bucket}/${path(name)}?t=${Date.now()}`, { headers, signal: AbortSignal.timeout(60000) });
+    if (res.ok) return res.text();
+    if ([400, 404].includes(res.status)) return null;
+    const body = await res.text();
+    if (/not.?found/i.test(body)) return null;
+    throw new Error(`storage ${name}: HTTP ${res.status} ${body.slice(0, 120)}`);
+  };
+  return {
+    kind: 'supabase',
+    readText,
+    async readJson(name) {
+      const text = await readText(name);
+      return text === null ? null : JSON.parse(text);
+    },
+    async writeText(name, text) {
+      const put = () => fetch(`${url}/storage/v1/object/${bucket}/${path(name)}`, {
+        method: 'POST',
+        headers: { ...headers, 'content-type': 'application/json; charset=utf-8', 'x-upsert': 'true', 'cache-control': 'max-age=60' },
+        body: text,
+        signal: AbortSignal.timeout(120000),
+      });
+      let res = await put();
+      if (!res.ok) {
+        const body = await res.text();
+        if (/bucket not found/i.test(body) || res.status === 404) {
+          await ensureBucket();
+          res = await put();
+          if (!res.ok) throw new Error(`storage ${name}: HTTP ${res.status} ${(await res.text()).slice(0, 160)}`);
+        } else throw new Error(`storage ${name}: HTTP ${res.status} ${body.slice(0, 160)}`);
+      }
+      return publicUrl(name);
+    },
+    publicUrl,
+    async list() {
+      const res = await fetch(`${url}/storage/v1/object/list/${bucket}`, {
+        method: 'POST',
+        headers: { ...headers, 'content-type': 'application/json' },
+        body: JSON.stringify({ prefix: '', limit: 100, sortBy: { column: 'name', order: 'asc' } }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!res.ok) throw new Error(`storage list: HTTP ${res.status} ${(await res.text()).slice(0, 160)}`);
+      const top = await res.json();
+      const out = [];
+      for (const entry of top) {
+        if (entry.id) { out.push({ pathname: entry.name, size: entry.metadata ? entry.metadata.size : 0, uploadedAt: entry.updated_at }); continue; }
+        const sub = await fetch(`${url}/storage/v1/object/list/${bucket}`, { method: 'POST', headers: { ...headers, 'content-type': 'application/json' }, body: JSON.stringify({ prefix: `${entry.name}/`, limit: 100 }) });
+        if (sub.ok) for (const e of await sub.json()) if (e.id) out.push({ pathname: `${entry.name}/${e.name}`, size: e.metadata ? e.metadata.size : 0, uploadedAt: e.updated_at });
+      }
+      return out;
+    },
+  };
+}
+
+// Where the data lives: Supabase when it is set up, else Vercel Blob, else a folder.
 export function storageFromEnv(dir) {
+  if (process.env.PRI_STORAGE === 'file') return fileStorage(dir);
+  if (process.env.PRI_STORAGE !== 'blob' && supabaseConfig()) return supabaseStorage();
   return cleanToken(process.env.BLOB_READ_WRITE_TOKEN) ? blobStorage() : fileStorage(dir);
+}
+
+export function hostedStorage() {
+  if (process.env.PRI_STORAGE !== 'blob' && supabaseConfig()) return supabaseStorage();
+  return blobStorage();
 }

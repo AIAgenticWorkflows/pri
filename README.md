@@ -62,6 +62,15 @@ before and simply shows no sign-in button.
 Only the email address (kept by Supabase Auth) and each person's lists are stored; each person
 can read only their own rows (row level security), and can delete their account from the page.
 
+### Where the data is kept
+
+The pull keeps its copy of the lists in a public Supabase Storage bucket (`pri-data`,
+created automatically) when `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (or the newer
+secret key) are set, which the Supabase integration does on Vercel. Without them it falls
+back to Vercel Blob (`BLOB_READ_WRITE_TOKEN`), then to a local folder. `PRI_STORAGE=blob`
+or `PRI_STORAGE=file` forces one. For a long run on your own computer, put the same two
+Supabase values in `.env.local`.
+
 ### The first full copy
 
 The daily four-minute runs would take weeks to walk the whole medicines list, so

@@ -10,7 +10,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { cleanToken, loadEnv } from './lib/env.mjs';
-import { blobStorage } from './lib/storage.mjs';
+import { blobStorage, supabaseConfig, supabaseStorage } from './lib/storage.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const loaded = loadEnv(ROOT);
@@ -32,6 +32,21 @@ const HOW_TO_COPY = [
 ];
 
 say(loaded.length ? `read ${loaded.join(' and ')}` : 'no .env.local file in the project folder');
+
+// Supabase Storage, when set up, is where the data lives.
+let storage;
+let blobs;
+if (process.env.PRI_STORAGE !== 'blob' && supabaseConfig()) {
+  const cfg = supabaseConfig();
+  say(`storage: Supabase (${cfg.url.replace(/^https:\/\//, '')})`);
+  storage = supabaseStorage(cfg);
+  try {
+    blobs = await storage.list();
+  } catch (err) {
+    if (/bucket not found|404/i.test(err.message)) blobs = [];
+    else fail(`Supabase refused: ${err.message}`, 'Check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (Supabase, Project Settings, API Keys: the service_role or secret key).');
+  }
+} else {
 
 const raw = process.env.BLOB_READ_WRITE_TOKEN;
 if (!raw) fail('BLOB_READ_WRITE_TOKEN is not set.', '', ...HOW_TO_COPY);
@@ -65,7 +80,6 @@ try {
   fail('The @vercel/blob package is not installed: run "npm install" in the project folder first.');
 }
 
-let blobs;
 try {
   ({ blobs } = await blob.list({ token, limit: 100 }));
 } catch (err) {
@@ -76,6 +90,9 @@ try {
     '',
     ...HOW_TO_COPY,
   );
+}
+
+storage = blobStorage(token);
 }
 
 say(`storage: reachable, ${blobs.length} file${blobs.length === 1 ? '' : 's'} in the store`);
@@ -89,7 +106,6 @@ for (const b of blobs.sort((a, c) => a.pathname.localeCompare(c.pathname))) {
   say(`  ${b.pathname.padEnd(24)} ${kb(b.size).padStart(10)}   ${new Date(b.uploadedAt).toISOString().replace('T', ' ').slice(0, 16)} UTC`);
 }
 
-const storage = blobStorage(token);
 const state = await storage.readJson('state.json');
 const meta = await storage.readJson('data/meta.json');
 const ago = (iso) => {

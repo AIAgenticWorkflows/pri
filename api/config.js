@@ -6,17 +6,9 @@
 //   SUPABASE_URL, SUPABASE_ANON_KEY           (or the NEXT_PUBLIC_ names the Supabase integration adds)
 //   PRI_AUTH_PROVIDERS                         which buttons to show, e.g. "google,facebook,apple,email"
 
-// The Supabase integration names its variables in different ways (a prefix such as
-// STORAGE_, NEXT_PUBLIC_, or the newer "publishable" and "secret" keys), so any variable
-// whose name ends the right way is accepted.
-export function findEnv(env, endings) {
-  for (const ending of endings) {
-    const exact = Object.keys(env).filter((k) => k === ending);
-    const prefixed = Object.keys(env).filter((k) => k !== ending && k.endsWith(`_${ending}`)).sort();
-    for (const k of [...exact, ...prefixed]) if (env[k]) return { name: k, value: env[k] };
-  }
-  return null;
-}
+import { findEnv } from '../scripts/lib/env.mjs';
+
+export { findEnv };
 
 export function authConfig(env = process.env) {
   const url = findEnv(env, ['SUPABASE_URL']);

@@ -8,7 +8,7 @@
 // Needs a Blob store connected to the project (BLOB_READ_WRITE_TOKEN).
 
 import { runPull } from '../scripts/lib/pull.mjs';
-import { blobStorage } from '../scripts/lib/storage.mjs';
+import { hostedStorage } from '../scripts/lib/storage.mjs';
 
 const WORK_MS = Number(process.env.PRI_PULL_SECONDS || 235) * 1000;
 const MIN_GAP_MS = 20 * 60 * 1000;
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
 
   let storage;
   try {
-    storage = blobStorage();
+    storage = hostedStorage();
   } catch (err) {
     return send(500, { error: 'no-storage', message: err.message });
   }
