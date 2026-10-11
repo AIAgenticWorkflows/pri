@@ -881,7 +881,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
 
   const t = (key, vars) => {
     let text = (I18N[state.lang] && I18N[state.lang][key]) ?? I18N.en[key] ?? key;
-    if (vars) for (const k of Object.keys(vars)) text = text.replace(`{${k}}`, vars[k]);
+    if (vars) for (const k of Object.keys(vars)) text = text.split(`{${k}}`).join(vars[k]);
     return text;
   };
   const langIndex = () => LANGS.indexOf(state.lang);
