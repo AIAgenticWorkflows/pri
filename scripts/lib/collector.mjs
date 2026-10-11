@@ -130,7 +130,8 @@ export class Collector {
       } catch (err) {
         lastError = err;
         this.log(`page ${page}${query ? ` (${query})` : ''}: attempt ${attempt} failed: ${err.message}`);
-        if (attempt < retries && this.timeLeft() > 30000) await sleep(3000 * attempt);
+        // A page that took the site over 50 seconds to fail will fail again: do not retry.
+        if (attempt < retries && this.timeLeft() > 30000 && Date.now() - t0 < 50000) await sleep(3000 * attempt);
         else break;
       }
     }
