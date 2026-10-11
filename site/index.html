@@ -217,9 +217,9 @@ a { color: var(--brand); }
 .verdict { margin: 0; padding: 10px 12px; border-radius: 10px; font-weight: 700; }
 .verdict.ok { background: var(--ok-bg); color: var(--ok); }
 .verdict.over { background: var(--over-bg); color: var(--over); }
-.report { display: grid; gap: 8px; padding: 12px; border: 2px solid var(--over); border-radius: 12px; }
+.report { display: grid; gap: 8px; padding: 12px; border: 2px solid var(--over); border-radius: 12px; min-width: 0; }
 .report strong { font-size: 0.95rem; }
-.report .field { width: 100%; }
+.report .field { width: 100%; box-sizing: border-box; }
 .btn.wa { background: #1f7a4d; color: #fff; border-color: #1f7a4d; }
 .tablewrap { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
