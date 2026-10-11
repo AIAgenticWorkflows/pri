@@ -121,7 +121,7 @@ test('a whole run: seeds, top of each list, searches, outputs, and the state fil
   const storage = fileStorage(dir);
   try {
     const seed = async (key) => (key === 'p' ? { ...emptyStore('p'), headers: HEADERS, rows: groceries(100), seen: Array(100).fill(1), pass: 1, fullPassAt: new Date().toISOString(), topAt: null, complete: true } : null);
-    const summary = await runPull({ storage, deadlineAt: soon(60000), base: mock.url, pauseMs: 0, log: quiet, seed });
+    const summary = await runPull({ storage, deadlineAt: soon(60000), base: mock.url, pauseMs: 0, log: process.env.DBG ? console.log : quiet, seed });
     assert.equal(summary.lists.p.rows, 120); // 100 seeded + 20 found at the top
     assert.equal(summary.lists.s.rows, 30);
     assert.equal(summary.lists.phs.rows, 15);
@@ -142,6 +142,36 @@ test('a whole run: seeds, top of each list, searches, outputs, and the state fil
     const second = await runPull({ storage, deadlineAt: soon(60000), base: mock.url, pauseMs: 0, log: quiet, seed });
     assert.equal(second.lists.ph.rows, 58);
     assert.ok(mock.requests() - requests <= 3, `made ${mock.requests() - requests} requests`);
+  } finally {
+    mock.server.close();
+  }
+});
+
+test('text searches find every medicine, even names sharing no word with a known one', async () => {
+  const names = ['ZYLORIC 300', 'EXFORGE 5/160 COMPS X 28', 'QUX', 'A', 'BETA-X', 'ÉCRAN 50 ML', 'NOVO-7', 'CO-AMOXI 625', 'KX', 'AB'];
+  const rows = [];
+  for (let i = 0; i < 400; i++) {
+    const name = i < names.length ? names[i] : `${String.fromCharCode(65 + (i % 26))}${String.fromCharCode(65 + ((i * 7) % 26))}MED ${i} TABS`;
+    rows.push(['01/10/2026', `B${i}`, '', name, 'Pharmaceutical Products (Classified)', '', '10.00', '11.00']);
+  }
+  const mock = await startMock({ [PH]: { headers: PHARMA_HEADERS, rows } });
+  try {
+    const store = { ...emptyStore('ph'), slicesDone: true, headers: PHARMA_HEADERS };
+    const c = new Collector({ key: 'ph', store, deadlineAt: soon(120000), base: mock.url, pauseMs: 0, log: quiet, maxSliceRows: 40 });
+    assert.equal(c.coverDue(), true);
+    assert.equal(c.passDue(), false);
+    assert.equal(c.topDue(), false);
+    const out = await c.runCover([]);
+    assert.equal(out.done, true);
+    assert.equal(c.store.rows.length, 400);
+    assert.equal(c.store.complete, true);
+    assert.equal(c.coverDue(), false);
+
+    // New batches later: the refresh finds them.
+    rows.unshift(['09/10/2026', 'NEW1', '', 'ZYLORIC 100', 'Pharmaceutical Products (Classified)', '', '9.00', '9.50']);
+    const again = new Collector({ key: 'ph', store: c.finish(), deadlineAt: soon(120000), base: mock.url, pauseMs: 0, log: quiet, maxSliceRows: 40 });
+    await again.refreshCover();
+    assert.equal(again.store.rows.length, 401);
   } finally {
     mock.server.close();
   }

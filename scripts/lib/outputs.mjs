@@ -66,6 +66,8 @@ export function buildOutputs(stores, { generatedAt = new Date().toISOString() } 
           entry.searchesLeft = st.slicesDone ? 0 : null;
           entry.resumePage = st.resumePage || 0;
           entry.lastPage = st.lastPage || null;
+          entry.textSearches = st.cover ? st.cover.searches : 0;
+          entry.textSearchesToGo = st.cover ? (st.cover.doneAt ? 0 : st.cover.stack.length) : null;
         }
         return [key, entry];
       }),

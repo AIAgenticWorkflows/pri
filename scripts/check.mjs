@@ -120,7 +120,7 @@ if (meta && meta.lists) {
     if (key === 'ph') {
       if (l.searchesLeft === 0) bits.push(`${l.searchesDone} searches done`);
       else bits.push(`${l.searchesDone} searches so far`);
-      if (l.resumePage) bits.push(`page walk at ${l.resumePage}${l.lastPage ? ` of ${l.lastPage + 1}` : ''}`);
+      if (l.textSearches) bits.push(`${l.textSearches} text searches${l.textSearchesToGo ? `, ${l.textSearchesToGo} queued` : ''}`);
       if (l.complete) bits.push('complete');
     }
     say(`  ${key.padEnd(4)} ${bits.join('; ')}`);

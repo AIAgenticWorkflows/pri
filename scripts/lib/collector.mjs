@@ -96,6 +96,10 @@ export class Collector {
     this.index.set(id, this.store.rows.length);
     this.store.rows.push(row);
     this.store.seen.push(pass);
+    if (this._folded && this._folded.length === this.store.rows.length - 1) {
+      const col = this.nameColumn();
+      this._folded.push(col < 0 ? '' : fold(row[col]).replace(/\s+/g, ' '));
+    }
     this.stats.newRows++;
     return true;
   }
@@ -138,6 +142,9 @@ export class Collector {
     // An empty store is filled by a read-through (or, for the medicines list, by name
     // searches): reading its slow unfiltered first page would gain nothing.
     if (!this.store.rows.length) return false;
+    // The full medicines list's first page is too slow for the site to answer; it is kept
+    // current by refreshCover instead.
+    if (this.policy.slices) return false;
     return !this.store.topAt || now - Date.parse(this.store.topAt) > this.policy.topEvery;
   }
 
@@ -253,12 +260,214 @@ export class Collector {
     return { done: false, searched, rowsFound };
   }
 
+  // ---- complete coverage by text searches (full medicines list) -------------------
+  //
+  // Word searches only find names that share a word with a name already known. To be
+  // sure of getting every row, search pieces of text instead: every name contains at
+  // least one character, so searching each character covers everything. A search that
+  // matches too many rows is split into longer pieces (q + each character), and a piece
+  // whose rows are all already known (the site's "of N" equals the rows we hold that
+  // contain it) needs no further reading. Names where the piece only appears at the
+  // very end are not reached by q + character, so a split piece that is still short of
+  // rows afterwards is also searched as character + q.
+  //
+  // The work list is kept in the store (store.cover) and carries on across runs.
+
+  coverDue() {
+    if (!this.policy.slices) return false;
+    return !(this.store.cover && this.store.cover.doneAt);
+  }
+
+  nameColumn() {
+    return this.store.headers ? this.store.headers.findIndex((h) => /commodity name/i.test(h)) : -1;
+  }
+
+  foldedNames() {
+    const col = this.nameColumn();
+    if (!this._folded || this._folded.length !== this.store.rows.length) {
+      this._folded = col < 0 ? [] : this.store.rows.map((row) => fold(row[col]).replace(/\s+/g, ' '));
+    }
+    return this._folded;
+  }
+
+  // How many rows we hold whose name contains q (the site matches ignoring case and accents).
+  localCount(q) {
+    let n = 0;
+    for (const name of this.foldedNames()) if (name.includes(q)) n++;
+    return n;
+  }
+
+  coverAlphabet(extraNames) {
+    const counts = new Map();
+    const names = [...this.foldedNames(), ...extraNames.map((s) => fold(s))];
+    for (const name of names) for (const ch of new Set(name)) counts.set(ch, (counts.get(ch) || 0) + 1);
+    // Letters and digits always; other characters when they are common enough. Space, %
+    // and _ are left out (% and _ are wildcards in the site's search, and a leading or
+    // trailing space may be trimmed).
+    const out = new Set('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
+    for (const [ch, n] of counts) if (n >= 20 && !/[\s%_\\]/.test(ch)) out.add(ch);
+    return [...out].sort().join('');
+  }
+
+  async runCover(extraNames = []) {
+    const store = this.store;
+    if (!store.cover) {
+      const alphabet = this.coverAlphabet(extraNames);
+      store.cover = { alphabet, stack: [...alphabet].reverse().map((q) => ({ q, step: 'search' })), nodes: {}, searches: 0, startedAt: new Date().toISOString(), doneAt: null };
+    }
+    const cover = store.cover;
+    const alphabet = [...cover.alphabet];
+    const tolerance = (t) => Math.max(1, Math.floor(t * 0.002)); // exact duplicate rows on the site
+    const short = (node) => node.t === null || this.localCount(node.q) < node.t - tolerance(node.t);
+    let searched = 0;
+    const rowsBefore = store.rows.length;
+    const query = (q) => `field_commodity_name_value=${encodeURIComponent(q)}`;
+
+    while (cover.stack.length) {
+      if (this.outOfTime()) break;
+      const item = cover.stack.pop();
+      const node = cover.nodes[item.q] || (cover.nodes[item.q] = { q: item.q, t: null, state: 'new', reads: 0 });
+
+      if (item.step === 'check') {
+        // After the longer pieces q + character: anything still missing ends with q.
+        if (node.t === null && node.left) node.state = 'ok'; // too broad to count; both sides searched
+        else if (short(node) && !node.left && node.q.length < 30) {
+          node.left = true;
+          cover.stack.push({ q: node.q, step: 'check' });
+          for (const ch of [...alphabet].reverse()) cover.stack.push({ q: ch + node.q, step: 'search' });
+        } else if (node.state !== 'ok') node.state = short(node) ? 'gap' : 'ok';
+        continue;
+      }
+
+      // The same piece can be reached twice (AB from A, and from B searched on its left).
+      if (!item.again && node.state !== 'new') continue;
+      let first;
+      try {
+        if (this.timeLeft() < 30000) {
+          cover.stack.push(item);
+          break;
+        }
+        first = await this.fetchPage(query(node.q), 0);
+        searched++;
+        cover.searches++;
+      } catch (err) {
+        if (/out of time/.test(err.message) || this.timeLeft() < 20000) {
+          // Cut short by our own deadline, not by the site: try again next run.
+          cover.stack.push(item);
+          break;
+        }
+        // Too many matches for the site to answer in time: split without knowing the count.
+        node.state = 'split';
+        node.t = null;
+        node.error = String(err.message).slice(0, 80);
+        cover.stack.push({ q: node.q, step: 'check' });
+        for (const ch of [...alphabet].reverse()) cover.stack.push({ q: node.q + ch, step: 'search' });
+        continue;
+      }
+      node.t = first.empty ? 0 : first.total || first.rows.length;
+      node.at = new Date().toISOString();
+      for (const row of first.rows) this.add(row);
+      if (!short(node)) {
+        node.state = 'ok';
+      } else if (node.t > this.maxSliceRows || (node.reads >= 2 && node.t > 100)) {
+        // Too many to read page by page, or paging keeps missing rows: split.
+        node.state = 'split';
+        cover.stack.push({ q: node.q, step: 'check' });
+        for (const ch of [...alphabet].reverse()) cover.stack.push({ q: node.q + ch, step: 'search' });
+      } else {
+        const pages = Math.max(first.lastPage, Math.ceil(node.t / 100) - 1);
+        let finished = true;
+        for (let n = 1; n <= pages; n++) {
+          if (this.outOfTime()) {
+            finished = false;
+            break;
+          }
+          await sleep(this.pauseMs);
+          try {
+            const page = await this.fetchPage(query(node.q), n);
+            for (const row of page.rows) this.add(row);
+          } catch (err) {
+            finished = false;
+            break;
+          }
+        }
+        node.reads++;
+        if (!finished) cover.stack.push({ q: node.q, step: 'search', again: true });
+        else if (short(node)) cover.stack.push({ q: node.q, step: 'search', again: true });
+        else node.state = 'ok';
+      }
+      if (this.onProgress && searched % 20 === 0) {
+        this.log(`text searches: ${cover.searches} so far, ${store.rows.length} rows, ${cover.stack.length} to go`);
+        await this.onProgress();
+      }
+      if (this.pauseMs) await sleep(this.pauseMs);
+    }
+
+    const found = store.rows.length - rowsBefore;
+    this.stats.searches += searched;
+    if (!cover.stack.length) {
+      cover.doneAt = new Date().toISOString();
+      store.complete = true;
+      store.fullPassAt = cover.doneAt;
+      const gaps = Object.values(cover.nodes).filter((n) => n.state === 'gap').length;
+      this.stats.steps.push(`text searches: complete after ${cover.searches}, ${found} new rows this run${gaps ? `, ${gaps} pieces still short` : ''}`);
+      return { done: true };
+    }
+    this.stats.steps.push(`text searches: ${searched} this run, ${found} new rows, ${cover.stack.length} still to search`);
+    return { done: false };
+  }
+
+  // Once complete: look again at the smaller pieces, oldest first, and read any whose
+  // count grew (new batches). Keeps the medicines list current without the slow first page.
+  async refreshCover(maxSearches = Infinity) {
+    const cover = this.store.cover;
+    if (!cover || !cover.doneAt) return { done: false };
+    const leaves = Object.values(cover.nodes)
+      .filter((n) => n.state === 'ok' && n.t !== null && n.t <= this.maxSliceRows && n.t > 0)
+      .sort((a, b) => (a.at || '').localeCompare(b.at || ''));
+    let checked = 0;
+    let grown = 0;
+    const rowsBefore = this.store.rows.length;
+    for (const node of leaves) {
+      if (this.outOfTime() || checked >= maxSearches || this.timeLeft() < 60000) break;
+      const q = `field_commodity_name_value=${encodeURIComponent(node.q)}`;
+      let first;
+      try {
+        first = await this.fetchPage(q, 0, 1);
+      } catch {
+        break;
+      }
+      checked++;
+      const t = first.empty ? 0 : first.total || first.rows.length;
+      for (const row of first.rows) this.add(row);
+      node.at = new Date().toISOString();
+      if (t !== node.t || this.localCount(node.q) < t - Math.max(1, Math.floor(t * 0.002))) {
+        grown++;
+        node.t = t;
+        const pages = Math.max(first.lastPage, Math.ceil(t / 100) - 1);
+        for (let n = 1; n <= pages && !this.outOfTime(); n++) {
+          await sleep(this.pauseMs);
+          try {
+            const page = await this.fetchPage(q, n);
+            for (const row of page.rows) this.add(row);
+          } catch {
+            break;
+          }
+        }
+      }
+      if (this.pauseMs) await sleep(this.pauseMs);
+    }
+    this.store.topAt = new Date().toISOString();
+    this.stats.steps.push(`refresh: ${checked} of ${leaves.length} searches looked at again, ${grown} had changed, ${this.store.rows.length - rowsBefore} new rows`);
+    return { done: true };
+  }
+
   // ---- complete read-through, resumed across runs --------------------------------
   passDue(now = Date.now()) {
+    // The full medicines list is covered by searches: its unfiltered pages are too slow
+    // for the site to answer.
+    if (this.policy.slices) return false;
     if (this.store.resumePage > 0) return true;
-    if (this.policy.slices && this.store.complete) return false;
-    // The slow page walk of the medicines list only starts once the searches are done.
-    if (this.policy.slices && !this.store.slicesDone) return false;
     if (!this.store.fullPassAt) return true;
     return now - Date.parse(this.store.fullPassAt) > this.policy.fullEvery;
   }

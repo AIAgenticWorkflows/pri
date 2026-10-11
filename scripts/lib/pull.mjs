@@ -112,8 +112,23 @@ export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseM
     await save('ph');
   }
 
-  // 3b. Then, once, a slow page walk of the medicines list to catch anything the searches missed.
-  if (collectors.ph && collectors.ph.passDue() && !outOfTime()) await runPassFor('ph');
+  // 3b. Then text searches until every row of the medicines list is held; once that is
+  // done, the same searches looked at again, oldest first, bring in new batches.
+  if (collectors.ph && collectors.ph.store.slicesDone && !outOfTime()) {
+    const c = collectors.ph;
+    try {
+      if (c.coverDue()) {
+        const phsStore = collectors.phs ? collectors.phs.store : (await storage.readJson('stores/phs.json')) || emptyStore('phs');
+        const col = phsStore.headers ? phsStore.headers.findIndex((h) => /commodity name/i.test(h)) : -1;
+        await c.runCover(col >= 0 ? phsStore.rows.map((row) => row[col]) : []);
+      } else {
+        await c.refreshCover();
+      }
+    } catch (err) {
+      say(`ph: text searches failed: ${err.message}`);
+    }
+    await save('ph');
+  }
 
   // 4. The files the page loads.
   const stores = {};
