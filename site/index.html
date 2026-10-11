@@ -205,12 +205,6 @@ a { color: var(--brand); }
 .listbar button { border: 0; background: var(--on-brand); color: var(--brand); border-radius: 10px; min-height: 42px; padding: 6px 16px; font-weight: 800; white-space: nowrap; }
 body.has-listbar { padding-bottom: 76px; }
 body.has-listbar .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
-.promo { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: var(--radius); background: var(--surface); border: 2px solid var(--brand); }
-.promo .ico { width: 44px; height: 44px; border-radius: 12px; background: var(--brand); color: var(--on-brand); display: grid; place-items: center; font-size: 1.4rem; font-weight: 800; flex: none; }
-.promo div { flex: 1 1 auto; min-width: 0; display: grid; gap: 2px; }
-.promo div span { color: var(--ink-2); font-size: 0.9rem; }
-.promo .btn { flex: none; }
-.promo .x { border: 0; background: none; color: var(--ink-2); font-size: 1.3rem; cursor: pointer; flex: none; }
 .item.is-open { box-shadow: var(--shadow); border-color: var(--ink-2); }
 .item.is-sub { border-color: var(--sub-line); }
 .item-head { width: 100%; border: 0; background: none; text-align: left; padding: 14px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 14px; align-items: center; }
@@ -419,11 +413,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   .btotal { position: sticky; bottom: calc(8px + env(safe-area-inset-bottom, 0px)); z-index: 3; }
   .new-list .btn { flex: 1 1 100%; justify-content: center; }
 
-  /* Invitation: text first, button underneath. */
-  .promo { flex-wrap: wrap; position: relative; padding-right: 40px; }
-  .promo div { flex: 1 1 calc(100% - 60px); }
-  .promo .btn { flex: 1 1 100%; justify-content: center; }
-  .promo .x { position: absolute; top: 6px; right: 6px; }
 
   /* Dialogs open from the bottom, like the rest of the phone. */
   #auth { place-items: end center; padding: 0; }
@@ -526,7 +515,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         </label>
       </div>
       <div class="sizes" id="sizes" hidden></div>
-      <div class="promo" id="promo" hidden></div>
       <p class="note" id="note" hidden></p>
       <div class="list" id="list">
         <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
@@ -605,7 +593,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       listSummary: '{n} products', listsHow: 'To add products, search for them and press “Add to a list”.', listEmpty: 'This list is empty.',
       listTotal: 'Maximum total', listTotalNote: 'Most you should pay in {island}.', listMissing: '{n} not counted.',
       listNotHere: 'No price for {island}.', listGone: 'No longer on the official lists.', renameList: 'Rename', deleteList: 'Delete list', deleteListSure: 'Tap again to delete',
-      listError: 'That change could not be saved. Please try again.', addedTo: 'Added to {list}', viewList: 'View list', listWord: 'List', promoTitle: 'New: your shopping lists', promoBody: 'Add products, see the maximum total, and find your lists on any phone.',
+      listError: 'That change could not be saved. Please try again.', addedTo: 'Added to {list}', viewList: 'View list', listWord: 'List',
       authTitle: 'Sign in to make your lists', authBody: 'Make shopping lists of the products and medicines you buy, see their maximum total, and find them on any phone or computer.',
       signInToList: 'Sign in to add this product to a list. You will be brought straight back to it.',
       continueWith: 'Continue with {p}', or: 'or', emailPh: 'Your email address', emailLink: 'Email me a sign-in link',
@@ -663,7 +651,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       listSummary: '{n} produits', listsHow: 'Pour ajouter des produits, recherchez-les puis appuyez sur « Ajouter à une liste ».', listEmpty: 'Cette liste est vide.',
       listTotal: 'Total maximum', listTotalNote: 'Le maximum à payer à {island}.', listMissing: '{n} non compté(s).',
       listNotHere: 'Pas de prix pour {island}.', listGone: 'N’est plus sur les listes officielles.', renameList: 'Renommer', deleteList: 'Supprimer la liste', deleteListSure: 'Appuyez encore pour supprimer',
-      listError: 'Cette modification n’a pas pu être enregistrée. Réessayez.', addedTo: 'Ajouté à {list}', viewList: 'Voir la liste', listWord: 'Liste', promoTitle: 'Nouveau : vos listes de courses', promoBody: 'Ajoutez des produits, voyez le total maximum, et retrouvez vos listes sur tous vos appareils.',
+      listError: 'Cette modification n’a pas pu être enregistrée. Réessayez.', addedTo: 'Ajouté à {list}', viewList: 'Voir la liste', listWord: 'Liste',
       authTitle: 'Connectez-vous pour créer vos listes', authBody: 'Faites des listes de courses avec les produits et médicaments que vous achetez, voyez leur total maximum, et retrouvez-les sur tous vos appareils.',
       signInToList: 'Connectez-vous pour ajouter ce produit à une liste. Vous y reviendrez directement.',
       continueWith: 'Continuer avec {p}', or: 'ou', emailPh: 'Votre adresse e-mail', emailLink: 'Recevoir un lien de connexion',
@@ -721,7 +709,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       listSummary: '{n} prodwi', listsHow: 'Pou azout prodwi, rod zot ek pes “Azout dan enn lalis”.', listEmpty: 'Sa lalis-la vid.',
       listTotal: 'Total maximum', listTotalNote: 'Maximum ki ou bizin peye dan {island}.', listMissing: '{n} pa konte.',
       listNotHere: 'Pena pri pou {island}.', listGone: 'Pa lor lalis ofisiel aster.', renameList: 'Sanz nom', deleteList: 'Efas lalis', deleteListSure: 'Pes ankor pou efase',
-      listError: 'Sa sanzman-la pa finn kapav sove. Reseye.', addedTo: 'Finn azout dan {list}', viewList: 'Get lalis', listWord: 'Lalis', promoTitle: 'Nouvo: ou bann lalis komision', promoBody: 'Azout prodwi, get total maximum, ek retrouv ou bann lalis lor nenport ki telefonn.',
+      listError: 'Sa sanzman-la pa finn kapav sove. Reseye.', addedTo: 'Finn azout dan {list}', viewList: 'Get lalis', listWord: 'Lalis',
       authTitle: 'Konekte pou fer ou bann lalis', authBody: 'Fer lalis komisionn avek bann prodwi ek medsinn ki ou aste, get zot total maximum, ek retrouv zot lor nenport ki telefonn ouswa lordinater.',
       signInToList: 'Konekte pou azout sa prodwi-la dan enn lalis. Ou pou retourn direk lor la.',
       continueWith: 'Kontinie avek {p}', or: 'ouswa', emailPh: 'Ou ladres email', emailLink: 'Avoy mwa enn lien pou konekte',
@@ -1573,12 +1561,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         renderListBar.timer = setTimeout(() => { if (auth.flash && Date.now() - auth.flash.at >= 2500) renderListBar(); }, 2600);
       }
     }
-    const promo = $('#promo');
-    let dismissed = false;
-    try { dismissed = localStorage.getItem('pri.promoClosed') === '1'; } catch { dismissed = false; }
-    const promoOn = Boolean(auth.config) && !auth.user && !dismissed && !state.listsView;
-    promo.hidden = !promoOn;
-    if (promoOn) promo.innerHTML = `<span class="ico">✓</span><div><strong>${esc(t('promoTitle'))}</strong><span>${esc(t('promoBody'))}</span></div><button type="button" class="btn primary" data-promo="signin">${esc(t('signIn'))}</button><button type="button" class="x" data-promo="close" aria-label="${esc(t('scanClose'))}">×</button>`;
   }
   $('#listbar').addEventListener('click', (e) => {
     const b = e.target.closest('[data-barlist]');
@@ -1589,12 +1571,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     $('#clear').hidden = true;
     render();
     window.scrollTo({ top: $('.controls').offsetTop - 8, behavior: 'smooth' });
-  });
-  $('#promo').addEventListener('click', (e) => {
-    const b = e.target.closest('[data-promo]');
-    if (!b) return;
-    if (b.dataset.promo === 'signin') openAuth();
-    else { try { localStorage.setItem('pri.promoClosed', '1'); } catch { /* fine */ } $('#promo').hidden = true; }
   });
   function refreshListViews() {
     renderAccount();
