@@ -141,6 +141,14 @@ a { color: var(--brand); }
 .seg { display: inline-flex; background: var(--surface-2); border-radius: 12px; padding: 4px; gap: 2px; max-width: 100%; }
 .seg button { border: 0; background: none; border-radius: 9px; min-height: 40px; padding: 6px 14px; font-weight: 700; color: var(--ink-2); display: inline-flex; align-items: center; gap: 8px; }
 .seg button[aria-selected="true"], .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(28, 39, 64, 0.14); }
+#tab-lists { color: var(--brand); }
+#tab-lists[aria-selected="true"] { background: var(--brand); color: #fff; }
+#tab-lists .n { color: inherit; opacity: 0.85; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 30; width: min(calc(100% - 32px), 440px); background: var(--ink); color: var(--bg); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; box-shadow: 0 8px 24px rgba(8, 13, 24, 0.3); font-weight: 700; }
+.toast span { flex: 1 1 auto; min-width: 0; }
+.toast button { border: 0; background: var(--brand); color: #fff; border-radius: 10px; min-height: 40px; padding: 6px 14px; font-weight: 800; white-space: nowrap; }
+#tabs .short { display: none; }
+@media (max-width: 480px) { #tabs { width: 100%; } #tabs button { flex: 1 1 auto; justify-content: center; padding-inline: 8px; white-space: nowrap; } #tabs .n, #tabs .long { display: none; } #tabs .short { display: inline; } }
 .seg .n { font-size: 0.75rem; font-weight: 700; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .seg.small button { min-height: 36px; padding: 4px 12px; font-size: 0.9rem; }
 
@@ -385,8 +393,9 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
 
   <section class="controls">
     <div class="seg" id="tabs" role="tablist" aria-label="Product type">
-      <button type="button" role="tab" data-tab="shop" aria-selected="true"><span data-t="tabShop">Groceries &amp; home</span><span class="n" id="n-shop"></span></button>
+      <button type="button" role="tab" data-tab="shop" aria-selected="true"><span class="long" data-t="tabShop">Groceries &amp; home</span><span class="short" data-t="tabShopShort">Groceries</span><span class="n" id="n-shop"></span></button>
       <button type="button" role="tab" data-tab="med" aria-selected="false"><span data-t="tabMed">Medicines</span><span class="n" id="n-med"></span></button>
+      <button type="button" role="tab" data-tab="lists" aria-selected="false" id="tab-lists" hidden><span class="tab-ico" aria-hidden="true">✓</span><span data-t="myLists">My lists</span><span class="n" id="n-lists"></span></button>
     </div>
     <div class="seg small" id="island" role="group" aria-label="Island">
       <button type="button" data-isl="m" aria-pressed="true" data-t="islM">Mauritius</button>
@@ -460,6 +469,8 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   </div>
 </footer>
 
+<div class="toast" id="toast" hidden role="status"></div>
+
 <div class="scanner" id="auth" hidden role="dialog" aria-modal="true" aria-labelledby="auth-title">
   <div class="auth-box" id="auth-box"></div>
 </div>
@@ -483,7 +494,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       h1: 'Check the maximum price before you pay.',
       sub: 'Official maximum retail prices for {n} products and medicines in Mauritius and Rodrigues, from the Price Fixing Unit.',
       subPlain: 'Official maximum retail prices in Mauritius and Rodrigues, from the Price Fixing Unit.',
-      tabShop: 'Groceries & home', tabMed: 'Medicines', islM: 'Mauritius', islR: 'Rodrigues',
+      tabShop: 'Groceries & home', tabShopShort: 'Groceries', tabMed: 'Medicines', islM: 'Mauritius', islR: 'Rodrigues',
       searchLabel: 'Search', ph: 'Try “rice 5 kg” or a barcode', size: 'Size', sizeNone: 'No product of {s} here.', phMed: 'Medicine name, batch number or barcode', scan: 'Scan', clear: 'Clear',
       all: 'All', subOnly: 'Subsidised', latest: 'Latest price updates', latestMed: 'Medicines, latest price updates first', medLoading: 'Loading the medicines list…', medPartial: 'The full medicines list is still being copied ({n} of {t} batches so far). Searches also check the official list live.',
       nProducts: '{n} products', nProduct1: '1 product', nMeds: '{n} medicines', nFor: '{n} results for “{q}”', nFor1: '1 result for “{q}”', noneHere: 'No maximum price in {island} for “{q}”.',
@@ -500,7 +511,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       listSummary: '{n} products', listsHow: 'To add products, search for them and press “Add to a list”.', listEmpty: 'This list is empty.',
       listTotal: 'Maximum total', listTotalNote: 'Most you should pay in {island}.', listMissing: '{n} not counted.',
       listNotHere: 'No price for {island}.', listGone: 'No longer on the official lists.', renameList: 'Rename', deleteList: 'Delete list', deleteListSure: 'Tap again to delete',
-      listError: 'That change could not be saved. Please try again.',
+      listError: 'That change could not be saved. Please try again.', addedTo: 'Added to {list}', viewList: 'View list',
       authTitle: 'Sign in to make your lists', authBody: 'Make shopping lists of the products and medicines you buy, see their maximum total, and find them on any phone or computer.',
       signInToList: 'Sign in to add this product to a list. You will be brought straight back to it.',
       continueWith: 'Continue with {p}', or: 'or', emailPh: 'Your email address', emailLink: 'Email me a sign-in link',
@@ -541,7 +552,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       h1: 'Vérifiez le prix maximum avant de payer.',
       sub: 'Les prix de vente maximums officiels de {n} produits et médicaments à Maurice et à Rodrigues, publiés par la Price Fixing Unit.',
       subPlain: 'Les prix de vente maximums officiels à Maurice et à Rodrigues, publiés par la Price Fixing Unit.',
-      tabShop: 'Courses et maison', tabMed: 'Médicaments', islM: 'Maurice', islR: 'Rodrigues',
+      tabShop: 'Courses et maison', tabShopShort: 'Courses', tabMed: 'Médicaments', islM: 'Maurice', islR: 'Rodrigues',
       searchLabel: 'Rechercher', ph: 'Essayez « riz 5 kg » ou un code-barres', size: 'Format', sizeNone: 'Aucun produit de {s} ici.', phMed: 'Nom du médicament, numéro de lot ou code-barres', scan: 'Scanner', clear: 'Effacer',
       all: 'Tout', subOnly: 'Subventionnés', latest: 'Derniers prix mis à jour', latestMed: 'Médicaments, derniers prix d’abord', medLoading: 'Chargement de la liste des médicaments…', medPartial: 'La liste complète des médicaments est en cours de copie ({n} lots sur {t}). Les recherches consultent aussi la liste officielle en direct.',
       nProducts: '{n} produits', nProduct1: '1 produit', nMeds: '{n} médicaments', nFor: '{n} résultats pour « {q} »', nFor1: '1 résultat pour « {q} »', noneHere: 'Pas de prix maximum à {island} pour « {q} ».',
@@ -558,7 +569,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       listSummary: '{n} produits', listsHow: 'Pour ajouter des produits, recherchez-les puis appuyez sur « Ajouter à une liste ».', listEmpty: 'Cette liste est vide.',
       listTotal: 'Total maximum', listTotalNote: 'Le maximum à payer à {island}.', listMissing: '{n} non compté(s).',
       listNotHere: 'Pas de prix pour {island}.', listGone: 'N’est plus sur les listes officielles.', renameList: 'Renommer', deleteList: 'Supprimer la liste', deleteListSure: 'Appuyez encore pour supprimer',
-      listError: 'Cette modification n’a pas pu être enregistrée. Réessayez.',
+      listError: 'Cette modification n’a pas pu être enregistrée. Réessayez.', addedTo: 'Ajouté à {list}', viewList: 'Voir la liste',
       authTitle: 'Connectez-vous pour créer vos listes', authBody: 'Faites des listes de courses avec les produits et médicaments que vous achetez, voyez leur total maximum, et retrouvez-les sur tous vos appareils.',
       signInToList: 'Connectez-vous pour ajouter ce produit à une liste. Vous y reviendrez directement.',
       continueWith: 'Continuer avec {p}', or: 'ou', emailPh: 'Votre adresse e-mail', emailLink: 'Recevoir un lien de connexion',
@@ -599,7 +610,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       h1: 'Verifie pri maximum avan ou peye.',
       sub: 'Pri maximum ofisiel pou {n} prodwi ek medsinn dan Moris ek Rodrig, dapre Price Fixing Unit.',
       subPlain: 'Pri maximum ofisiel dan Moris ek Rodrig, dapre Price Fixing Unit.',
-      tabShop: 'Komision ek lakaz', tabMed: 'Medsinn', islM: 'Moris', islR: 'Rodrig',
+      tabShop: 'Komision ek lakaz', tabShopShort: 'Komision', tabMed: 'Medsinn', islM: 'Moris', islR: 'Rodrig',
       searchLabel: 'Rode', ph: 'Seye “diri 5 kg” ouswa enn kod-bar', size: 'Grander', sizeNone: 'Pena prodwi {s} isi.', phMed: 'Nom medsinn, nimero lot ouswa kod-bar', scan: 'Skann', clear: 'Efase',
       all: 'Tou', subOnly: 'Sibvansione', latest: 'Dernie pri ki finn sanze', latestMed: 'Medsinn, dernie pri an premie', medLoading: 'Lalis medsinn pe sarze…', medPartial: 'Lalis konple medsinn pe kopie ankor ({n} lor {t} lot ziska ler). Rod osi lor lalis ofisiel an direk.',
       nProducts: '{n} prodwi', nProduct1: '1 prodwi', nMeds: '{n} medsinn', nFor: '{n} rezilta pou “{q}”', nFor1: '1 rezilta pou “{q}”', noneHere: 'Pena pri maximum dan {island} pou “{q}”.',
@@ -616,7 +627,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       listSummary: '{n} prodwi', listsHow: 'Pou azout prodwi, rod zot ek pes “Azout dan enn lalis”.', listEmpty: 'Sa lalis-la vid.',
       listTotal: 'Total maximum', listTotalNote: 'Maximum ki ou bizin peye dan {island}.', listMissing: '{n} pa konte.',
       listNotHere: 'Pena pri pou {island}.', listGone: 'Pa lor lalis ofisiel aster.', renameList: 'Sanz nom', deleteList: 'Efas lalis', deleteListSure: 'Pes ankor pou efase',
-      listError: 'Sa sanzman-la pa finn kapav sove. Reseye.',
+      listError: 'Sa sanzman-la pa finn kapav sove. Reseye.', addedTo: 'Finn azout dan {list}', viewList: 'Get lalis',
       authTitle: 'Konekte pou fer ou bann lalis', authBody: 'Fer lalis komisionn avek bann prodwi ek medsinn ki ou aste, get zot total maximum, ek retrouv zot lor nenport ki telefonn ouswa lordinater.',
       signInToList: 'Konekte pou azout sa prodwi-la dan enn lalis. Ou pou retourn direk lor la.',
       continueWith: 'Kontinie avek {p}', or: 'ouswa', emailPh: 'Ou ladres email', emailLink: 'Avoy mwa enn lien pou konekte',
@@ -1172,7 +1183,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         if (v.sub) subs++;
       }
       el.innerHTML = [
-        listsChip(),
         `<button type="button" class="chip is-sub" data-sub aria-pressed="${state.subOnly}"><span>${esc(t('subOnly'))}</span><span class="n">${count(subs)}</span></button>`,
         `<button type="button" class="chip" data-cat="" aria-pressed="${!state.cat && !state.listsView}"><span>${esc(t('all'))}</span><span class="n">${count(all)}</span></button>`,
         ...CAT_ORDER.filter((id) => counts[id]).map((id) => `<button type="button" class="chip" data-cat="${id}" aria-pressed="${state.cat === id}"><span>${esc(catLabel(id))}</span><span class="n">${count(counts[id])}</span></button>`),
@@ -1186,7 +1196,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         counts[it.k] = (counts[it.k] || 0) + 1;
       }
       el.innerHTML = [
-        listsChip(),
         `<button type="button" class="chip" data-cls="" aria-pressed="${!state.cls && !state.listsView}"><span>${esc(t('all'))}</span><span class="n">${count(all)}</span></button>`,
         ...Object.keys(CLASSES).filter((id) => counts[id]).map((id) => `<button type="button" class="chip" data-cls="${id}" aria-pressed="${state.cls === id}"><span>${esc(classLabel(id))}</span><span class="n">${count(counts[id])}</span></button>`),
       ].join('');
@@ -1199,6 +1208,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const moreEl = $('#more');
     if (!G) return;
     $('.sort').hidden = Boolean(state.listsView);
+    $('#cats').hidden = Boolean(state.listsView);
     if (state.listsView && renderListsView()) return;
     if (state.tab === 'med' && !M.loaded) {
       ensureMedicines();
@@ -1271,7 +1281,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   function renderStatic() {
     document.documentElement.lang = state.lang === 'kr' ? 'mfe' : state.lang;
     for (const el of $$('[data-t]')) el.textContent = t(el.dataset.t);
-    for (const b of $$('#tabs [data-tab]')) b.setAttribute('aria-selected', String(b.dataset.tab === state.tab));
+    for (const b of $$('#tabs [data-tab]')) b.setAttribute('aria-selected', String(b.dataset.tab === 'lists' ? Boolean(state.listsView) : !state.listsView && b.dataset.tab === state.tab));
     for (const b of $$('#island [data-isl]')) b.setAttribute('aria-pressed', String(b.dataset.isl === state.island));
     for (const b of $$('.lang [data-lang]')) b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
     $('#q').placeholder = t(state.tab === 'shop' ? 'ph' : 'phMed');
@@ -1379,13 +1389,12 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     }
     return keyIndex.get(key) || null;
   }
-  function listsChip() {
-    if (!auth.config) return '';
-    return `<button type="button" class="chip is-saved" data-lists aria-pressed="${Boolean(state.listsView)}"><span><span class="star">✓</span> ${esc(t('myLists'))}</span><span class="n">${auth.user ? count(auth.lists.length) : ''}</span></button>`;
-  }
   function renderAccount() {
     const btn = $('#account');
     btn.hidden = !auth.config;
+    $('#tab-lists').hidden = !auth.config;
+    $('#n-lists').textContent = auth.user && auth.lists.length ? count(auth.lists.length) : '';
+    for (const b of $$('#tabs [data-tab]')) b.setAttribute('aria-selected', String(b.dataset.tab === 'lists' ? Boolean(state.listsView) : !state.listsView && b.dataset.tab === state.tab));
     if (!auth.config) return;
     if (auth.user) {
       const label = (auth.user.user_metadata && (auth.user.user_metadata.full_name || auth.user.user_metadata.name)) || auth.user.email || '';
@@ -1465,6 +1474,27 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     openAuth('', false, 'pick');
   }
 
+  let toastTimer = 0;
+  function showToast(text, listId) {
+    const el = $('#toast');
+    el.innerHTML = `<span>✓ ${esc(text)}</span>${listId ? `<button type="button" data-toastlist="${esc(listId)}">${esc(t('viewList'))}</button>` : ''}`;
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.hidden = true; }, 5000);
+  }
+  $('#toast').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-toastlist]');
+    if (!b) return;
+    $('#toast').hidden = true;
+    closeAuth();
+    state.listsView = b.dataset.toastlist;
+    state.q = '';
+    $('#q').value = '';
+    $('#clear').hidden = true;
+    render();
+    window.scrollTo({ top: $('.controls').offsetTop - 8, behavior: 'smooth' });
+  });
+
   // ---- talking to the database
   const db = () => auth.client;
   function failed(error) {
@@ -1507,6 +1537,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       const row = { list_id: list.id, ...rowFor(item) };
       list.items.push(row);
       refreshListViews();
+      showToast(t('addedTo', { list: list.name }), list.id);
       const { error } = await db().from('list_items').upsert(row, { onConflict: 'list_id,item_key' });
       if (error) failed(error);
     }
@@ -1812,7 +1843,18 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   });
   $('#tabs').addEventListener('click', (e) => {
     const b = e.target.closest('[data-tab]');
-    if (!b || b.dataset.tab === state.tab) return;
+    if (!b) return;
+    if (b.dataset.tab === 'lists') {
+      if (!auth.user) { openAuth(t('signInToList')); return; }
+      state.listsView = 'all';
+      state.open = '';
+      state.q = '';
+      $('#q').value = '';
+      $('#clear').hidden = true;
+      render();
+      return;
+    }
+    if (b.dataset.tab === state.tab && !state.listsView) return;
     state.tab = b.dataset.tab;
     state.listsView = '';
     state.limit = PAGE;
