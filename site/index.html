@@ -1112,6 +1112,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       const wanted = [...asked.sizes, state.size].filter(Boolean);
       if (wanted.length) items = items.filter((it) => { const sz = sizesOf(it); return wanted.every((w) => sz.includes(w)); });
     } else {
+      if (state.subOnly) items = items.filter((it) => it.sub === 1);
       if (state.cls) items = items.filter((it) => it.k === state.cls);
     }
     const here = items.filter((it) => viewOf(it, isl));
@@ -1274,12 +1275,16 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     } else {
       const counts = {};
       let all = 0;
+      let subs = 0;
       for (const it of M.items) {
-        if (!viewOf(it, isl)) continue;
+        const v = viewOf(it, isl);
+        if (!v) continue;
         all++;
+        if (v.sub) subs++;
         counts[it.k] = (counts[it.k] || 0) + 1;
       }
       el.innerHTML = [
+        subs ? `<button type="button" class="chip is-sub" data-sub aria-pressed="${state.subOnly}"><span>${esc(t('subOnly'))}</span><span class="n">${count(subs)}</span></button>` : '',
         `<button type="button" class="chip" data-cls="" aria-pressed="${!state.cls && !state.listsView}"><span>${esc(t('all'))}</span><span class="n">${count(all)}</span></button>`,
         ...Object.keys(CLASSES).filter((id) => counts[id]).map((id) => `<button type="button" class="chip" data-cls="${id}" aria-pressed="${state.cls === id}"><span>${esc(classLabel(id))}</span><span class="n">${count(counts[id])}</span></button>`),
       ].join('');
@@ -1314,7 +1319,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       ? t(items.length === 1 ? 'nFor1' : 'nFor', { n: count(items.length), q })
       : (state.tab === 'shop'
         ? (state.cat || state.subOnly || state.size ? (items.length === 1 ? t('nProduct1') : t('nProducts', { n: count(items.length) })) : t('latest'))
-        : (state.cls ? t('nMeds', { n: count(items.length) }) : t('latestMed')));
+        : (state.cls || state.subOnly ? t('nMeds', { n: count(items.length) }) : t('latestMed')));
 
     const notes = [];
     if (kind === 'fuzzy' && items.length) notes.push(esc(t('fuzzy')));
@@ -1327,7 +1332,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     if (!items.length && medCode) {
       listEl.innerHTML = `<div class="state"><strong>${esc(t('noneBarcodeMed', { q: q.replace(/[\s-]/g, '') }))}</strong></div>`;
       moreEl.hidden = true;
-    } else if (!items.length && state.tab === 'med' && live.available !== false && norm(q).replace(/ /g, '').length >= 3) {
+    } else if (!items.length && state.tab === 'med' && !state.subOnly && live.available !== false && norm(q).replace(/ /g, '').length >= 3) {
       // Not a subsidised medicine: the live search of the full official list below answers instead.
       listEl.innerHTML = '';
       moreEl.hidden = true;
@@ -1410,7 +1415,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   // ---------------------------------------------------------------- live medicine search (published site only)
   function renderLive() {
     const el = $('#live');
-    if (state.tab !== 'med' || (phComplete() && live.localCount > 0)) { el.hidden = true; return; }
+    if (state.tab !== 'med' || state.subOnly || (phComplete() && live.localCount > 0)) { el.hidden = true; return; }
     el.hidden = false;
     const q = state.q.trim();
     let body = '';
@@ -1429,7 +1434,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     clearTimeout(live.timer);
     if (live.ctrl) live.ctrl.abort();
     const q = state.q.trim();
-    if (state.tab !== 'med' || !M.loaded || live.available === false || norm(q).replace(/ /g, '').length < 3) return;
+    if (state.tab !== 'med' || state.subOnly || !M.loaded || live.available === false || norm(q).replace(/ /g, '').length < 3) return;
     if (phComplete() && live.localCount > 0) return;
     if (/^\d{8,14}$/.test(q.replace(/[\s-]/g, ''))) return; // a barcode: names only on the official search
     if (live.q === q && live.status === 'done') return;
@@ -1978,6 +1983,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     if (b.dataset.tab === state.tab && !state.listsView) return;
     state.tab = b.dataset.tab;
     state.listsView = '';
+    state.subOnly = false;
     state.limit = PAGE;
     state.open = '';
     state.sort = 'auto';
