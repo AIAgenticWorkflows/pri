@@ -9,6 +9,7 @@ import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import medicines from '../api/medicines.js';
+import config from '../api/config.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = path.join(ROOT, 'site');
@@ -21,6 +22,7 @@ export function createServer() {
   return http.createServer((req, res) => {
     const url = new URL(req.url, 'http://localhost');
     if (url.pathname === '/api/medicines') return medicines(req, res);
+    if (url.pathname === '/api/config') return config(req, res);
     let file;
     const data = /^\/data\/([a-z]+\.json)$/.exec(url.pathname);
     if (data) file = DATA_DIRS.map((dir) => path.join(dir, data[1])).find((f) => existsSync(f)) || path.join(SITE, 'missing');

@@ -42,6 +42,26 @@ too (rate-limited to once every 20 minutes unless it sends `CRON_SECRET`).
   (`BLOB_READ_WRITE_TOKEN` is added to the project automatically).
 - Optional: `CRON_SECRET` environment variable, so scheduled calls skip the rate limit.
 
+### Sign-in and saved items (optional)
+
+Sign-in uses Supabase (free plan is enough to start). Without it, the page works as
+before and simply shows no sign-in button.
+
+1. Create a project at supabase.com. In SQL Editor, run `supabase/schema.sql`.
+2. Authentication, URL Configuration: set Site URL to the site's address and add it to
+   Redirect URLs (also `http://localhost:4173` for local testing).
+3. Authentication, Providers: turn on the ones wanted. Google needs an OAuth client from
+   Google Cloud Console; Facebook an app from developers.facebook.com; Apple an Apple
+   Developer account. Email links work out of the box.
+4. In Vercel, Settings, Environment Variables, add:
+   - `SUPABASE_URL` and `SUPABASE_ANON_KEY` (Supabase, Project Settings, API)
+   - `SUPABASE_SERVICE_ROLE_KEY` (same page; lets people delete their account; never shown to the page)
+   - `PRI_AUTH_PROVIDERS`, e.g. `google,facebook,apple,email`
+5. Redeploy.
+
+Only the email address (kept by Supabase Auth) and the saved items are stored; each person
+can read only their own rows (row level security), and can delete their account from the page.
+
 ### The first full copy
 
 The daily four-minute runs would take weeks to walk the whole medicines list, so

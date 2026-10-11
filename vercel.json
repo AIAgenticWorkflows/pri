@@ -4,20 +4,43 @@
   "buildCommand": "node scripts/build-data.mjs",
   "outputDirectory": "site",
   "functions": {
-    "api/pull.js": { "maxDuration": 300 },
-    "api/medicines.js": { "maxDuration": 30 },
-    "api/data.js": { "maxDuration": 15 }
+    "api/pull.js": {
+      "maxDuration": 300
+    },
+    "api/medicines.js": {
+      "maxDuration": 30
+    },
+    "api/data.js": {
+      "maxDuration": 15
+    },
+    "api/config.js": {
+      "maxDuration": 10
+    },
+    "api/delete-account.js": {
+      "maxDuration": 15
+    }
   },
   "rewrites": [
-    { "source": "/data/:file", "destination": "/api/data?file=:file" }
+    {
+      "source": "/data/:file",
+      "destination": "/api/data?file=:file"
+    }
   ],
   "crons": [
-    { "path": "/api/pull", "schedule": "15 22 * * *" }
+    {
+      "path": "/api/pull",
+      "schedule": "15 22 * * *"
+    }
   ],
   "headers": [
     {
       "source": "/seed-data/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=300, s-maxage=3600" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300, s-maxage=3600"
+        }
+      ]
     }
   ]
 }

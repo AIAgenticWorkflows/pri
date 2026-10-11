@@ -258,6 +258,24 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
 .foot { border-top: 1px solid var(--line); color: var(--ink-2); font-size: 0.9rem; padding-block: 18px 30px; }
 .foot p { margin: 0 0 6px; max-width: 70ch; }
 
+.top-right { display: flex; align-items: center; gap: 8px; }
+.acct { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; min-height: 38px; padding: 4px 14px 4px 6px; font-weight: 700; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
+.acct .av { width: 28px; height: 28px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 0.85rem; }
+.acct.out { padding-left: 14px; }
+.chip.is-saved[aria-pressed="true"] { background: var(--brand); color: #fff; border-color: var(--brand); }
+.chip.is-saved .star, .saved-mark { color: var(--flag-gold); }
+.saved-mark { font-size: 1rem; line-height: 1; margin-right: 2px; }
+.btn.saved { border-color: var(--brand); color: var(--brand); }
+.auth-box { width: min(100%, 420px); background: var(--surface); border-radius: 18px; padding: 20px; display: grid; gap: 12px; max-height: calc(100vh - 32px); overflow-y: auto; }
+.auth-box h2 { margin: 0; font: 700 1.2rem/1.3 var(--font-display); }
+.auth-box p { margin: 0; color: var(--ink-2); font-size: 0.92rem; }
+.auth-box .btn { width: 100%; justify-content: center; min-height: 48px; font-size: 0.98rem; }
+.auth-box .or { text-align: center; color: var(--ink-2); font-size: 0.85rem; }
+.auth-box input[type=email] { width: 100%; box-sizing: border-box; min-height: 48px; border: 2px solid var(--line); border-radius: 12px; padding: 4px 12px; font-size: 1rem; background: var(--bg); color: var(--ink); }
+.auth-box .small { font-size: 0.8rem; }
+.auth-box .danger { color: var(--over); border-color: var(--over); }
+.auth-msg { padding: 10px 12px; border-radius: 10px; background: var(--ok-bg); color: var(--ok); font-weight: 700; }
+.auth-msg.err { background: var(--over-bg); color: var(--over); }
 .scanner { position: fixed; inset: 0; z-index: 20; background: rgba(8, 13, 24, 0.82); display: grid; place-items: center; padding: 16px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
 .scan-box { width: min(100%, 460px); background: var(--surface); border-radius: 18px; padding: 16px; display: grid; gap: 12px; }
 .scan-box h2 { margin: 0; font: 700 1.1rem/1.3 var(--font-display); }
@@ -317,10 +335,13 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     </svg>
     <span>Pri Max</span>
   </a>
-  <div class="lang" role="group" aria-label="Language">
-    <button type="button" data-lang="en" aria-pressed="true">EN</button>
-    <button type="button" data-lang="fr" aria-pressed="false">FR</button>
-    <button type="button" data-lang="kr" aria-pressed="false" title="Kreol Morisien">KR</button>
+  <div class="top-right">
+    <button type="button" class="acct out" id="account" hidden></button>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+      <button type="button" data-lang="kr" aria-pressed="false" title="Kreol Morisien">KR</button>
+    </div>
   </div>
 </header>
 
@@ -407,6 +428,10 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   </div>
 </footer>
 
+<div class="scanner" id="auth" hidden role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  <div class="auth-box" id="auth-box"></div>
+</div>
+
 <div class="scanner" id="scanner" hidden role="dialog" aria-modal="true" aria-labelledby="scan-title">
   <div class="scan-box">
     <h2 id="scan-title" data-t="scanTitle">Point the camera at the barcode</h2>
@@ -437,6 +462,16 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       barcode: 'Barcode', officialCat: 'Official category', history: 'Approved prices', date: 'From', list: 'List', regular: 'Regular', none0: 'not set',
       check: 'Price on the shelf', within: 'Within the maximum: Rs {x} below it.', exact: 'Exactly the maximum price.',
       over: 'Rs {x} above the maximum ({pc}% more). Keep the receipt and report it.',
+      signIn: 'Sign in', myAccount: 'My account', savedChip: 'Saved', saveBtn: '☆ Save', savedBtn: '★ Saved',
+      savedNone: 'Nothing saved here yet. Open a product and press Save to keep it in this list.',
+      authTitle: 'Sign in to save your products', authBody: 'Keep the products and medicines you buy often in one list, on any phone or computer.',
+      signInToSave: 'Sign in to save this product. It will be saved as soon as you are signed in.',
+      continueWith: 'Continue with {p}', or: 'or', emailPh: 'Your email address', emailLink: 'Email me a sign-in link',
+      emailSent: 'Check your inbox at {email} and open the link to sign in.',
+      authPrivacy: 'We keep only your email address and the items you save. Nothing is shared or sold. You can delete your account at any time.',
+      signedInAs: 'Signed in as {who}', showSaved: 'My saved items ({n})', signOut: 'Sign out', deleteAccount: 'Delete my account', cancel: 'Cancel',
+      deleteTitle: 'Delete your account?', deleteBody: 'Your account and all your saved items will be deleted for good.', deleteYes: 'Yes, delete everything',
+      deleted: 'Your account and saved items have been deleted.', deleteFailed: 'That did not work. Please try again in a moment.',
       reportTitle: 'Report it to the Consumer Affairs Unit', reportShop: 'Shop name and town', reportWa: 'Report on WhatsApp', reportCall: 'Call 185',
       reportHint: 'WhatsApp opens with the message filled in. Add a photo of the shelf price and of the receipt before sending.',
       reportMsgHead: 'Price above the official maximum', reportMsgProduct: 'Product', reportMsgPaid: 'Price charged', reportMsgMax: 'Official maximum ({island})', reportMsgShop: 'Shop', reportMsgSource: 'Official list', reportMsgDate: 'Date',
@@ -479,6 +514,16 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       barcode: 'Code-barres', officialCat: 'Catégorie officielle', history: 'Prix approuvés', date: 'À partir du', list: 'Liste', regular: 'Ordinaire', none0: 'non fixé',
       check: 'Prix affiché en rayon', within: 'Dans la limite : Rs {x} de moins que le maximum.', exact: 'Exactement le prix maximum.',
       over: 'Rs {x} au-dessus du maximum ({pc} % de plus). Gardez le reçu et signalez-le.',
+      signIn: 'Se connecter', myAccount: 'Mon compte', savedChip: 'Enregistrés', saveBtn: '☆ Enregistrer', savedBtn: '★ Enregistré',
+      savedNone: 'Rien d’enregistré ici. Ouvrez un produit et appuyez sur Enregistrer pour le garder dans cette liste.',
+      authTitle: 'Connectez-vous pour enregistrer vos produits', authBody: 'Gardez les produits et médicaments que vous achetez souvent dans une liste, sur tous vos appareils.',
+      signInToSave: 'Connectez-vous pour enregistrer ce produit. Il sera enregistré dès que vous serez connecté.',
+      continueWith: 'Continuer avec {p}', or: 'ou', emailPh: 'Votre adresse e-mail', emailLink: 'Recevoir un lien de connexion',
+      emailSent: 'Ouvrez le lien envoyé à {email} pour vous connecter.',
+      authPrivacy: 'Nous gardons seulement votre adresse e-mail et les produits enregistrés. Rien n’est partagé ni vendu. Vous pouvez supprimer votre compte à tout moment.',
+      signedInAs: 'Connecté : {who}', showSaved: 'Mes produits enregistrés ({n})', signOut: 'Se déconnecter', deleteAccount: 'Supprimer mon compte', cancel: 'Annuler',
+      deleteTitle: 'Supprimer votre compte ?', deleteBody: 'Votre compte et tous vos produits enregistrés seront supprimés définitivement.', deleteYes: 'Oui, tout supprimer',
+      deleted: 'Votre compte et vos produits enregistrés ont été supprimés.', deleteFailed: 'Cela n’a pas fonctionné. Réessayez dans un instant.',
       reportTitle: 'Signaler à la Consumer Affairs Unit', reportShop: 'Nom du magasin et localité', reportWa: 'Signaler sur WhatsApp', reportCall: 'Appeler le 185',
       reportHint: 'WhatsApp s’ouvre avec le message déjà rempli. Ajoutez une photo du prix en rayon et du reçu avant d’envoyer.',
       reportMsgHead: 'Prix au-dessus du maximum officiel', reportMsgProduct: 'Produit', reportMsgPaid: 'Prix demandé', reportMsgMax: 'Maximum officiel ({island})', reportMsgShop: 'Magasin', reportMsgSource: 'Liste officielle', reportMsgDate: 'Date',
@@ -521,6 +566,16 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       barcode: 'Kod-bar', officialCat: 'Kategori ofisiel', history: 'Pri ki finn aprouve', date: 'Apartir', list: 'Lalis', regular: 'Normal', none0: 'pa fixe',
       check: 'Pri lor reyon', within: 'Dan limit: Rs {x} pli ba ki maximum.', exact: 'Exakteman pri maximum.',
       over: 'Rs {x} plis ki maximum ({pc}% anplis). Gard ou resi ek sinyal li.',
+      signIn: 'Konekte', myAccount: 'Mo kont', savedChip: 'Sove', saveBtn: '☆ Sove', savedBtn: '★ Finn sove',
+      savedNone: 'Pa ena nanye sove isi ankor. Ouver enn prodwi ek pes Sove pou gard li dan sa lalis-la.',
+      authTitle: 'Konekte pou sov ou bann prodwi', authBody: 'Gard bann prodwi ek medsinn ki ou aste souvan dan enn sel lalis, lor nenport ki telefonn ouswa lordinater.',
+      signInToSave: 'Konekte pou sov sa prodwi-la. Li pou sove deswit kan ou konekte.',
+      continueWith: 'Kontinie avek {p}', or: 'ouswa', emailPh: 'Ou ladres email', emailLink: 'Avoy mwa enn lien pou konekte',
+      emailSent: 'Get ou email {email} ek ouver lien-la pou konekte.',
+      authPrivacy: 'Nou gard zis ou ladres email ek bann prodwi ki ou sove. Nou pa partaz ni vann nanye. Ou kapav efas ou kont nenport kan.',
+      signedInAs: 'Konekte kouma {who}', showSaved: 'Mo bann prodwi sove ({n})', signOut: 'Dekonekte', deleteAccount: 'Efas mo kont', cancel: 'Anile',
+      deleteTitle: 'Efas ou kont?', deleteBody: 'Ou kont ek tou ou bann prodwi sove pou efase pou touzour.', deleteYes: 'Wi, efas tou',
+      deleted: 'Ou kont ek ou bann prodwi sove finn efase.', deleteFailed: 'Sa pa finn marse. Reseye dan enn ti moman.',
       reportTitle: 'Sinyal li ar Consumer Affairs Unit', reportShop: 'Nom laboutik ek landrwa', reportWa: 'Sinyal lor WhatsApp', reportCall: 'Apel 185',
       reportHint: 'WhatsApp pou ouver avek mesaz-la deza ranpli. Azout enn foto pri lor reyon ek enn foto ou resi avan ou avoye.',
       reportMsgHead: 'Pri plis ki maximum ofisiel', reportMsgProduct: 'Prodwi', reportMsgPaid: 'Pri ki zot finn demande', reportMsgMax: 'Maximum ofisiel ({island})', reportMsgShop: 'Laboutik', reportMsgSource: 'Lalis ofisiel', reportMsgDate: 'Dat',
@@ -671,7 +726,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   }
 
   const state = {
-    lang: 'en', island: 'm', tab: 'shop', q: '', cat: '', subOnly: false, cls: '', size: '', sort: 'auto', limit: PAGE, open: '',
+    lang: 'en', island: 'm', tab: 'shop', q: '', cat: '', subOnly: false, savedOnly: false, cls: '', size: '', sort: 'auto', limit: PAGE, open: '',
   };
   let G = null; // groceries and household products
   let M = null; // medicines kept on the page
@@ -716,12 +771,26 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   };
 
   // ---------------------------------------------------------------- data
+  // The same price approved again on a later date adds nothing, and the official list
+  // usually keeps only the later entry: one entry per unchanged price (newest first).
+  function collapseHistory(h) {
+    const out = [];
+    for (const x of h) {
+      const prev = out[out.length - 1];
+      if (prev && prev[1] === x[1] && prev[2] === x[2] && prev[3] === x[3]) {
+        if (prev[0] > TODAY) out[out.length - 1] = x;
+        continue;
+      }
+      out.push(x);
+    }
+    return out;
+  }
   function prepare(groceries, medicines) {
     const cats = groceries.cats;
     G = {
       types: groceries.types,
       items: groceries.items.map(([n, b, e, c, h], i) => ({
-        id: `g${i}`, n, b, e, ek: e.replace(/^0+/, ''), c: cats[c], h,
+        id: `g${i}`, n, b, e, ek: e.replace(/^0+/, ''), c: cats[c], h: collapseHistory(h),
         text: `${norm(`${n} ${b}`)} ${(CATS[cats[c]] || CATS.other)[3]}`, words: null, view: {},
       })),
     };
@@ -887,13 +956,15 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     let items = found.items;
     let sizePool = null;
     if (state.tab === 'shop') {
+      if (state.savedOnly) items = items.filter(isSaved);
       if (state.subOnly) items = items.filter((it) => { const v = viewOf(it, isl) || viewOf(it, other); return v && v.sub; });
       if (state.cat) items = items.filter((it) => it.c === state.cat);
       sizePool = items.filter((it) => viewOf(it, isl));
       const wanted = [...asked.sizes, state.size].filter(Boolean);
       if (wanted.length) items = items.filter((it) => { const sz = sizesOf(it); return wanted.every((w) => sz.includes(w)); });
-    } else if (state.cls) {
-      items = items.filter((it) => it.k === state.cls);
+    } else {
+      if (state.savedOnly) items = items.filter(isSaved);
+      if (state.cls) items = items.filter((it) => it.k === state.cls);
     }
     const here = items.filter((it) => viewOf(it, isl));
     const elsewhere = items.length - here.length;
@@ -997,6 +1068,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const text = shareText(item, view);
     return `<div class="actions">
       <a class="btn" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">${esc(t('whatsapp'))}</a>
+      ${auth.config ? `<button type="button" class="btn${isSaved(item) ? ' saved' : ''}" data-save="${item.id}" aria-pressed="${isSaved(item)}">${esc(t(isSaved(item) ? 'savedBtn' : 'saveBtn'))}</button>` : ''}
       <button type="button" class="btn" data-copy="${item.id}">${esc(t('copy'))}</button>
       <a class="btn" href="${esc(officialLink(item, view))}" target="_blank" rel="noopener">${esc(t('official'))}</a>
     </div>`;
@@ -1016,7 +1088,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         <span class="item-main">
           ${view.sub ? `<span class="pill">${esc(t('subsidised'))}</span>` : ''}
           ${!isMed && sameCode(item).some((other) => viewOf(other).date > view.date) ? `<span class="pill soft">${esc(t('newer'))}</span>` : ''}
-          <span class="item-name">${esc(item.n)}</span>
+          <span class="item-name">${isSaved(item) ? `<span class="saved-mark" title="${esc(t('savedBtn'))}">★</span>` : ''}${esc(item.n)}</span>
           <span class="item-meta">${meta.filter(Boolean).map((x) => `<span>${esc(x)}</span>`).join('')}</span>
         </span>
         <span class="item-price">${tagHtml(view.price)}<span class="when">${esc(when)}</span></span>
@@ -1041,6 +1113,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         if (v.sub) subs++;
       }
       el.innerHTML = [
+        savedChip(G.items),
         `<button type="button" class="chip is-sub" data-sub aria-pressed="${state.subOnly}"><span>${esc(t('subOnly'))}</span><span class="n">${count(subs)}</span></button>`,
         `<button type="button" class="chip" data-cat="" aria-pressed="${!state.cat}"><span>${esc(t('all'))}</span><span class="n">${count(all)}</span></button>`,
         ...CAT_ORDER.filter((id) => counts[id]).map((id) => `<button type="button" class="chip" data-cat="${id}" aria-pressed="${state.cat === id}"><span>${esc(catLabel(id))}</span><span class="n">${count(counts[id])}</span></button>`),
@@ -1054,6 +1127,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         counts[it.k] = (counts[it.k] || 0) + 1;
       }
       el.innerHTML = [
+        savedChip(M.items),
         `<button type="button" class="chip" data-cls="" aria-pressed="${!state.cls}"><span>${esc(t('all'))}</span><span class="n">${count(all)}</span></button>`,
         ...Object.keys(CLASSES).filter((id) => counts[id]).map((id) => `<button type="button" class="chip" data-cls="${id}" aria-pressed="${state.cls === id}"><span>${esc(classLabel(id))}</span><span class="n">${count(counts[id])}</span></button>`),
       ].join('');
@@ -1099,7 +1173,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     } else if (!items.length) {
       const digits = q.replace(/[\s-]/g, '');
       const sizeOnly = state.size && !elsewhere ? t('sizeNone', { s: sizeLabel(state.size) }) : '';
-      const message = sizeOnly || !q ? (sizeOnly || t('noneCat', { island: islandName(state.island) }))
+      const message = state.savedOnly && !q ? t('savedNone') : sizeOnly || !q ? (sizeOnly || t('noneCat', { island: islandName(state.island) }))
         : elsewhere > 0 ? t('noneHere', { q, island: islandName(state.island) })
         : (kind === 'barcode' && /^\d{8,14}$/.test(digits) ? t('noneBarcode', { q: digits }) : t('none', { q }));
       listEl.innerHTML = `<div class="state"><strong>${esc(message)}</strong>${q && kind !== 'barcode' && !elsewhere ? `<span>${esc(t('noneHint'))}</span>` : ''}</div>`;
@@ -1139,6 +1213,8 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     $('#clear').setAttribute('aria-label', t('clear'));
     $('#scan').hidden = state.tab !== 'shop';
     $('#sort').value = state.sort;
+    renderAccount();
+    if (!$('#auth').hidden) renderAuth();
     if (G) {
       const products = G.items.length;
       const meds = (META && META.counts && META.counts.medicines) || M.items.length;
@@ -1219,6 +1295,209 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   }
   const findItem = (id) => (id[0] === 'g' ? G.items : id[0] === 'm' ? M.items : live.items).find((it) => it.id === id);
 
+  // ---------------------------------------------------------------- sign-in and saved items
+  // Sign-in is by Supabase (Google, Facebook, Apple or an email link). Each person's saved
+  // items live in one table that only they can read (see supabase/schema.sql).
+  const auth = { config: null, client: null, user: null, saved: new Map(), view: 'menu', message: '', error: false, busy: false };
+  const itemKey = (item) => (item.batches ? `m:${squash(item.n)}` : `g:${item.ek || ''}:${squash(item.n)}`);
+  const isSaved = (item) => auth.saved.has(itemKey(item));
+  function savedChip(pool) {
+    if (!auth.config) return '';
+    const n = auth.user ? pool.filter(isSaved).length : 0;
+    return `<button type="button" class="chip is-saved" data-saved aria-pressed="${state.savedOnly}"><span><span class="star">★</span> ${esc(t('savedChip'))}</span><span class="n">${auth.user ? count(n) : ''}</span></button>`;
+  }
+  function renderAccount() {
+    const btn = $('#account');
+    btn.hidden = !auth.config;
+    if (!auth.config) return;
+    if (auth.user) {
+      const label = auth.user.user_metadata && (auth.user.user_metadata.full_name || auth.user.user_metadata.name) || auth.user.email || '';
+      btn.className = 'acct';
+      btn.innerHTML = `<span class="av">${esc((label.trim()[0] || '?').toUpperCase())}</span><span>${esc(t('myAccount'))}</span>`;
+    } else {
+      btn.className = 'acct out';
+      btn.textContent = t('signIn');
+    }
+  }
+  const PROVIDER_LABEL = { google: 'Google', facebook: 'Facebook', apple: 'Apple' };
+  function renderAuth() {
+    const box = $('#auth-box');
+    const msg = auth.message ? `<p class="auth-msg${auth.error ? ' err' : ''}">${esc(auth.message)}</p>` : '';
+    if (auth.user) {
+      const who = auth.user.email || (auth.user.user_metadata && auth.user.user_metadata.full_name) || '';
+      const n = auth.saved.size;
+      box.innerHTML = auth.view === 'delete'
+        ? `<h2 id="auth-title">${esc(t('deleteTitle'))}</h2><p>${esc(t('deleteBody'))}</p>${msg}
+           <button type="button" class="btn danger" data-auth="delete-yes"${auth.busy ? ' disabled' : ''}>${esc(t('deleteYes'))}</button>
+           <button type="button" class="btn" data-auth="menu">${esc(t('cancel'))}</button>`
+        : `<h2 id="auth-title">${esc(t('myAccount'))}</h2><p>${esc(t('signedInAs', { who }))}</p>${msg}
+           <button type="button" class="btn primary" data-auth="show-saved">★ ${esc(t('showSaved', { n: count(n) }))}</button>
+           <button type="button" class="btn" data-auth="signout">${esc(t('signOut'))}</button>
+           <button type="button" class="btn danger" data-auth="delete">${esc(t('deleteAccount'))}</button>
+           <button type="button" class="btn" data-auth="close">${esc(t('scanClose'))}</button>`;
+      return;
+    }
+    const providers = auth.config.providers || [];
+    const social = providers.filter((p) => PROVIDER_LABEL[p]).map((p) => `<button type="button" class="btn" data-provider="${p}">${esc(t('continueWith', { p: PROVIDER_LABEL[p] }))}</button>`).join('');
+    const email = providers.includes('email')
+      ? `${social ? `<p class="or">${esc(t('or'))}</p>` : ''}<form id="auth-email"><label class="sr" for="auth-mail">Email</label><input id="auth-mail" type="email" required autocomplete="email" placeholder="${esc(t('emailPh'))}"></form>
+         <button type="submit" form="auth-email" class="btn primary"${auth.busy ? ' disabled' : ''}>${esc(t('emailLink'))}</button>`
+      : '';
+    box.innerHTML = `<h2 id="auth-title">${esc(t('authTitle'))}</h2><p>${esc(t('authBody'))}</p>${msg}${social}${email}
+      <p class="small">${esc(t('authPrivacy'))}</p>
+      <button type="button" class="btn" data-auth="close">${esc(t('scanClose'))}</button>`;
+  }
+  function openAuth(message = '', error = false) {
+    if (!auth.config) return;
+    auth.view = 'menu';
+    auth.message = message;
+    auth.error = error;
+    renderAuth();
+    $('#auth').hidden = false;
+  }
+  const closeAuth = () => { $('#auth').hidden = true; auth.message = ''; };
+  function refreshSavedViews() {
+    renderAccount();
+    if (G) { renderChips(); renderResults(); }
+    if (!$('#auth').hidden) renderAuth();
+  }
+  async function loadSaved() {
+    auth.saved = new Map();
+    if (!auth.user) return;
+    const { data, error } = await auth.client.from('saved_items').select('item_key,kind,name,brand');
+    if (error) { console.error('saved items:', error.message); return; }
+    for (const row of data || []) auth.saved.set(row.item_key, row);
+  }
+  async function toggleSave(item) {
+    if (!item || !auth.config) return;
+    const key = itemKey(item);
+    if (!auth.user) {
+      try { sessionStorage.setItem('pri.pendingSave', JSON.stringify({ key, kind: item.batches ? 'medicine' : 'grocery', name: item.n, brand: item.b || '' })); } catch { /* fine */ }
+      openAuth(t('signInToSave'));
+      return;
+    }
+    if (auth.saved.has(key)) {
+      auth.saved.delete(key);
+      refreshSavedViews();
+      const { error } = await auth.client.from('saved_items').delete().eq('item_key', key);
+      if (error) { auth.saved.set(key, { item_key: key }); refreshSavedViews(); }
+    } else {
+      await saveRow({ key, kind: item.batches ? 'medicine' : 'grocery', name: item.n, brand: item.b || '' });
+    }
+  }
+  async function saveRow(row) {
+    auth.saved.set(row.key, { item_key: row.key, kind: row.kind, name: row.name, brand: row.brand });
+    refreshSavedViews();
+    const { error } = await auth.client.from('saved_items').upsert({ item_key: row.key, kind: row.kind, name: String(row.name).slice(0, 300), brand: String(row.brand || '').slice(0, 200) }, { onConflict: 'user_id,item_key', ignoreDuplicates: true });
+    if (error) { auth.saved.delete(row.key); refreshSavedViews(); console.error('save:', error.message); }
+  }
+  async function onSignedIn() {
+    await loadSaved();
+    let pending = null;
+    try { pending = JSON.parse(sessionStorage.getItem('pri.pendingSave') || 'null'); sessionStorage.removeItem('pri.pendingSave'); } catch { pending = null; }
+    if (pending && pending.key) await saveRow(pending);
+    refreshSavedViews();
+  }
+  async function startAuth() {
+    try {
+      const res = await fetch('api/config', { cache: 'no-cache' });
+      if (!res.ok) return;
+      const cfg = await res.json();
+      if (!cfg.auth) return;
+      if (!window.supabase) await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js');
+      auth.client = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit' } });
+      auth.config = cfg;
+      renderAccount();
+      if (G) renderChips();
+      const { data } = await auth.client.auth.getSession();
+      auth.user = data && data.session ? data.session.user : null;
+      if (auth.user) await onSignedIn();
+      auth.client.auth.onAuthStateChange((event, session) => {
+        const before = auth.user && auth.user.id;
+        auth.user = session ? session.user : null;
+        if (auth.user && auth.user.id !== before) onSignedIn();
+        if (!auth.user && before) { auth.saved = new Map(); state.savedOnly = false; refreshSavedViews(); }
+      });
+      // Back from Google, Facebook or Apple: tidy the address bar.
+      if (/access_token=|error_description=/.test(location.hash)) {
+        const err = /error_description=([^&]+)/.exec(location.hash);
+        history.replaceState(null, '', location.pathname + location.search);
+        if (err) openAuth(decodeURIComponent(err[1].replace(/\+/g, ' ')), true);
+      }
+    } catch (err) {
+      console.error('sign-in unavailable:', err);
+    }
+  }
+  const redirectTo = () => location.origin + location.pathname;
+  $('#account').addEventListener('click', () => openAuth());
+  $('#auth').addEventListener('click', async (e) => {
+    if (e.target.id === 'auth') { closeAuth(); return; }
+    const provider = e.target.closest('[data-provider]');
+    if (provider) {
+      const { error } = await auth.client.auth.signInWithOAuth({ provider: provider.dataset.provider, options: { redirectTo: redirectTo() } });
+      if (error) openAuth(error.message, true);
+      return;
+    }
+    const action = e.target.closest('[data-auth]');
+    if (!action) return;
+    const what = action.dataset.auth;
+    if (what === 'close') closeAuth();
+    else if (what === 'menu') { auth.view = 'menu'; auth.message = ''; renderAuth(); }
+    else if (what === 'show-saved') {
+      state.savedOnly = true;
+      state.cat = ''; state.cls = ''; state.subOnly = false; state.size = '';
+      $('#q').value = '';
+      state.q = '';
+      closeAuth();
+      render();
+      $('#cats').scrollIntoView({ block: 'start', behavior: 'smooth' });
+    } else if (what === 'signout') {
+      await auth.client.auth.signOut();
+      auth.user = null;
+      auth.saved = new Map();
+      state.savedOnly = false;
+      closeAuth();
+      refreshSavedViews();
+    } else if (what === 'delete') { auth.view = 'delete'; auth.message = ''; renderAuth(); }
+    else if (what === 'delete-yes') {
+      auth.busy = true;
+      renderAuth();
+      try {
+        const { data } = await auth.client.auth.getSession();
+        const token = data && data.session && data.session.access_token;
+        const res = await fetch('api/delete-account', { method: 'POST', headers: { authorization: `Bearer ${token}` } });
+        if (!res.ok) throw new Error(String(res.status));
+        await auth.client.auth.signOut();
+        auth.user = null;
+        auth.saved = new Map();
+        state.savedOnly = false;
+        auth.busy = false;
+        auth.view = 'menu';
+        refreshSavedViews();
+        openAuth(t('deleted'));
+      } catch {
+        auth.busy = false;
+        auth.message = t('deleteFailed');
+        auth.error = true;
+        renderAuth();
+      }
+    }
+  });
+  $('#auth').addEventListener('submit', async (e) => {
+    if (e.target.id !== 'auth-email') return;
+    e.preventDefault();
+    const email = $('#auth-mail').value.trim();
+    if (!email) return;
+    auth.busy = true;
+    renderAuth();
+    const { error } = await auth.client.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo() } });
+    auth.busy = false;
+    auth.message = error ? error.message : t('emailSent', { email });
+    auth.error = Boolean(error);
+    renderAuth();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#auth').hidden) closeAuth(); });
+
   // ---------------------------------------------------------------- events
   function setQuery(value) {
     state.q = value;
@@ -1262,7 +1541,10 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   $('#cats').addEventListener('click', (e) => {
     const b = e.target.closest('.chip');
     if (!b) return;
-    if ('sub' in b.dataset) state.subOnly = !state.subOnly;
+    if ('saved' in b.dataset) {
+      if (!auth.user) { openAuth(); return; }
+      state.savedOnly = !state.savedOnly;
+    } else if ('sub' in b.dataset) state.subOnly = !state.subOnly;
     else if ('cat' in b.dataset) { state.cat = b.dataset.cat; state.size = ''; }
     else if ('cls' in b.dataset) state.cls = b.dataset.cls;
     state.limit = PAGE;
@@ -1295,6 +1577,11 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     render();
   });
   function onListClick(e) {
+    const saveBtn = e.target.closest('[data-save]');
+    if (saveBtn) {
+      toggleSave(findItem(saveBtn.dataset.save));
+      return;
+    }
     const copyBtn = e.target.closest('[data-copy]');
     if (copyBtn) {
       const item = findItem(copyBtn.dataset.copy);
@@ -1478,6 +1765,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   } catch { /* no query string here */ }
   render();
   load();
+  startAuth();
 })();
 </script>
 </body>

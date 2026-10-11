@@ -270,10 +270,14 @@ export function buildGroceries(rawLists) {
     withCode[0].history.sort((a, b) => b[0] - a[0] || b[1] - a[1]);
   }
 
+  const today = todayNumber();
   const items = products
     .filter((p) => !dropped.has(p))
     .map((p) => {
       p.history.sort((a, b) => b[0] - a[0] || b[1] - a[1] || b[2] - a[2]);
+      const before = p.history.length;
+      p.history = collapseHistory(p.history, today);
+      stats.repeatsMerged = (stats.repeatsMerged || 0) + before - p.history.length;
       return p;
     })
     .sort((a, b) => b.history[0][0] - a.history[0][0] || (fold(a.name) < fold(b.name) ? -1 : 1));
@@ -378,4 +382,30 @@ export function buildMedicines(rawLists) {
   items.sort((a, b) => b.latest - a.latest || (fold(a.name) < fold(b.name) ? -1 : 1));
   stats.medicines = items.length;
   return { items, stats };
+}
+
+// Today in Mauritius as yyyymmdd.
+export function todayNumber(now = new Date()) {
+  const d = new Date(now.getTime() + 4 * 3600 * 1000);
+  return d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate();
+}
+
+/**
+ * The same price approved again on another date (same list, same Mauritius and
+ * Rodrigues prices) tells a shopper nothing, and the official list often replaces the
+ * older entry with the newer one: keep one entry per unchanged price. The newer date is
+ * kept, as on the official list, unless it is still in the future, in which case the
+ * entry in force today is kept. History is newest first.
+ */
+export function collapseHistory(history, today = todayNumber()) {
+  const out = [];
+  for (const h of history) {
+    const prev = out[out.length - 1];
+    if (prev && prev[1] === h[1] && prev[2] === h[2] && prev[3] === h[3]) {
+      if (prev[0] > today) out[out.length - 1] = h; // the newer one is not in force yet
+      continue;
+    }
+    out.push(h);
+  }
+  return out;
 }
