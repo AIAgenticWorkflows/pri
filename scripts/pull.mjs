@@ -18,7 +18,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEnv } from './lib/env.mjs';
 import { runPull } from './lib/pull.mjs';
-import { fileStorage, storageFromEnv } from './lib/storage.mjs';
+import { blobStorage, fileStorage, storageFromEnv } from './lib/storage.mjs';
+import { cleanToken } from './lib/env.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 loadEnv(ROOT);
@@ -51,7 +52,22 @@ runPull({
   lists,
   base: process.env.PRI_BASE_URL,
   pauseMs: process.env.PRI_PAUSE_MS ? Number(process.env.PRI_PAUSE_MS) : undefined,
-  seed: (key) => seeds.readJson(`${key}.json`),
+  seed: async (key) => {
+    // Moving to Supabase: carry over what the old Blob store already holds, if it can
+    // still be read; otherwise start from the copies in the repository.
+    if (storage.kind !== 'blob' && cleanToken(process.env.BLOB_READ_WRITE_TOKEN)) {
+      try {
+        const old = await blobStorage().readJson(`stores/${key}.json`);
+        if (old && Array.isArray(old.rows) && old.rows.length) {
+          console.log(`${key}: carried over ${old.rows.length} rows from the old Blob store`);
+          return old;
+        }
+      } catch (err) {
+        console.log(`${key}: the old Blob store could not be read (${String(err.message).slice(0, 80)})`);
+      }
+    }
+    return seeds.readJson(`${key}.json`);
+  },
   by: 'command line',
   force: process.env.PRI_FORCE === '1',
 })
