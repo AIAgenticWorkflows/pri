@@ -213,9 +213,6 @@ body.has-listbar .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px));
 .item-name { font-weight: 700; font-size: 1rem; line-height: 1.3; overflow-wrap: anywhere; }
 .item-meta { color: var(--ink-2); font-size: 0.86rem; display: flex; flex-wrap: wrap; gap: 2px 8px; }
 .item-meta span + span::before { content: "·"; margin-right: 8px; }
-.store { justify-self: start; display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: var(--brand); background: var(--surface-2); border-radius: 999px; padding: 3px 10px; }
-.store::before { content: ""; width: 12px; height: 12px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l1-5h16l1 5M4 9v11h16V9M3 9h18M9 20v-6h6v6'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l1-5h16l1 5M4 9v11h16V9M3 9h18M9 20v-6h6v6'/%3E%3C/svg%3E") center / contain no-repeat; }
-.facts .wide { grid-column: 1 / -1; }
 .pill { justify-self: start; max-width: 100%; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; border-radius: 999px; padding: 3px 9px; background: var(--sub); color: var(--on-sub); }
 .pill.soft { background: var(--surface-2); color: var(--ink-2); text-transform: none; letter-spacing: 0; font-size: 0.74rem; }
 .pill + .pill { margin-top: -1px; }
@@ -598,7 +595,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       listSummary: '{n} products', listsHow: 'To add products, search for them and press “Add to a list”.', listEmpty: 'This list is empty.',
       listTotal: 'Maximum total', listTotalNote: 'Most you should pay in {island}.', listMissing: '{n} not counted.',
       listNotHere: 'No price for {island}.', listGone: 'No longer on the official lists.', renameList: 'Rename', deleteList: 'Delete list', deleteListSure: 'Tap again to delete',
-      listError: 'That change could not be saved. Please try again.', addedTo: 'Added to {list}', viewList: 'View list', soldAt: 'Store brand · {store}', whereBuy: 'Where to buy', whereStore: '{store} own brand: sold in {store} shops.', whereAny: 'Sold in many shops. The official list does not name them, but this maximum price applies in every shop.', wherePharmacy: 'Sold in pharmacies; the maximum price applies in every one.', themeDark: 'Dark mode', themeLight: 'Light mode', listWord: 'List',
+      listError: 'That change could not be saved. Please try again.', addedTo: 'Added to {list}', viewList: 'View list', themeDark: 'Dark mode', themeLight: 'Light mode', listWord: 'List',
       authTitle: 'Sign in to make your lists', authBody: 'Make shopping lists of the products and medicines you buy, see their maximum total, and find them on any phone or computer.',
       signInToList: 'Sign in to add this product to a list. You will be brought straight back to it.',
       continueWith: 'Continue with {p}', or: 'or', emailPh: 'Your email address', emailLink: 'Email me a sign-in link',
@@ -656,7 +653,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       listSummary: '{n} produits', listsHow: 'Pour ajouter des produits, recherchez-les puis appuyez sur « Ajouter à une liste ».', listEmpty: 'Cette liste est vide.',
       listTotal: 'Total maximum', listTotalNote: 'Le maximum à payer à {island}.', listMissing: '{n} non compté(s).',
       listNotHere: 'Pas de prix pour {island}.', listGone: 'N’est plus sur les listes officielles.', renameList: 'Renommer', deleteList: 'Supprimer la liste', deleteListSure: 'Appuyez encore pour supprimer',
-      listError: 'Cette modification n’a pas pu être enregistrée. Réessayez.', addedTo: 'Ajouté à {list}', viewList: 'Voir la liste', soldAt: 'Marque de distributeur · {store}', whereBuy: 'Où l’acheter', whereStore: 'Marque propre de {store} : vendue dans les magasins {store}.', whereAny: 'Vendu dans de nombreux magasins. La liste officielle ne les nomme pas, mais ce prix maximum s’applique partout.', wherePharmacy: 'Vendu en pharmacie ; le prix maximum s’applique dans chacune.', themeDark: 'Mode sombre', themeLight: 'Mode clair', listWord: 'Liste',
+      listError: 'Cette modification n’a pas pu être enregistrée. Réessayez.', addedTo: 'Ajouté à {list}', viewList: 'Voir la liste', themeDark: 'Mode sombre', themeLight: 'Mode clair', listWord: 'Liste',
       authTitle: 'Connectez-vous pour créer vos listes', authBody: 'Faites des listes de courses avec les produits et médicaments que vous achetez, voyez leur total maximum, et retrouvez-les sur tous vos appareils.',
       signInToList: 'Connectez-vous pour ajouter ce produit à une liste. Vous y reviendrez directement.',
       continueWith: 'Continuer avec {p}', or: 'ou', emailPh: 'Votre adresse e-mail', emailLink: 'Recevoir un lien de connexion',
@@ -714,7 +711,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       listSummary: '{n} prodwi', listsHow: 'Pou azout prodwi, rod zot ek pes “Azout dan enn lalis”.', listEmpty: 'Sa lalis-la vid.',
       listTotal: 'Total maximum', listTotalNote: 'Maximum ki ou bizin peye dan {island}.', listMissing: '{n} pa konte.',
       listNotHere: 'Pena pri pou {island}.', listGone: 'Pa lor lalis ofisiel aster.', renameList: 'Sanz nom', deleteList: 'Efas lalis', deleteListSure: 'Pes ankor pou efase',
-      listError: 'Sa sanzman-la pa finn kapav sove. Reseye.', addedTo: 'Finn azout dan {list}', viewList: 'Get lalis', soldAt: 'Mark laboutik · {store}', whereBuy: 'Kot pou aste', whereStore: 'Mark {store}: vann dan bann laboutik {store}.', whereAny: 'Vann dan boukou laboutik. Lalis ofisiel pa dir kiles, me sa pri maximum-la aplike partou.', wherePharmacy: 'Vann dan farmasi; pri maximum-la aplike dan sakenn.', themeDark: 'Mod nwar', themeLight: 'Mod kler', listWord: 'Lalis',
+      listError: 'Sa sanzman-la pa finn kapav sove. Reseye.', addedTo: 'Finn azout dan {list}', viewList: 'Get lalis', themeDark: 'Mod nwar', themeLight: 'Mod kler', listWord: 'Lalis',
       authTitle: 'Konekte pou fer ou bann lalis', authBody: 'Fer lalis komisionn avek bann prodwi ek medsinn ki ou aste, get zot total maximum, ek retrouv zot lor nenport ki telefonn ouswa lordinater.',
       signInToList: 'Konekte pou azout sa prodwi-la dan enn lalis. Ou pou retourn direk lor la.',
       continueWith: 'Kontinie avek {p}', or: 'ouswa', emailPh: 'Ou ladres email', emailLink: 'Avoy mwa enn lien pou konekte',
@@ -884,7 +881,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
 
   const t = (key, vars) => {
     let text = (I18N[state.lang] && I18N[state.lang][key]) ?? I18N.en[key] ?? key;
-    if (vars) for (const k of Object.keys(vars)) text = text.split(`{${k}}`).join(vars[k]);
+    if (vars) for (const k of Object.keys(vars)) text = text.replace(`{${k}}`, vars[k]);
     return text;
   };
   const langIndex = () => LANGS.indexOf(state.lang);
@@ -1179,7 +1176,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       `<div><dt>${esc(t('islR'))}</dt><dd>${r ? `Rs ${money(r.price)}` : esc(t('none0'))}</dd></div>`,
       item.e ? `<div><dt>${esc(t('barcode'))}</dt><dd class="mono">${esc(item.e)}</dd></div>` : '',
       `<div><dt>${esc(t('officialCat'))}</dt><dd>${esc(G.types[view.shown[4]] || catLabel(item.c))}</dd></div>`,
-      `<div class="wide"><dt>${esc(t('whereBuy'))}</dt><dd>${esc(storeOf(item) ? t('whereStore', { store: storeOf(item) }) : t('whereAny'))}</dd></div>`,
     ].join('');
     const history = item.h.length > 1
       ? `<div><p class="hint"><strong>${esc(t('history'))}</strong></p><div class="tablewrap"><table><thead><tr><th>${esc(t('date'))}</th><th class="num">${esc(t('islM'))}</th><th class="num">${esc(t('islR'))}</th><th>${esc(t('list'))}</th></tr></thead><tbody>${item.h.map((h) => `<tr><td>${esc(fmtDate(h[0]))}</td><td class="num">${h[2] ? money(h[2]) : '–'}</td><td class="num">${h[3] ? money(h[3]) : '–'}</td><td>${esc(h[1] ? t('subsidised') : t('regular'))}</td></tr>`).join('')}</tbody></table></div></div>`
@@ -1210,7 +1206,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const many = item.batches.length > 8;
     return `<div class="detail" id="d-${item.id}">
       ${item.sub ? `<p class="sub-line">${esc(t('subExplain'))}</p>` : ''}
-      <p class="hint">${esc(t('batchHint'))} ${esc(t('wherePharmacy'))}</p>
+      <p class="hint">${esc(t('batchHint'))}</p>
       ${many ? `<input class="field" type="search" data-batchfilter="${item.id}" placeholder="${esc(t('findBatch'))}" value="${esc(item.hitBatch || '')}" autocomplete="off" autocapitalize="characters" spellcheck="false">` : ''}
       <div class="tablewrap"><table><thead><tr><th>${esc(t('batch'))}</th><th class="num">${esc(islandName(state.island))}</th><th>${esc(t('date'))}</th></tr></thead><tbody id="b-${item.id}">${batchRows(item, view, item.hitBatch || '')}</tbody></table></div>
       ${actionsHtml(item, view)}
@@ -1231,29 +1227,13 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     </div>`;
   }
 
-  // Store brands are sold only by their own chain. Other brands are sold in many shops,
-  // and the official list does not say which.
-  const STORE_BRANDS = [
-    ['Super U', /(^| )u( |$)|u saveurs|u bio/],
-    ['Carrefour', /carrefour|(^| )crf( |$)/],
-    ['Intermart', /saint eloi|st eloi|fiorini|chabrior|top budget|pommette/],
-    ["Winner's", /(^| )winner ?s( |$)/],
-  ];
-  function storeOf(item) {
-    if (item.batches) return '';
-    if (item.store !== undefined) return item.store;
-    const text = ` ${norm(`${item.n} ${item.b}`)} `;
-    const hit = STORE_BRANDS.find(([, re]) => re.test(text));
-    item.store = hit ? hit[0] : '';
-    return item.store;
-  }
   function itemHtml(item) {
     const view = viewOf(item);
     const open = state.open === item.id;
     const isMed = Boolean(item.batches);
     const meta = isMed
       ? [item.b, classLabel(item.k), t('batches', { n: count(view.rows.length) })]
-      : [item.b && squash(item.b).length <= 22 && !squash(item.n).startsWith(squash(item.b)) && !storeOf(item) ? item.b : '', catLabel(item.c)];
+      : [item.b && squash(item.b).length <= 22 && !squash(item.n).startsWith(squash(item.b)) ? item.b : '', catLabel(item.c)];
     const when = t(view.pending ? 'from' : 'since', { d: fmtDate(view.date) });
     const soon = !isMed && view.next ? `<span class="soon">${esc(t('newFrom', { d: fmtDate(view.next[0]), p: money(view.next[view.col]) }))}</span>` : '';
     return `<article class="item${view.sub ? ' is-sub' : ''}${open ? ' is-open' : ''}" data-id="${item.id}">
@@ -1263,7 +1243,6 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
           ${!isMed && sameCode(item).some((other) => viewOf(other).date > view.date) ? `<span class="pill soft">${esc(t('newer'))}</span>` : ''}
           <span class="item-name">${inAnyList(item) ? `<span class="saved-mark" title="${esc(t('inLists', { n: listsWith(item).length }))}">✓</span>` : ''}${esc(item.n)}</span>
           <span class="item-meta">${meta.filter(Boolean).map((x) => `<span>${esc(x)}</span>`).join('')}</span>
-          ${storeOf(item) ? `<span class="store">${esc(t('soldAt', { store: storeOf(item) }))}</span>` : ''}
         </span>
         <span class="item-price">${tagHtml(view.price)}<span class="when">${esc(when)}</span></span>
         ${soon}
