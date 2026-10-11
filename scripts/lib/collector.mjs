@@ -150,6 +150,7 @@ export class Collector {
   }
 
   async readTop(maxPages = 15) {
+    this.log('reading the newest rows');
     let fresh = 0;
     let n = 0;
     for (; n < maxPages; n++) {
@@ -502,6 +503,7 @@ export class Collector {
         for (const row of page.rows) this.add(row, pass);
       }
       if (this.pauseMs) await sleep(this.pauseMs);
+      if (n % 10 < policy.concurrency) this.log(`read-through: page ${n} of ${last + 1}, ${store.rows.length} rows`);
       if (this.onProgress && n % 10 < policy.concurrency) {
         store.resumePage = n; // so a saved copy can carry on from here
         await this.onProgress();
