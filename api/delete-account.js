@@ -3,7 +3,7 @@
 // Needs SUPABASE_SERVICE_ROLE_KEY (kept on the server only). Saved items go with the
 // account (ON DELETE CASCADE in supabase/schema.sql).
 
-import { authConfig } from './config.js';
+import { authConfig, serviceKey as findServiceKey } from './config.js';
 
 export default async function handler(req, res) {
   res.setHeader('content-type', 'application/json; charset=utf-8');
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   };
   if (req.method !== 'POST') return send(405, { error: 'method' });
   const cfg = authConfig();
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceKey = findServiceKey();
   if (!cfg.auth || !serviceKey) return send(503, { error: 'not-configured' });
   const token = /^Bearer\s+(.+)$/i.exec(req.headers.authorization || '');
   if (!token) return send(401, { error: 'no-token' });

@@ -6,20 +6,41 @@
 //   SUPABASE_URL, SUPABASE_ANON_KEY           (or the NEXT_PUBLIC_ names the Supabase integration adds)
 //   PRI_AUTH_PROVIDERS                         which buttons to show, e.g. "google,facebook,apple,email"
 
+// The Supabase integration names its variables in different ways (a prefix such as
+// STORAGE_, NEXT_PUBLIC_, or the newer "publishable" and "secret" keys), so any variable
+// whose name ends the right way is accepted.
+export function findEnv(env, endings) {
+  for (const ending of endings) {
+    const exact = Object.keys(env).filter((k) => k === ending);
+    const prefixed = Object.keys(env).filter((k) => k !== ending && k.endsWith(`_${ending}`)).sort();
+    for (const k of [...exact, ...prefixed]) if (env[k]) return { name: k, value: env[k] };
+  }
+  return null;
+}
+
 export function authConfig(env = process.env) {
-  const url = env.SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const anonKey = env.SUPABASE_ANON_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  const url = findEnv(env, ['SUPABASE_URL']);
+  const anonKey = findEnv(env, ['SUPABASE_ANON_KEY', 'SUPABASE_PUBLISHABLE_KEY']);
   const allowed = ['google', 'facebook', 'apple', 'email'];
   const providers = String(env.PRI_AUTH_PROVIDERS || 'email')
     .split(',')
     .map((p) => p.trim().toLowerCase())
     .filter((p) => allowed.includes(p));
-  if (!url || !anonKey) return { auth: false };
-  return { auth: true, supabaseUrl: url.replace(/\/+$/, ''), supabaseAnonKey: anonKey, providers };
+  if (!url || !anonKey) {
+    // Names only, never values: helps see what is missing.
+    const seen = Object.keys(env).filter((k) => /SUPABASE/i.test(k)).sort();
+    return { auth: false, missing: [!url && 'SUPABASE_URL', !anonKey && 'SUPABASE_ANON_KEY'].filter(Boolean), supabaseVariables: seen };
+  }
+  return { auth: true, supabaseUrl: url.value.replace(/\/+$/, ''), supabaseAnonKey: anonKey.value, providers };
+}
+
+export function serviceKey(env = process.env) {
+  const hit = findEnv(env, ['SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_SECRET_KEY']);
+  return hit ? hit.value : '';
 }
 
 export default function handler(req, res) {
   res.setHeader('content-type', 'application/json; charset=utf-8');
-  res.setHeader('cache-control', 'public, max-age=60, s-maxage=300');
+  res.setHeader('cache-control', 'public, max-age=60, s-maxage=60');
   res.end(JSON.stringify(authConfig()));
 }
