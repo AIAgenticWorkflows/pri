@@ -42,7 +42,7 @@ too (rate-limited to once every 20 minutes unless it sends `CRON_SECRET`).
   (`BLOB_READ_WRITE_TOKEN` is added to the project automatically).
 - Optional: `CRON_SECRET` environment variable, so scheduled calls skip the rate limit.
 
-### Sign-in and saved items (optional)
+### Sign-in and shopping lists (optional)
 
 Sign-in uses Supabase (free plan is enough to start). Without it, the page works as
 before and simply shows no sign-in button.
@@ -59,7 +59,7 @@ before and simply shows no sign-in button.
    - `PRI_AUTH_PROVIDERS`, e.g. `google,facebook,apple,email`
 5. Redeploy.
 
-Only the email address (kept by Supabase Auth) and the saved items are stored; each person
+Only the email address (kept by Supabase Auth) and each person's lists are stored; each person
 can read only their own rows (row level security), and can delete their account from the page.
 
 ### The first full copy

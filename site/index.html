@@ -262,9 +262,35 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
 .acct { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; min-height: 38px; padding: 4px 14px 4px 6px; font-weight: 700; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
 .acct .av { width: 28px; height: 28px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 0.85rem; }
 .acct.out { padding-left: 14px; }
+@media (max-width: 480px) { .acct:not(.out) { padding: 4px; } .acct:not(.out) span:not(.av) { display: none; } .acct.out { padding-inline: 12px; } }
 .chip.is-saved[aria-pressed="true"] { background: var(--brand); color: #fff; border-color: var(--brand); }
-.chip.is-saved .star, .saved-mark { color: var(--flag-gold); }
-.saved-mark { font-size: 1rem; line-height: 1; margin-right: 2px; }
+.chip.is-saved .star { color: inherit; }
+.saved-mark { color: var(--brand); font-weight: 800; margin-right: 4px; }
+.lists { display: grid; gap: 10px; }
+.list-card { display: flex; align-items: center; gap: 12px; text-align: left; width: 100%; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); color: var(--ink); cursor: pointer; }
+.list-card:hover { border-color: var(--ink-2); }
+.list-card .grow, .pick .grow { flex: 1 1 auto; min-width: 0; display: grid; gap: 2px; }
+.list-card .grow span { color: var(--ink-2); font-size: 0.88rem; }
+.list-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.new-list { display: flex; gap: 8px; flex-wrap: wrap; }
+.new-list input { flex: 1 1 180px; min-width: 0; min-height: 46px; border: 2px solid var(--line); border-radius: 12px; padding: 4px 12px; font-size: 1rem; background: var(--bg); color: var(--ink); }
+.new-list .btn { width: auto; }
+.auth-box .btn.pick { justify-content: flex-start; gap: 10px; }
+.bline { display: grid; grid-template-columns: 1fr auto auto; gap: 8px 12px; align-items: center; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.bline .bq { font-weight: 800; font-size: 0.95rem; grid-column: 1 / -1; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.bline .linky { border: 0; background: none; padding: 0; font: inherit; color: inherit; text-align: left; cursor: pointer; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+.bline .qty { display: flex; align-items: center; gap: 8px; }
+.bline .qty button { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); font-size: 1.2rem; font-weight: 800; color: var(--ink); }
+.bline .qty button:disabled { opacity: 0.4; }
+.bline .qty > span:not(.each) { min-width: 1.5em; text-align: center; font-weight: 800; }
+.bline .each { color: var(--ink-2); font-size: 0.88rem; white-space: nowrap; }
+.bline .bprice { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+.bline .x { width: 36px; height: 36px; border-radius: 50%; border: 0; background: none; color: var(--ink-2); font-size: 1.4rem; line-height: 1; cursor: pointer; }
+.bline.missing { border-style: dashed; color: var(--ink-2); grid-template-columns: 1fr auto; }
+.bline .sub-tag { color: var(--sub-ink); background: var(--sub-bg); border-radius: 6px; padding: 1px 6px; font-size: 0.75rem; font-weight: 800; }
+.btotal { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 14px; border-radius: var(--radius); background: var(--ink); color: var(--bg); font-weight: 800; font-size: 1.05rem; }
+.btotal small { display: block; font-weight: 600; font-size: 0.8rem; opacity: 0.8; }
+.btn.danger { color: var(--over); border-color: var(--over); }
 .btn.saved { border-color: var(--brand); color: var(--brand); }
 .auth-box { width: min(100%, 420px); background: var(--surface); border-radius: 18px; padding: 20px; display: grid; gap: 12px; max-height: calc(100vh - 32px); overflow-y: auto; }
 .auth-box h2 { margin: 0; font: 700 1.2rem/1.3 var(--font-display); }
@@ -462,16 +488,21 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       barcode: 'Barcode', officialCat: 'Official category', history: 'Approved prices', date: 'From', list: 'List', regular: 'Regular', none0: 'not set',
       check: 'Price on the shelf', within: 'Within the maximum: Rs {x} below it.', exact: 'Exactly the maximum price.',
       over: 'Rs {x} above the maximum ({pc}% more). Keep the receipt and report it.',
-      signIn: 'Sign in', myAccount: 'My account', savedChip: 'Saved', saveBtn: '☆ Save', savedBtn: '★ Saved',
-      savedNone: 'Nothing saved here yet. Open a product and press Save to keep it in this list.',
-      authTitle: 'Sign in to save your products', authBody: 'Keep the products and medicines you buy often in one list, on any phone or computer.',
-      signInToSave: 'Sign in to save this product. It will be saved as soon as you are signed in.',
+      signIn: 'Sign in', myAccount: 'My account', myLists: 'My lists', addToList: '＋ Add to a list', inLists: '✓ In {n} list(s)',
+      addToListTitle: 'Add to a list', noListsYet: 'You have no lists yet.', newListName: 'Name of the new list', newListPh: 'New list, e.g. Weekly shopping',
+      defaultListName: 'My shopping', createAndAdd: 'Create and add', createList: 'Create list', done: 'Done', save: 'Save', remove: 'Remove',
+      listSummary: '{n} products', listsHow: 'To add products, search for them and press “Add to a list”.', listEmpty: 'This list is empty.',
+      listTotal: 'Maximum total', listTotalNote: 'Most you should pay in {island}.', listMissing: '{n} not counted.',
+      listNotHere: 'No price for {island}.', listGone: 'No longer on the official lists.', renameList: 'Rename', deleteList: 'Delete list', deleteListSure: 'Tap again to delete',
+      listError: 'That change could not be saved. Please try again.',
+      authTitle: 'Sign in to make your lists', authBody: 'Make shopping lists of the products and medicines you buy, see their maximum total, and find them on any phone or computer.',
+      signInToList: 'Sign in to add this product to a list. You will be brought straight back to it.',
       continueWith: 'Continue with {p}', or: 'or', emailPh: 'Your email address', emailLink: 'Email me a sign-in link',
       emailSent: 'Check your inbox at {email} and open the link to sign in.',
-      authPrivacy: 'We keep only your email address and the items you save. Nothing is shared or sold. You can delete your account at any time.',
-      signedInAs: 'Signed in as {who}', showSaved: 'My saved items ({n})', signOut: 'Sign out', deleteAccount: 'Delete my account', cancel: 'Cancel',
-      deleteTitle: 'Delete your account?', deleteBody: 'Your account and all your saved items will be deleted for good.', deleteYes: 'Yes, delete everything',
-      deleted: 'Your account and saved items have been deleted.', deleteFailed: 'That did not work. Please try again in a moment.',
+      authPrivacy: 'We keep only your email address and your lists. Nothing is shared or sold. You can delete your account at any time.',
+      signedInAs: 'Signed in as {who}', showLists: 'My lists ({n})', signOut: 'Sign out', deleteAccount: 'Delete my account', cancel: 'Cancel',
+      deleteTitle: 'Delete your account?', deleteBody: 'Your account and all your lists will be deleted for good.', deleteYes: 'Yes, delete everything',
+      deleted: 'Your account and lists have been deleted.', deleteFailed: 'That did not work. Please try again in a moment.',
       reportTitle: 'Report it to the Consumer Affairs Unit', reportShop: 'Shop name and town', reportWa: 'Report on WhatsApp', reportCall: 'Call 185',
       reportHint: 'WhatsApp opens with the message filled in. Add a photo of the shelf price and of the receipt before sending.',
       reportMsgHead: 'Price above the official maximum', reportMsgProduct: 'Product', reportMsgPaid: 'Price charged', reportMsgMax: 'Official maximum ({island})', reportMsgShop: 'Shop', reportMsgSource: 'Official list', reportMsgDate: 'Date',
@@ -515,16 +546,21 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       barcode: 'Code-barres', officialCat: 'Catégorie officielle', history: 'Prix approuvés', date: 'À partir du', list: 'Liste', regular: 'Ordinaire', none0: 'non fixé',
       check: 'Prix affiché en rayon', within: 'Dans la limite : Rs {x} de moins que le maximum.', exact: 'Exactement le prix maximum.',
       over: 'Rs {x} au-dessus du maximum ({pc} % de plus). Gardez le reçu et signalez-le.',
-      signIn: 'Se connecter', myAccount: 'Mon compte', savedChip: 'Enregistrés', saveBtn: '☆ Enregistrer', savedBtn: '★ Enregistré',
-      savedNone: 'Rien d’enregistré ici. Ouvrez un produit et appuyez sur Enregistrer pour le garder dans cette liste.',
-      authTitle: 'Connectez-vous pour enregistrer vos produits', authBody: 'Gardez les produits et médicaments que vous achetez souvent dans une liste, sur tous vos appareils.',
-      signInToSave: 'Connectez-vous pour enregistrer ce produit. Il sera enregistré dès que vous serez connecté.',
+      signIn: 'Se connecter', myAccount: 'Mon compte', myLists: 'Mes listes', addToList: '＋ Ajouter à une liste', inLists: '✓ Dans {n} liste(s)',
+      addToListTitle: 'Ajouter à une liste', noListsYet: 'Vous n’avez pas encore de liste.', newListName: 'Nom de la nouvelle liste', newListPh: 'Nouvelle liste, ex. Courses de la semaine',
+      defaultListName: 'Mes courses', createAndAdd: 'Créer et ajouter', createList: 'Créer la liste', done: 'Terminé', save: 'Enregistrer', remove: 'Retirer',
+      listSummary: '{n} produits', listsHow: 'Pour ajouter des produits, recherchez-les puis appuyez sur « Ajouter à une liste ».', listEmpty: 'Cette liste est vide.',
+      listTotal: 'Total maximum', listTotalNote: 'Le maximum à payer à {island}.', listMissing: '{n} non compté(s).',
+      listNotHere: 'Pas de prix pour {island}.', listGone: 'N’est plus sur les listes officielles.', renameList: 'Renommer', deleteList: 'Supprimer la liste', deleteListSure: 'Appuyez encore pour supprimer',
+      listError: 'Cette modification n’a pas pu être enregistrée. Réessayez.',
+      authTitle: 'Connectez-vous pour créer vos listes', authBody: 'Faites des listes de courses avec les produits et médicaments que vous achetez, voyez leur total maximum, et retrouvez-les sur tous vos appareils.',
+      signInToList: 'Connectez-vous pour ajouter ce produit à une liste. Vous y reviendrez directement.',
       continueWith: 'Continuer avec {p}', or: 'ou', emailPh: 'Votre adresse e-mail', emailLink: 'Recevoir un lien de connexion',
       emailSent: 'Ouvrez le lien envoyé à {email} pour vous connecter.',
-      authPrivacy: 'Nous gardons seulement votre adresse e-mail et les produits enregistrés. Rien n’est partagé ni vendu. Vous pouvez supprimer votre compte à tout moment.',
-      signedInAs: 'Connecté : {who}', showSaved: 'Mes produits enregistrés ({n})', signOut: 'Se déconnecter', deleteAccount: 'Supprimer mon compte', cancel: 'Annuler',
-      deleteTitle: 'Supprimer votre compte ?', deleteBody: 'Votre compte et tous vos produits enregistrés seront supprimés définitivement.', deleteYes: 'Oui, tout supprimer',
-      deleted: 'Votre compte et vos produits enregistrés ont été supprimés.', deleteFailed: 'Cela n’a pas fonctionné. Réessayez dans un instant.',
+      authPrivacy: 'Nous gardons seulement votre adresse e-mail et vos listes. Rien n’est partagé ni vendu. Vous pouvez supprimer votre compte à tout moment.',
+      signedInAs: 'Connecté : {who}', showLists: 'Mes listes ({n})', signOut: 'Se déconnecter', deleteAccount: 'Supprimer mon compte', cancel: 'Annuler',
+      deleteTitle: 'Supprimer votre compte ?', deleteBody: 'Votre compte et toutes vos listes seront supprimés définitivement.', deleteYes: 'Oui, tout supprimer',
+      deleted: 'Votre compte et vos listes ont été supprimés.', deleteFailed: 'Cela n’a pas fonctionné. Réessayez dans un instant.',
       reportTitle: 'Signaler à la Consumer Affairs Unit', reportShop: 'Nom du magasin et localité', reportWa: 'Signaler sur WhatsApp', reportCall: 'Appeler le 185',
       reportHint: 'WhatsApp s’ouvre avec le message déjà rempli. Ajoutez une photo du prix en rayon et du reçu avant d’envoyer.',
       reportMsgHead: 'Prix au-dessus du maximum officiel', reportMsgProduct: 'Produit', reportMsgPaid: 'Prix demandé', reportMsgMax: 'Maximum officiel ({island})', reportMsgShop: 'Magasin', reportMsgSource: 'Liste officielle', reportMsgDate: 'Date',
@@ -568,16 +604,21 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       barcode: 'Kod-bar', officialCat: 'Kategori ofisiel', history: 'Pri ki finn aprouve', date: 'Apartir', list: 'Lalis', regular: 'Normal', none0: 'pa fixe',
       check: 'Pri lor reyon', within: 'Dan limit: Rs {x} pli ba ki maximum.', exact: 'Exakteman pri maximum.',
       over: 'Rs {x} plis ki maximum ({pc}% anplis). Gard ou resi ek sinyal li.',
-      signIn: 'Konekte', myAccount: 'Mo kont', savedChip: 'Sove', saveBtn: '☆ Sove', savedBtn: '★ Finn sove',
-      savedNone: 'Pa ena nanye sove isi ankor. Ouver enn prodwi ek pes Sove pou gard li dan sa lalis-la.',
-      authTitle: 'Konekte pou sov ou bann prodwi', authBody: 'Gard bann prodwi ek medsinn ki ou aste souvan dan enn sel lalis, lor nenport ki telefonn ouswa lordinater.',
-      signInToSave: 'Konekte pou sov sa prodwi-la. Li pou sove deswit kan ou konekte.',
+      signIn: 'Konekte', myAccount: 'Mo kont', myLists: 'Mo bann lalis', addToList: '＋ Azout dan enn lalis', inLists: '✓ Dan {n} lalis',
+      addToListTitle: 'Azout dan enn lalis', noListsYet: 'Ou pena okenn lalis ankor.', newListName: 'Nom nouvo lalis', newListPh: 'Nouvo lalis, par egzanp Komisionn semenn',
+      defaultListName: 'Mo komisionn', createAndAdd: 'Kree ek azoute', createList: 'Kree lalis', done: 'Fini', save: 'Sove', remove: 'Tire',
+      listSummary: '{n} prodwi', listsHow: 'Pou azout prodwi, rod zot ek pes “Azout dan enn lalis”.', listEmpty: 'Sa lalis-la vid.',
+      listTotal: 'Total maximum', listTotalNote: 'Maximum ki ou bizin peye dan {island}.', listMissing: '{n} pa konte.',
+      listNotHere: 'Pena pri pou {island}.', listGone: 'Pa lor lalis ofisiel aster.', renameList: 'Sanz nom', deleteList: 'Efas lalis', deleteListSure: 'Pes ankor pou efase',
+      listError: 'Sa sanzman-la pa finn kapav sove. Reseye.',
+      authTitle: 'Konekte pou fer ou bann lalis', authBody: 'Fer lalis komisionn avek bann prodwi ek medsinn ki ou aste, get zot total maximum, ek retrouv zot lor nenport ki telefonn ouswa lordinater.',
+      signInToList: 'Konekte pou azout sa prodwi-la dan enn lalis. Ou pou retourn direk lor la.',
       continueWith: 'Kontinie avek {p}', or: 'ouswa', emailPh: 'Ou ladres email', emailLink: 'Avoy mwa enn lien pou konekte',
       emailSent: 'Get ou email {email} ek ouver lien-la pou konekte.',
-      authPrivacy: 'Nou gard zis ou ladres email ek bann prodwi ki ou sove. Nou pa partaz ni vann nanye. Ou kapav efas ou kont nenport kan.',
-      signedInAs: 'Konekte kouma {who}', showSaved: 'Mo bann prodwi sove ({n})', signOut: 'Dekonekte', deleteAccount: 'Efas mo kont', cancel: 'Anile',
-      deleteTitle: 'Efas ou kont?', deleteBody: 'Ou kont ek tou ou bann prodwi sove pou efase pou touzour.', deleteYes: 'Wi, efas tou',
-      deleted: 'Ou kont ek ou bann prodwi sove finn efase.', deleteFailed: 'Sa pa finn marse. Reseye dan enn ti moman.',
+      authPrivacy: 'Nou gard zis ou ladres email ek ou bann lalis. Nou pa partaz ni vann nanye. Ou kapav efas ou kont nenport kan.',
+      signedInAs: 'Konekte kouma {who}', showLists: 'Mo bann lalis ({n})', signOut: 'Dekonekte', deleteAccount: 'Efas mo kont', cancel: 'Anile',
+      deleteTitle: 'Efas ou kont?', deleteBody: 'Ou kont ek tou ou bann lalis pou efase pou touzour.', deleteYes: 'Wi, efas tou',
+      deleted: 'Ou kont ek ou bann lalis finn efase.', deleteFailed: 'Sa pa finn marse. Reseye dan enn ti moman.',
       reportTitle: 'Sinyal li ar Consumer Affairs Unit', reportShop: 'Nom laboutik ek landrwa', reportWa: 'Sinyal lor WhatsApp', reportCall: 'Apel 185',
       reportHint: 'WhatsApp pou ouver avek mesaz-la deza ranpli. Azout enn foto pri lor reyon ek enn foto ou resi avan ou avoye.',
       reportMsgHead: 'Pri plis ki maximum ofisiel', reportMsgProduct: 'Prodwi', reportMsgPaid: 'Pri ki zot finn demande', reportMsgMax: 'Maximum ofisiel ({island})', reportMsgShop: 'Laboutik', reportMsgSource: 'Lalis ofisiel', reportMsgDate: 'Dat',
@@ -729,7 +770,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   }
 
   const state = {
-    lang: 'en', island: 'm', tab: 'shop', q: '', cat: '', subOnly: false, savedOnly: false, cls: '', size: '', sort: 'auto', limit: PAGE, open: '',
+    lang: 'en', island: 'm', tab: 'shop', q: '', cat: '', subOnly: false, listsView: '', cls: '', size: '', sort: 'auto', limit: PAGE, open: '',
   };
   let G = null; // groceries and household products
   let M = null; // medicines kept on the page
@@ -964,14 +1005,12 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     let items = found.items;
     let sizePool = null;
     if (state.tab === 'shop') {
-      if (state.savedOnly) items = items.filter(isSaved);
       if (state.subOnly) items = items.filter((it) => { const v = viewOf(it, isl) || viewOf(it, other); return v && v.sub; });
       if (state.cat) items = items.filter((it) => it.c === state.cat);
       sizePool = items.filter((it) => viewOf(it, isl));
       const wanted = [...asked.sizes, state.size].filter(Boolean);
       if (wanted.length) items = items.filter((it) => { const sz = sizesOf(it); return wanted.every((w) => sz.includes(w)); });
     } else {
-      if (state.savedOnly) items = items.filter(isSaved);
       if (state.cls) items = items.filter((it) => it.k === state.cls);
     }
     const here = items.filter((it) => viewOf(it, isl));
@@ -1082,7 +1121,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const text = shareText(item, view);
     return `<div class="actions">
       <a class="btn" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">${esc(t('whatsapp'))}</a>
-      ${auth.config ? `<button type="button" class="btn${isSaved(item) ? ' saved' : ''}" data-save="${item.id}" aria-pressed="${isSaved(item)}">${esc(t(isSaved(item) ? 'savedBtn' : 'saveBtn'))}</button>` : ''}
+      ${auth.config ? `<button type="button" class="btn${inAnyList(item) ? ' saved' : ''}" data-addlist="${item.id}">${esc(inAnyList(item) ? t('inLists', { n: listsWith(item).length }) : t('addToList'))}</button>` : ''}
       <button type="button" class="btn" data-copy="${item.id}">${esc(t('copy'))}</button>
       <a class="btn" href="${esc(officialLink(item, view))}" target="_blank" rel="noopener">${esc(t('official'))}</a>
     </div>`;
@@ -1102,7 +1141,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         <span class="item-main">
           ${view.sub ? `<span class="pill">${esc(t('subsidised'))}</span>` : ''}
           ${!isMed && sameCode(item).some((other) => viewOf(other).date > view.date) ? `<span class="pill soft">${esc(t('newer'))}</span>` : ''}
-          <span class="item-name">${isSaved(item) ? `<span class="saved-mark" title="${esc(t('savedBtn'))}">★</span>` : ''}${esc(item.n)}</span>
+          <span class="item-name">${inAnyList(item) ? `<span class="saved-mark" title="${esc(t('inLists', { n: listsWith(item).length }))}">✓</span>` : ''}${esc(item.n)}</span>
           <span class="item-meta">${meta.filter(Boolean).map((x) => `<span>${esc(x)}</span>`).join('')}</span>
         </span>
         <span class="item-price">${tagHtml(view.price)}<span class="when">${esc(when)}</span></span>
@@ -1127,9 +1166,9 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         if (v.sub) subs++;
       }
       el.innerHTML = [
-        savedChip(G.items),
+        listsChip(),
         `<button type="button" class="chip is-sub" data-sub aria-pressed="${state.subOnly}"><span>${esc(t('subOnly'))}</span><span class="n">${count(subs)}</span></button>`,
-        `<button type="button" class="chip" data-cat="" aria-pressed="${!state.cat}"><span>${esc(t('all'))}</span><span class="n">${count(all)}</span></button>`,
+        `<button type="button" class="chip" data-cat="" aria-pressed="${!state.cat && !state.listsView}"><span>${esc(t('all'))}</span><span class="n">${count(all)}</span></button>`,
         ...CAT_ORDER.filter((id) => counts[id]).map((id) => `<button type="button" class="chip" data-cat="${id}" aria-pressed="${state.cat === id}"><span>${esc(catLabel(id))}</span><span class="n">${count(counts[id])}</span></button>`),
       ].join('');
     } else {
@@ -1141,8 +1180,8 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         counts[it.k] = (counts[it.k] || 0) + 1;
       }
       el.innerHTML = [
-        savedChip(M.items),
-        `<button type="button" class="chip" data-cls="" aria-pressed="${!state.cls}"><span>${esc(t('all'))}</span><span class="n">${count(all)}</span></button>`,
+        listsChip(),
+        `<button type="button" class="chip" data-cls="" aria-pressed="${!state.cls && !state.listsView}"><span>${esc(t('all'))}</span><span class="n">${count(all)}</span></button>`,
         ...Object.keys(CLASSES).filter((id) => counts[id]).map((id) => `<button type="button" class="chip" data-cls="${id}" aria-pressed="${state.cls === id}"><span>${esc(classLabel(id))}</span><span class="n">${count(counts[id])}</span></button>`),
       ].join('');
     }
@@ -1153,6 +1192,8 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const noteEl = $('#note');
     const moreEl = $('#more');
     if (!G) return;
+    $('.sort').hidden = Boolean(state.listsView);
+    if (state.listsView && renderListsView()) return;
     if (state.tab === 'med' && !M.loaded) {
       ensureMedicines();
       $('#count').textContent = t('medLoading');
@@ -1191,7 +1232,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     } else if (!items.length) {
       const digits = q.replace(/[\s-]/g, '');
       const sizeOnly = state.size && !elsewhere ? t('sizeNone', { s: sizeLabel(state.size) }) : '';
-      const message = state.savedOnly && !q ? t('savedNone') : sizeOnly || !q ? (sizeOnly || t('noneCat', { island: islandName(state.island) }))
+      const message = sizeOnly || !q ? (sizeOnly || t('noneCat', { island: islandName(state.island) }))
         : elsewhere > 0 ? t('noneHere', { q, island: islandName(state.island) })
         : (kind === 'barcode' && /^\d{8,14}$/.test(digits) ? t('noneBarcode', { q: digits }) : t('none', { q }));
       listEl.innerHTML = `<div class="state"><strong>${esc(message)}</strong>${q && kind !== 'barcode' && !elsewhere ? `<span>${esc(t('noneHint'))}</span>` : ''}</div>`;
@@ -1313,23 +1354,35 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   }
   const findItem = (id) => (id[0] === 'g' ? G.items : id[0] === 'm' ? M.items : live.items).find((it) => it.id === id);
 
-  // ---------------------------------------------------------------- sign-in and saved items
-  // Sign-in is by Supabase (Google, Facebook, Apple or an email link). Each person's saved
-  // items live in one table that only they can read (see supabase/schema.sql).
-  const auth = { config: null, client: null, user: null, saved: new Map(), view: 'menu', message: '', error: false, busy: false };
+  // ---------------------------------------------------------------- sign-in and shopping lists
+  // Sign-in is by Supabase (Google, Facebook, Apple or an email link). Each person's lists
+  // live in two tables only they can read (see supabase/schema.sql).
+  const auth = { config: null, client: null, user: null, lists: [], view: 'menu', message: '', error: false, busy: false, picking: null };
   const itemKey = (item) => (item.batches ? `m:${squash(item.n)}` : `g:${item.ek || ''}:${squash(item.n)}`);
-  const isSaved = (item) => auth.saved.has(itemKey(item));
-  function savedChip(pool) {
+  const listsWith = (item) => { const key = itemKey(item); return auth.lists.filter((l) => l.items.some((r) => r.item_key === key)); };
+  const inAnyList = (item) => Boolean(auth.user) && listsWith(item).length > 0;
+  let keyIndex = null;
+  let keyIndexFor = -1;
+  function findByKey(key) {
+    const size = (G ? G.items.length : 0) + (M && M.loaded ? M.items.length : 0);
+    if (!keyIndex || keyIndexFor !== size) {
+      keyIndex = new Map();
+      keyIndexFor = size;
+      for (const it of G ? G.items : []) keyIndex.set(itemKey(it), it);
+      for (const it of M && M.loaded ? M.items : []) keyIndex.set(itemKey(it), it);
+    }
+    return keyIndex.get(key) || null;
+  }
+  function listsChip() {
     if (!auth.config) return '';
-    const n = auth.user ? pool.filter(isSaved).length : 0;
-    return `<button type="button" class="chip is-saved" data-saved aria-pressed="${state.savedOnly}"><span><span class="star">★</span> ${esc(t('savedChip'))}</span><span class="n">${auth.user ? count(n) : ''}</span></button>`;
+    return `<button type="button" class="chip is-saved" data-lists aria-pressed="${Boolean(state.listsView)}"><span><span class="star">✓</span> ${esc(t('myLists'))}</span><span class="n">${auth.user ? count(auth.lists.length) : ''}</span></button>`;
   }
   function renderAccount() {
     const btn = $('#account');
     btn.hidden = !auth.config;
     if (!auth.config) return;
     if (auth.user) {
-      const label = auth.user.user_metadata && (auth.user.user_metadata.full_name || auth.user.user_metadata.name) || auth.user.email || '';
+      const label = (auth.user.user_metadata && (auth.user.user_metadata.full_name || auth.user.user_metadata.name)) || auth.user.email || '';
       btn.className = 'acct';
       btn.innerHTML = `<span class="av">${esc((label.trim()[0] || '?').toUpperCase())}</span><span>${esc(t('myAccount'))}</span>`;
     } else {
@@ -1337,19 +1390,35 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       btn.textContent = t('signIn');
     }
   }
+
+  // ---- the dialog: sign in, account, or "add to a list"
   const PROVIDER_LABEL = { google: 'Google', facebook: 'Facebook', apple: 'Apple' };
   function renderAuth() {
     const box = $('#auth-box');
     const msg = auth.message ? `<p class="auth-msg${auth.error ? ' err' : ''}">${esc(auth.message)}</p>` : '';
+    if (auth.user && auth.view === 'pick' && auth.picking) {
+      const item = auth.picking;
+      const key = itemKey(item);
+      const rows = auth.lists.map((l) => {
+        const has = l.items.some((r) => r.item_key === key);
+        return `<button type="button" class="btn pick${has ? ' saved' : ''}" data-picklist="${l.id}" aria-pressed="${has}"><span>${has ? '✓' : '＋'}</span><span class="grow">${esc(l.name)}</span><span class="n">${count(l.items.length)}</span></button>`;
+      }).join('');
+      box.innerHTML = `<h2 id="auth-title">${esc(t('addToListTitle'))}</h2><p><strong>${esc(item.n)}</strong></p>${msg}
+        ${rows || `<p>${esc(t('noListsYet'))}</p>`}
+        <form id="new-list" class="new-list"><label class="sr" for="new-list-name">${esc(t('newListName'))}</label>
+          <input id="new-list-name" type="text" maxlength="60" placeholder="${esc(t('newListPh'))}" value="${auth.lists.length ? '' : esc(t('defaultListName'))}">
+          <button type="submit" class="btn primary"${auth.busy ? ' disabled' : ''}>${esc(t('createAndAdd'))}</button></form>
+        <button type="button" class="btn" data-auth="close">${esc(t('done'))}</button>`;
+      return;
+    }
     if (auth.user) {
       const who = auth.user.email || (auth.user.user_metadata && auth.user.user_metadata.full_name) || '';
-      const n = auth.saved.size;
       box.innerHTML = auth.view === 'delete'
         ? `<h2 id="auth-title">${esc(t('deleteTitle'))}</h2><p>${esc(t('deleteBody'))}</p>${msg}
            <button type="button" class="btn danger" data-auth="delete-yes"${auth.busy ? ' disabled' : ''}>${esc(t('deleteYes'))}</button>
            <button type="button" class="btn" data-auth="menu">${esc(t('cancel'))}</button>`
         : `<h2 id="auth-title">${esc(t('myAccount'))}</h2><p>${esc(t('signedInAs', { who }))}</p>${msg}
-           <button type="button" class="btn primary" data-auth="show-saved">★ ${esc(t('showSaved', { n: count(n) }))}</button>
+           <button type="button" class="btn primary" data-auth="show-lists">✓ ${esc(t('showLists', { n: count(auth.lists.length) }))}</button>
            <button type="button" class="btn" data-auth="signout">${esc(t('signOut'))}</button>
            <button type="button" class="btn danger" data-auth="delete">${esc(t('deleteAccount'))}</button>
            <button type="button" class="btn" data-auth="close">${esc(t('scanClose'))}</button>`;
@@ -1365,56 +1434,232 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       <p class="small">${esc(t('authPrivacy'))}</p>
       <button type="button" class="btn" data-auth="close">${esc(t('scanClose'))}</button>`;
   }
-  function openAuth(message = '', error = false) {
+  function openAuth(message = '', error = false, view = 'menu') {
     if (!auth.config) return;
-    auth.view = 'menu';
+    auth.view = view;
     auth.message = message;
     auth.error = error;
     renderAuth();
     $('#auth').hidden = false;
   }
-  const closeAuth = () => { $('#auth').hidden = true; auth.message = ''; };
-  function refreshSavedViews() {
+  const closeAuth = () => { $('#auth').hidden = true; auth.message = ''; auth.picking = null; auth.view = 'menu'; };
+  function refreshListViews() {
     renderAccount();
     if (G) { renderChips(); renderResults(); }
     if (!$('#auth').hidden) renderAuth();
   }
-  async function loadSaved() {
-    auth.saved = new Map();
-    if (!auth.user) return;
-    const { data, error } = await auth.client.from('saved_items').select('item_key,kind,name,brand');
-    if (error) { console.error('saved items:', error.message); return; }
-    for (const row of data || []) auth.saved.set(row.item_key, row);
-  }
-  async function toggleSave(item) {
+  function openPicker(item) {
     if (!item || !auth.config) return;
-    const key = itemKey(item);
     if (!auth.user) {
-      try { sessionStorage.setItem('pri.pendingSave', JSON.stringify({ key, kind: item.batches ? 'medicine' : 'grocery', name: item.n, brand: item.b || '' })); } catch { /* fine */ }
-      openAuth(t('signInToSave'));
+      try { sessionStorage.setItem('pri.pendingAdd', itemKey(item)); } catch { /* fine */ }
+      openAuth(t('signInToList'));
       return;
     }
-    if (auth.saved.has(key)) {
-      auth.saved.delete(key);
-      refreshSavedViews();
-      const { error } = await auth.client.from('saved_items').delete().eq('item_key', key);
-      if (error) { auth.saved.set(key, { item_key: key }); refreshSavedViews(); }
+    auth.picking = item;
+    openAuth('', false, 'pick');
+  }
+
+  // ---- talking to the database
+  const db = () => auth.client;
+  function failed(error) {
+    console.error('lists:', error && error.message);
+    auth.message = t('listError');
+    auth.error = true;
+    return loadLists().then(refreshListViews);
+  }
+  async function loadLists() {
+    auth.lists = [];
+    if (!auth.user) return;
+    const [lists, items] = await Promise.all([
+      db().from('lists').select('id,name,created_at').order('created_at', { ascending: true }),
+      db().from('list_items').select('list_id,item_key,kind,name,brand,qty,created_at').order('created_at', { ascending: true }),
+    ]);
+    if (lists.error || items.error) { console.error('lists:', (lists.error || items.error).message); return; }
+    auth.lists = (lists.data || []).map((l) => ({ ...l, items: (items.data || []).filter((r) => r.list_id === l.id) }));
+    if (auth.lists.some((l) => l.items.some((r) => r.kind === 'medicine')) && M && !M.loaded) ensureMedicines().then(refreshListViews);
+  }
+  const rowFor = (item, qty = 1) => ({ item_key: itemKey(item), kind: item.batches ? 'medicine' : 'grocery', name: String(item.n).slice(0, 300), brand: String(item.b || '').slice(0, 200), qty });
+  async function createList(name, item) {
+    const clean = String(name || '').trim().slice(0, 60) || t('defaultListName');
+    const { data, error } = await db().from('lists').insert({ name: clean }).select('id,name,created_at').single();
+    if (error) return failed(error);
+    const list = { ...data, items: [] };
+    auth.lists.push(list);
+    if (item) await toggleInList(list, item);
+    refreshListViews();
+    return list;
+  }
+  async function toggleInList(list, item) {
+    const key = itemKey(item);
+    const at = list.items.findIndex((r) => r.item_key === key);
+    if (at >= 0) {
+      list.items.splice(at, 1);
+      refreshListViews();
+      const { error } = await db().from('list_items').delete().eq('list_id', list.id).eq('item_key', key);
+      if (error) failed(error);
     } else {
-      await saveRow({ key, kind: item.batches ? 'medicine' : 'grocery', name: item.n, brand: item.b || '' });
+      const row = { list_id: list.id, ...rowFor(item) };
+      list.items.push(row);
+      refreshListViews();
+      const { error } = await db().from('list_items').upsert(row, { onConflict: 'list_id,item_key' });
+      if (error) failed(error);
     }
   }
-  async function saveRow(row) {
-    auth.saved.set(row.key, { item_key: row.key, kind: row.kind, name: row.name, brand: row.brand });
-    refreshSavedViews();
-    const { error } = await auth.client.from('saved_items').upsert({ item_key: row.key, kind: row.kind, name: String(row.name).slice(0, 300), brand: String(row.brand || '').slice(0, 200) }, { onConflict: 'user_id,item_key', ignoreDuplicates: true });
-    if (error) { auth.saved.delete(row.key); refreshSavedViews(); console.error('save:', error.message); }
+  async function setQty(list, key, qty) {
+    const row = list.items.find((r) => r.item_key === key);
+    if (!row) return;
+    row.qty = Math.max(1, Math.min(99, qty));
+    refreshListViews();
+    const { error } = await db().from('list_items').update({ qty: row.qty }).eq('list_id', list.id).eq('item_key', key);
+    if (error) failed(error);
   }
+  async function removeFromList(list, key) {
+    list.items = list.items.filter((r) => r.item_key !== key);
+    refreshListViews();
+    const { error } = await db().from('list_items').delete().eq('list_id', list.id).eq('item_key', key);
+    if (error) failed(error);
+  }
+  async function renameList(list, name) {
+    const clean = String(name || '').trim().slice(0, 60);
+    if (!clean || clean === list.name) return;
+    list.name = clean;
+    refreshListViews();
+    const { error } = await db().from('lists').update({ name: clean }).eq('id', list.id);
+    if (error) failed(error);
+  }
+  async function deleteList(list) {
+    auth.lists = auth.lists.filter((l) => l !== list);
+    state.listsView = 'all';
+    refreshListViews();
+    const { error } = await db().from('lists').delete().eq('id', list.id);
+    if (error) failed(error);
+  }
+
+  // ---- the lists themselves, shown where the results usually are
+  function listTotals(list) {
+    let total = 0;
+    let missing = 0;
+    const lines = list.items.map((row) => {
+      const item = findByKey(row.item_key);
+      const view = item ? viewOf(item, state.island) : null;
+      if (!view) { missing++; return { row, item, view: null, line: 0 }; }
+      const line = view.price * row.qty;
+      total += line;
+      return { row, item, view, line };
+    });
+    return { lines, total, missing };
+  }
+  function listShareText(list, totals) {
+    const rows = totals.lines.filter((l) => l.view).map((l) => `${l.row.qty} × ${l.item.n}: Rs ${money(l.line)}`);
+    return `${list.name}\n${rows.join('\n')}\n${t('listTotal')} (${islandName(state.island)}): Rs ${money(totals.total)}\n${location.origin}${location.pathname}`;
+  }
+  function renderListsView() {
+    $('#sizes').hidden = true;
+    $('#more').hidden = true;
+    $('#live').hidden = true;
+    $('#note').hidden = true;
+    const listEl = $('#list');
+    if (!auth.user) { state.listsView = ''; return false; }
+    const list = state.listsView !== 'all' && auth.lists.find((l) => l.id === state.listsView);
+    if (!list) {
+      $('#count').textContent = t('myLists');
+      const cards = auth.lists.map((l) => {
+        const tt = listTotals(l);
+        return `<button type="button" class="list-card" data-openlist="${l.id}"><span class="grow"><strong>${esc(l.name)}</strong><span>${esc(t('listSummary', { n: count(l.items.length) }))}</span></span><span class="bprice">Rs ${money(tt.total)}</span></button>`;
+      }).join('');
+      listEl.innerHTML = `<div class="lists">
+        ${cards || `<div class="state"><strong>${esc(t('noListsYet'))}</strong><span>${esc(t('listsHow'))}</span></div>`}
+        <form id="new-list-top" class="new-list"><label class="sr" for="new-list-top-name">${esc(t('newListName'))}</label>
+          <input id="new-list-top-name" type="text" maxlength="60" placeholder="${esc(t('newListPh'))}">
+          <button type="submit" class="btn primary">${esc(t('createList'))}</button></form>
+        <p class="hint">${esc(t('listsHow'))}</p>
+      </div>`;
+      return true;
+    }
+    const totals = listTotals(list);
+    $('#count').textContent = list.name;
+    const lines = totals.lines.map(({ row, item, view, line }) => {
+      const name = item ? item.n : row.name;
+      const k = esc(row.item_key);
+      if (!view) {
+        return `<div class="bline missing"><div class="bq">${esc(name)}</div><span>${esc(t(item ? 'listNotHere' : 'listGone', { island: islandName(state.island) }))}</span><button type="button" class="x" data-remove="${k}" aria-label="${esc(t('remove'))}">×</button></div>`;
+      }
+      return `<div class="bline">
+        <div class="bq"><button type="button" class="linky" data-findkey="${k}">${esc(name)}</button>${view.sub ? `<span class="sub-tag">${esc(t('subsidised'))}</span>` : ''}</div>
+        <div class="qty"><button type="button" data-qty="${k}" data-d="-1" aria-label="−"${row.qty <= 1 ? ' disabled' : ''}>−</button><span>${row.qty}</span><button type="button" data-qty="${k}" data-d="1" aria-label="+">+</button>
+          <span class="each">× Rs ${money(view.price)}</span></div>
+        <span class="bprice">Rs ${money(line)}</span>
+        <button type="button" class="x" data-remove="${k}" aria-label="${esc(t('remove'))}">×</button>
+      </div>`;
+    }).join('');
+    listEl.innerHTML = `<div class="lists">
+      <div class="list-tools"><button type="button" class="btn" data-openlist="all">← ${esc(t('myLists'))}</button>
+        <button type="button" class="btn" data-rename="${list.id}">${esc(t('renameList'))}</button>
+        <button type="button" class="btn danger" data-dellist="${list.id}">${esc(t('deleteList'))}</button></div>
+      ${lines || `<div class="state"><strong>${esc(t('listEmpty'))}</strong><span>${esc(t('listsHow'))}</span></div>`}
+      ${list.items.length ? `<div class="btotal"><span>${esc(t('listTotal'))}<small>${esc(t('listTotalNote', { island: islandName(state.island) }))}${totals.missing ? ` ${esc(t('listMissing', { n: totals.missing }))}` : ''}</small></span><span>Rs ${money(totals.total)}</span></div>
+      <div class="actions"><a class="btn" href="https://wa.me/?text=${encodeURIComponent(listShareText(list, totals))}" target="_blank" rel="noopener">${esc(t('whatsapp'))}</a></div>` : ''}
+    </div>`;
+    return true;
+  }
+  function onListsClick(e) {
+    const open = e.target.closest('[data-openlist]');
+    if (open) { state.listsView = open.dataset.openlist; renderResults(); window.scrollTo({ top: $('#cats').offsetTop - 80, behavior: 'auto' }); return true; }
+    const list = auth.lists.find((l) => l.id === state.listsView);
+    const qty = e.target.closest('[data-qty]');
+    if (qty && list) { const row = list.items.find((r) => r.item_key === qty.dataset.qty); if (row) setQty(list, row.item_key, row.qty + Number(qty.dataset.d)); return true; }
+    const rm = e.target.closest('[data-remove]');
+    if (rm && list) { removeFromList(list, rm.dataset.remove); return true; }
+    const ren = e.target.closest('[data-rename]');
+    if (ren && list) {
+      const tools = ren.closest('.list-tools');
+      tools.outerHTML = `<form id="rename-list" class="new-list"><label class="sr" for="rename-name">${esc(t('renameList'))}</label><input id="rename-name" type="text" maxlength="60" value="${esc(list.name)}"><button type="submit" class="btn primary">${esc(t('save'))}</button></form>`;
+      $('#rename-name').focus();
+      return true;
+    }
+    const del = e.target.closest('[data-dellist]');
+    if (del && list) {
+      if (del.dataset.sure) deleteList(list);
+      else { del.dataset.sure = '1'; del.textContent = t('deleteListSure'); }
+      return true;
+    }
+    const find = e.target.closest('[data-findkey]');
+    if (find) {
+      const item = findByKey(find.dataset.findkey);
+      if (!item) return true;
+      state.listsView = '';
+      state.tab = item.batches ? 'med' : 'shop';
+      const q = !item.batches && item.e ? item.e : item.n;
+      $('#q').value = q;
+      render();
+      setQuery(q);
+      return true;
+    }
+    return false;
+  }
+  $('#list').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (e.target.id === 'new-list-top') {
+      const list = await createList($('#new-list-top-name').value);
+      if (list) { state.listsView = list.id; renderResults(); }
+    } else if (e.target.id === 'rename-list') {
+      const list = auth.lists.find((l) => l.id === state.listsView);
+      if (list) await renameList(list, $('#rename-name').value);
+      renderResults();
+    }
+  });
+
+  // ---- session
   async function onSignedIn() {
-    await loadSaved();
-    let pending = null;
-    try { pending = JSON.parse(sessionStorage.getItem('pri.pendingSave') || 'null'); sessionStorage.removeItem('pri.pendingSave'); } catch { pending = null; }
-    if (pending && pending.key) await saveRow(pending);
-    refreshSavedViews();
+    await loadLists();
+    let pending = '';
+    try { pending = sessionStorage.getItem('pri.pendingAdd') || ''; sessionStorage.removeItem('pri.pendingAdd'); } catch { pending = ''; }
+    refreshListViews();
+    if (pending) {
+      if (pending.startsWith('m:') && M && !M.loaded) await ensureMedicines();
+      const item = findByKey(pending);
+      if (item) openPicker(item);
+    }
   }
   async function startAuth() {
     try {
@@ -1426,7 +1671,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       auth.client = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit' } });
       auth.config = cfg;
       renderAccount();
-      if (G) renderChips();
+      if (G) { renderChips(); renderResults(); }
       const { data } = await auth.client.auth.getSession();
       auth.user = data && data.session ? data.session.user : null;
       if (auth.user) await onSignedIn();
@@ -1434,7 +1679,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         const before = auth.user && auth.user.id;
         auth.user = session ? session.user : null;
         if (auth.user && auth.user.id !== before) onSignedIn();
-        if (!auth.user && before) { auth.saved = new Map(); state.savedOnly = false; refreshSavedViews(); }
+        if (!auth.user && before) { auth.lists = []; state.listsView = ''; refreshListViews(); }
       });
       // Back from Google, Facebook or Apple: tidy the address bar.
       if (/access_token=|error_description=/.test(location.hash)) {
@@ -1456,26 +1701,32 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
       if (error) openAuth(error.message, true);
       return;
     }
+    const pick = e.target.closest('[data-picklist]');
+    if (pick && auth.picking) {
+      const list = auth.lists.find((l) => l.id === pick.dataset.picklist);
+      if (list) await toggleInList(list, auth.picking);
+      return;
+    }
     const action = e.target.closest('[data-auth]');
     if (!action) return;
     const what = action.dataset.auth;
     if (what === 'close') closeAuth();
     else if (what === 'menu') { auth.view = 'menu'; auth.message = ''; renderAuth(); }
-    else if (what === 'show-saved') {
-      state.savedOnly = true;
-      state.cat = ''; state.cls = ''; state.subOnly = false; state.size = '';
-      $('#q').value = '';
+    else if (what === 'show-lists') {
+      state.listsView = 'all';
       state.q = '';
+      $('#q').value = '';
+      $('#clear').hidden = true;
       closeAuth();
       render();
       $('#cats').scrollIntoView({ block: 'start', behavior: 'smooth' });
     } else if (what === 'signout') {
       await auth.client.auth.signOut();
       auth.user = null;
-      auth.saved = new Map();
-      state.savedOnly = false;
+      auth.lists = [];
+      state.listsView = '';
       closeAuth();
-      refreshSavedViews();
+      refreshListViews();
     } else if (what === 'delete') { auth.view = 'delete'; auth.message = ''; renderAuth(); }
     else if (what === 'delete-yes') {
       auth.busy = true;
@@ -1487,11 +1738,10 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
         if (!res.ok) throw new Error(String(res.status));
         await auth.client.auth.signOut();
         auth.user = null;
-        auth.saved = new Map();
-        state.savedOnly = false;
+        auth.lists = [];
+        state.listsView = '';
         auth.busy = false;
-        auth.view = 'menu';
-        refreshSavedViews();
+        refreshListViews();
         openAuth(t('deleted'));
       } catch {
         auth.busy = false;
@@ -1502,8 +1752,16 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     }
   });
   $('#auth').addEventListener('submit', async (e) => {
-    if (e.target.id !== 'auth-email') return;
     e.preventDefault();
+    if (e.target.id === 'new-list') {
+      if (!auth.picking) return;
+      auth.busy = true;
+      await createList($('#new-list-name').value, auth.picking);
+      auth.busy = false;
+      renderAuth();
+      return;
+    }
+    if (e.target.id !== 'auth-email') return;
     const email = $('#auth-mail').value.trim();
     if (!email) return;
     auth.busy = true;
@@ -1519,6 +1777,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   // ---------------------------------------------------------------- events
   function setQuery(value) {
     state.q = value;
+    if (value) state.listsView = '';
     state.limit = PAGE;
     state.open = '';
     $('#clear').hidden = !value;
@@ -1549,6 +1808,7 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     const b = e.target.closest('[data-tab]');
     if (!b || b.dataset.tab === state.tab) return;
     state.tab = b.dataset.tab;
+    state.listsView = '';
     state.limit = PAGE;
     state.open = '';
     state.sort = 'auto';
@@ -1559,10 +1819,17 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
   $('#cats').addEventListener('click', (e) => {
     const b = e.target.closest('.chip');
     if (!b) return;
-    if ('saved' in b.dataset) {
-      if (!auth.user) { openAuth(); return; }
-      state.savedOnly = !state.savedOnly;
-    } else if ('sub' in b.dataset) state.subOnly = !state.subOnly;
+    if ('lists' in b.dataset) {
+      if (!auth.user) { openAuth(t('signInToList')); return; }
+      state.listsView = state.listsView ? '' : 'all';
+      state.open = '';
+      if (state.listsView) { state.q = ''; $('#q').value = ''; $('#clear').hidden = true; }
+      renderChips();
+      renderResults();
+      return;
+    }
+    state.listsView = '';
+    if ('sub' in b.dataset) state.subOnly = !state.subOnly;
     else if ('cat' in b.dataset) { state.cat = b.dataset.cat; state.size = ''; }
     else if ('cls' in b.dataset) state.cls = b.dataset.cls;
     state.limit = PAGE;
@@ -1595,9 +1862,10 @@ tr.hit td { background: var(--sub-bg); color: var(--sub-ink); font-weight: 800; 
     render();
   });
   function onListClick(e) {
-    const saveBtn = e.target.closest('[data-save]');
-    if (saveBtn) {
-      toggleSave(findItem(saveBtn.dataset.save));
+    if (state.listsView && onListsClick(e)) return;
+    const addBtn = e.target.closest('[data-addlist]');
+    if (addBtn) {
+      openPicker(findItem(addBtn.dataset.addlist));
       return;
     }
     const copyBtn = e.target.closest('[data-copy]');
