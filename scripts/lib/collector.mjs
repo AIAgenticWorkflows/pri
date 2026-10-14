@@ -280,7 +280,15 @@ export class Collector {
   // The work list is kept in the store (store.cover) and carries on across runs.
 
   coverDue() {
-    if (!this.policy.slices) return false;
+    if (!this.policy.slices) {
+      // The smaller lists are read page by page, and that paging misses rows now and then.
+      // When we hold fewer rows than the site reports, text searches find the missing ones
+      // (at most once a day; a search started earlier is always finished).
+      const { cover, reportedTotal } = this.store;
+      if (cover && cover.version === 2 && !cover.doneAt) return true;
+      if (!reportedTotal || this.store.rows.length >= reportedTotal) return false;
+      return !(cover && cover.version === 2 && cover.doneAt && Date.now() - Date.parse(cover.doneAt) < 20 * HOUR);
+    }
     return !(this.store.cover && this.store.cover.version === 2 && this.store.cover.doneAt);
   }
 
@@ -319,6 +327,7 @@ export class Collector {
     const store = this.store;
     // Searches made before empty pages were told apart from error pages may have been
     // counted as "no match": start the text searches again (the rows found are kept).
+    if (store.cover && store.cover.doneAt && !this.policy.slices) store.cover = null;
     if (store.cover && store.cover.version !== 2) {
       this.log('text searches: starting again with the stricter check');
       store.cover = null;
@@ -421,8 +430,10 @@ export class Collector {
     this.stats.searches += searched;
     if (!cover.stack.length) {
       cover.doneAt = new Date().toISOString();
-      store.complete = true;
-      store.fullPassAt = cover.doneAt;
+      if (this.policy.slices) {
+        store.complete = true;
+        store.fullPassAt = cover.doneAt;
+      }
       const gaps = Object.values(cover.nodes).filter((n) => n.state === 'gap').length;
       this.stats.steps.push(`text searches: complete after ${cover.searches}, ${found} new rows this run${gaps ? `, ${gaps} pieces still short` : ''}`);
       return { done: true };

@@ -176,3 +176,19 @@ test('text searches find every medicine, even names sharing no word with a known
     mock.server.close();
   }
 });
+
+test('rows missed by paging are found by text searches when the site reports more', async () => {
+  const rows = groceries(300);
+  const mock = await startMock({ [P]: rows });
+  try {
+    const held = rows.filter((_, i) => i % 7 !== 0); // 43 rows missed
+    const store = { ...emptyStore('p'), headers: HEADERS, rows: held, seen: held.map(() => 1), pass: 1, fullPassAt: new Date().toISOString(), topAt: new Date().toISOString(), reportedTotal: 300 };
+    const c = new Collector({ key: 'p', store, deadlineAt: soon(60000), base: mock.url, pauseMs: 0, log: quiet, maxSliceRows: 60 });
+    assert.equal(c.coverDue(), true);
+    await c.runCover();
+    assert.equal(c.store.rows.length, 300);
+    assert.equal(c.coverDue(), false);
+  } finally {
+    mock.server.close();
+  }
+});

@@ -106,6 +106,20 @@ export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseM
     await runPassFor(key);
   }
 
+  // 2b. Rows the page-by-page reads missed: found by text searches.
+  for (const key of wanted) {
+    if (key === 'ph' || outOfTime()) continue;
+    const c = collectors[key];
+    if (!c.coverDue()) continue;
+    try {
+      say(`${key}: ${c.store.rows.length} rows held, the site reports ${c.store.reportedTotal}: searching for the missing ones`);
+      await c.runCover();
+    } catch (err) {
+      say(`${key}: text searches failed: ${err.message}`);
+    }
+    await save(key);
+  }
+
   // 3. The full medicines list, through name searches taken from both medicine lists.
   if (collectors.ph && !collectors.ph.store.slicesDone && !outOfTime()) {
     const phs = collectors.phs || { store: (await storage.readJson('stores/phs.json')) || emptyStore('phs') };
