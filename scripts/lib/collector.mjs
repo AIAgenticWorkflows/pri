@@ -121,7 +121,11 @@ export class Collector {
         const parsed = parsePage(html);
         this.stats.pages++;
         if (!parsed.hasTable) {
-          if (query) return { ...parsed, rows: [], ms: Date.now() - t0, empty: true }; // a search with no match
+          // A search with no match still shows the list's frame ("view ..."), just without
+          // results. A page without that frame is something else (an error or a block page):
+          // treating it as "no match" would silently lose rows.
+          if (query && /class="[^"]*\bview\b[^"]*view-id-|class="view /.test(html) && !/view-content/.test(html)) return { ...parsed, rows: [], ms: Date.now() - t0, empty: true };
+          if (query) throw new Error(`unexpected page for a search (${html.length} bytes): ${html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80)}`);
           throw new Error(`no results table in the response (${html.length} bytes)`);
         }
         if (!this.store.headers) this.store.headers = parsed.headers;
@@ -277,7 +281,7 @@ export class Collector {
 
   coverDue() {
     if (!this.policy.slices) return false;
-    return !(this.store.cover && this.store.cover.doneAt);
+    return !(this.store.cover && this.store.cover.version === 2 && this.store.cover.doneAt);
   }
 
   nameColumn() {
@@ -313,9 +317,16 @@ export class Collector {
 
   async runCover(extraNames = []) {
     const store = this.store;
+    // Searches made before empty pages were told apart from error pages may have been
+    // counted as "no match": start the text searches again (the rows found are kept).
+    if (store.cover && store.cover.version !== 2) {
+      this.log('text searches: starting again with the stricter check');
+      store.cover = null;
+      store.complete = false;
+    }
     if (!store.cover) {
       const alphabet = this.coverAlphabet(extraNames);
-      store.cover = { alphabet, stack: [...alphabet].reverse().map((q) => ({ q, step: 'search' })), nodes: {}, searches: 0, startedAt: new Date().toISOString(), doneAt: null };
+      store.cover = { version: 2, alphabet, stack: [...alphabet].reverse().map((q) => ({ q, step: 'search' })), nodes: {}, searches: 0, startedAt: new Date().toISOString(), doneAt: null };
     }
     const cover = store.cover;
     const alphabet = [...cover.alphabet];
@@ -368,6 +379,7 @@ export class Collector {
       }
       node.t = first.empty ? 0 : first.total || first.rows.length;
       node.at = new Date().toISOString();
+      if (process.env.PRI_DEBUG) this.log(`search "${node.q}": ${node.t} matches, ${first.ms} ms, ${this.localCount(node.q)} held`);
       for (const row of first.rows) this.add(row);
       if (!short(node)) {
         node.state = 'ok';
