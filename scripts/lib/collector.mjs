@@ -447,7 +447,14 @@ export class Collector {
         }
         node.reads++;
         if (!finished) cover.stack.push({ q: node.q, step: 'search', again: true });
-        else if (short(node)) cover.stack.push({ q: node.q, step: 'search', again: true });
+        else if (short(node) && node.t <= 100 && node.reads >= 2) {
+          // One page holds every match and we have read it twice: the few rows still
+          // "missing" are exact duplicates on the site, which we keep once.
+          node.state = 'ok';
+          node.duplicates = node.t - this.localCount(node.q);
+        } else if (short(node) && node.reads >= 4) {
+          node.state = 'gap'; // keep going; the daily refresh looks at it again
+        } else if (short(node)) cover.stack.push({ q: node.q, step: 'search', again: true });
         else node.state = 'ok';
       }
       if (this.onProgress && searched % 20 === 0) {

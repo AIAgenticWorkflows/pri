@@ -192,3 +192,19 @@ test('rows missed by paging are found by text searches when the site reports mor
     mock.server.close();
   }
 });
+
+test('text searches do not loop on rows the site lists twice', async () => {
+  const row = (i) => ['01/10/2026', `B${i}`, '', `PANADOL ${i} TABS`, 'Pharmaceutical Products (Classified)', '', '10.00', '11.00'];
+  const rows = [row(1), row(1), row(1), row(2), row(3)]; // the first row three times
+  const mock = await startMock({ [PH]: { headers: PHARMA_HEADERS, rows } });
+  try {
+    const store = { ...emptyStore('ph'), slicesDone: true, headers: PHARMA_HEADERS };
+    const c = new Collector({ key: 'ph', store, deadlineAt: soon(90000), base: mock.url, pauseMs: 0, log: quiet, maxSliceRows: 40 });
+    const out = await c.runCover([]);
+    assert.equal(out.done, true);
+    assert.equal(c.store.rows.length, 3);
+    assert.ok(c.store.cover.searches < 500, `${c.store.cover.searches} searches`);
+  } finally {
+    mock.server.close();
+  }
+});
