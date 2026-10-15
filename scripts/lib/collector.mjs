@@ -285,11 +285,11 @@ export class Collector {
       // When we hold fewer rows than the site reports, text searches find the missing ones
       // (at most once a day; a search started earlier is always finished).
       const { cover, reportedTotal } = this.store;
-      if (cover && cover.version === 2 && !cover.doneAt) return true;
+      if (cover && cover.version === 3 && !cover.doneAt) return true;
       if (!reportedTotal || this.store.rows.length >= reportedTotal) return false;
-      return !(cover && cover.version === 2 && cover.doneAt && Date.now() - Date.parse(cover.doneAt) < 20 * HOUR);
+      return !(cover && cover.version === 3 && cover.doneAt && Date.now() - Date.parse(cover.doneAt) < 20 * HOUR);
     }
-    return !(this.store.cover && this.store.cover.version === 2 && this.store.cover.doneAt);
+    return !(this.store.cover && this.store.cover.version === 3 && this.store.cover.doneAt);
   }
 
   nameColumn() {
@@ -305,9 +305,37 @@ export class Collector {
   }
 
   // How many rows we hold whose name contains q (the site matches ignoring case and accents).
+  // How the site's name search matches is learnt from what it returns: names that
+  // start with the text, names with a word starting with it, or names containing it.
+  // Until a result rules a narrower rule out, the narrowest is assumed, so we never
+  // believe we hold rows that we do not.
+  matches(name, q) {
+    const mode = this.matchMode();
+    if (mode === 'start') return name.startsWith(q);
+    if (mode === 'word') return name.startsWith(q) || name.includes(` ${q}`) || new RegExp(`[^A-Z0-9]${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(name);
+    return name.includes(q);
+  }
+  matchMode() {
+    const ruled = (this.store.matchRuledOut || []);
+    return ['start', 'word', 'contains'].find((m) => !ruled.includes(m)) || 'contains';
+  }
+  learnMatch(q, rows) {
+    const col = this.nameColumn();
+    if (col < 0 || !rows.length) return;
+    const ruled = new Set(this.store.matchRuledOut || []);
+    const before = this.matchMode();
+    for (const row of rows) {
+      const name = fold(row[col]).replace(/\s+/g, ' ');
+      if (!name.startsWith(q)) ruled.add('start');
+      const wordStart = name.startsWith(q) || new RegExp(`[^A-Z0-9]${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(name);
+      if (!wordStart && name.includes(q)) ruled.add('word');
+    }
+    this.store.matchRuledOut = [...ruled];
+    if (this.matchMode() !== before) this.log(`the site's name search matches by "${this.matchMode()}"`);
+  }
   localCount(q) {
     let n = 0;
-    for (const name of this.foldedNames()) if (name.includes(q)) n++;
+    for (const name of this.foldedNames()) if (this.matches(name, q)) n++;
     return n;
   }
 
@@ -328,14 +356,14 @@ export class Collector {
     // Searches made before empty pages were told apart from error pages may have been
     // counted as "no match": start the text searches again (the rows found are kept).
     if (store.cover && store.cover.doneAt && !this.policy.slices) store.cover = null;
-    if (store.cover && store.cover.version !== 2) {
+    if (store.cover && store.cover.version !== 3) {
       this.log('text searches: starting again with the stricter check');
       store.cover = null;
       store.complete = false;
     }
     if (!store.cover) {
       const alphabet = this.coverAlphabet(extraNames);
-      store.cover = { version: 2, alphabet, stack: [...alphabet].reverse().map((q) => ({ q, step: 'search' })), nodes: {}, searches: 0, startedAt: new Date().toISOString(), doneAt: null };
+      store.cover = { version: 3, alphabet, stack: [...alphabet].reverse().map((q) => ({ q, step: 'search' })), nodes: {}, searches: 0, startedAt: new Date().toISOString(), doneAt: null };
     }
     const cover = store.cover;
     const alphabet = [...cover.alphabet];
@@ -388,8 +416,9 @@ export class Collector {
       }
       node.t = first.empty ? 0 : first.total || first.rows.length;
       node.at = new Date().toISOString();
-      if (process.env.PRI_DEBUG) this.log(`search "${node.q}": ${node.t} matches, ${first.ms} ms, ${this.localCount(node.q)} held`);
+      this.learnMatch(node.q, first.rows);
       for (const row of first.rows) this.add(row);
+      if (process.env.PRI_DEBUG) this.log(`search "${node.q}": ${node.t} matches, ${first.ms} ms, ${this.localCount(node.q)} held (${this.matchMode()})`);
       if (!short(node)) {
         node.state = 'ok';
       } else if (node.t > this.maxSliceRows || (node.reads >= 2 && node.t > 100)) {
