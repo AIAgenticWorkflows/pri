@@ -375,9 +375,18 @@ export class Collector {
     const rowsBefore = store.rows.length;
     const query = (q) => `field_commodity_name_value=${encodeURIComponent(q)}`;
 
-    while (cover.stack.length) {
-      if (this.outOfTime()) break;
-      const item = cover.stack.pop();
+    // Several searches at once (PRI_CONCURRENCY, default 2). Each search taken from the
+    // list is noted as "in flight" so a stop at any moment loses nothing: the next run
+    // puts those back first. A "check" waits until no search below it is still running.
+    if (Array.isArray(cover.inflight) && cover.inflight.length) {
+      for (const it of cover.inflight) cover.stack.push(it);
+    }
+    cover.inflight = [];
+    const running = new Map(); // q -> promise
+    const workers = Math.max(1, Number(process.env.PRI_CONCURRENCY || this.concurrency || 2));
+    let stopping = false;
+
+    const step = async (item) => {
       const node = cover.nodes[item.q] || (cover.nodes[item.q] = { q: item.q, t: null, state: 'new', reads: 0 });
 
       if (item.step === 'check') {
@@ -388,16 +397,16 @@ export class Collector {
           cover.stack.push({ q: node.q, step: 'check' });
           for (const ch of [...alphabet].reverse()) cover.stack.push({ q: ch + node.q, step: 'search' });
         } else if (node.state !== 'ok') node.state = short(node) ? 'gap' : 'ok';
-        continue;
+        return 'next';
       }
 
       // The same piece can be reached twice (AB from A, and from B searched on its left).
-      if (!item.again && node.state !== 'new') continue;
+      if (!item.again && node.state !== 'new') return 'next';
       let first;
       try {
         if (this.timeLeft() < 30000) {
           cover.stack.push(item);
-          break;
+          return 'stop';
         }
         first = await this.fetchPage(query(node.q), 0);
         searched++;
@@ -406,7 +415,7 @@ export class Collector {
         if (/out of time/.test(err.message) || this.timeLeft() < 20000) {
           // Cut short by our own deadline, not by the site: try again next run.
           cover.stack.push(item);
-          break;
+          return 'stop';
         }
         // Too many matches for the site to answer in time: split without knowing the count.
         node.state = 'split';
@@ -414,7 +423,7 @@ export class Collector {
         node.error = String(err.message).slice(0, 80);
         cover.stack.push({ q: node.q, step: 'check' });
         for (const ch of [...alphabet].reverse()) cover.stack.push({ q: node.q + ch, step: 'search' });
-        continue;
+        return 'next';
       }
       node.t = first.empty ? 0 : first.total || first.rows.length;
       node.at = new Date().toISOString();
@@ -457,12 +466,51 @@ export class Collector {
         } else if (short(node)) cover.stack.push({ q: node.q, step: 'search', again: true });
         else node.state = 'ok';
       }
-      if (this.onProgress && searched % 20 === 0) {
-        this.log(`text searches: ${cover.searches} so far, ${store.rows.length} rows, ${cover.stack.length} to go`);
-        await this.onProgress();
+      return 'done';
+    };
+
+    const worker = async () => {
+      while (!stopping && (cover.stack.length || running.size)) {
+        if (this.outOfTime()) { stopping = true; break; }
+        if (!cover.stack.length) {
+          // The other worker may still add pieces to search: wait for it.
+          await Promise.race([...running.values()]).catch(() => {});
+          continue;
+        }
+        const item = cover.stack.pop();
+        if (item.step === 'check') {
+          const below = [...running.keys()].filter((q) => q !== item.q && q.includes(item.q));
+          if (below.length) {
+            cover.stack.push(item);
+            await Promise.all(below.map((q) => running.get(q)));
+            continue;
+          }
+        }
+        cover.inflight.push(item);
+        const key = `${item.q}\u0000${Math.random()}`;
+        const p = step(item);
+        running.set(key, p);
+        let outcome;
+        try {
+          outcome = await p;
+        } finally {
+          running.delete(key);
+          const at = cover.inflight.indexOf(item);
+          if (at >= 0) cover.inflight.splice(at, 1);
+        }
+        if (outcome === 'stop') { stopping = true; break; }
+        if (outcome === 'next') continue;
+        if (this.onProgress && searched > 0 && searched % 20 === 0 && !this._saving) {
+          this.log(`text searches: ${cover.searches} so far, ${store.rows.length} rows, ${cover.stack.length + cover.inflight.length} to go`);
+          this._saving = true;
+          try { await this.onProgress(); } finally { this._saving = false; }
+        }
+        if (this.pauseMs) await sleep(this.pauseMs);
       }
-      if (this.pauseMs) await sleep(this.pauseMs);
-    }
+    };
+    await Promise.all(Array.from({ length: workers }, () => worker()));
+    for (const it of cover.inflight) cover.stack.push(it);
+    cover.inflight = [];
 
     const found = store.rows.length - rowsBefore;
     this.stats.searches += searched;
