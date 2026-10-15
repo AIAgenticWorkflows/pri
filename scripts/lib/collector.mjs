@@ -285,11 +285,11 @@ export class Collector {
       // When we hold fewer rows than the site reports, text searches find the missing ones
       // (at most once a day; a search started earlier is always finished).
       const { cover, reportedTotal } = this.store;
-      if (cover && cover.version === 3 && !cover.doneAt) return true;
+      if (cover && cover.version === 4 && !cover.doneAt) return true;
       if (!reportedTotal || this.store.rows.length >= reportedTotal) return false;
-      return !(cover && cover.version === 3 && cover.doneAt && Date.now() - Date.parse(cover.doneAt) < 20 * HOUR);
+      return !(cover && cover.version === 4 && cover.doneAt && Date.now() - Date.parse(cover.doneAt) < 20 * HOUR);
     }
-    return !(this.store.cover && this.store.cover.version === 3 && this.store.cover.doneAt);
+    return !(this.store.cover && this.store.cover.version === 4 && this.store.cover.doneAt);
   }
 
   nameColumn() {
@@ -347,8 +347,10 @@ export class Collector {
     // and _ are left out (% and _ are wildcards in the site's search, and a leading or
     // trailing space may be trimmed).
     const out = new Set('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
-    for (const [ch, n] of counts) if (n >= 20 && !/[\s%_\\]/.test(ch)) out.add(ch);
-    return [...out].sort().join('');
+    // Characters the site stores as HTML codes (& ' " < >) do not search reliably: "'"
+    // reports thousands of matches yet "'A" none. Every name has letters or digits anyway.
+    for (const [ch, n] of counts) if (n >= 20 && !/[\s%_\\&'"<>]/.test(ch)) out.add(ch);
+    return [...out].sort((x, y) => (/[A-Z0-9]/.test(y) - /[A-Z0-9]/.test(x)) || (x < y ? -1 : 1)).join('');
   }
 
   async runCover(extraNames = []) {
@@ -356,14 +358,14 @@ export class Collector {
     // Searches made before empty pages were told apart from error pages may have been
     // counted as "no match": start the text searches again (the rows found are kept).
     if (store.cover && store.cover.doneAt && !this.policy.slices) store.cover = null;
-    if (store.cover && store.cover.version !== 3) {
+    if (store.cover && store.cover.version !== 4) {
       this.log('text searches: starting again with the stricter check');
       store.cover = null;
       store.complete = false;
     }
     if (!store.cover) {
       const alphabet = this.coverAlphabet(extraNames);
-      store.cover = { version: 3, alphabet, stack: [...alphabet].reverse().map((q) => ({ q, step: 'search' })), nodes: {}, searches: 0, startedAt: new Date().toISOString(), doneAt: null };
+      store.cover = { version: 4, alphabet, stack: [...alphabet].reverse().map((q) => ({ q, step: 'search' })), nodes: {}, searches: 0, startedAt: new Date().toISOString(), doneAt: null };
     }
     const cover = store.cover;
     const alphabet = [...cover.alphabet];
