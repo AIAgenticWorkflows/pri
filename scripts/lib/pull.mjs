@@ -138,7 +138,16 @@ export async function runPull({ storage, deadlineAt, lists = ORDER, base, pauseM
   if (collectors.ph && collectors.ph.store.slicesDone && !outOfTime()) {
     const c = collectors.ph;
     try {
-      if (c.coverDue()) {
+      // First the fast way, if the site allows it: one commodity type at a time.
+      if (c.typeWalkDue() && process.env.PRI_TYPE_WALK !== '0') await c.runTypeWalk();
+      await save('ph');
+    } catch (err) {
+      say(`ph: reading by type failed: ${err.message}`);
+    }
+    try {
+      if (outOfTime()) {
+        // carry on next run
+      } else if (c.coverDue()) {
         const phsStore = collectors.phs ? collectors.phs.store : (await storage.readJson('stores/phs.json')) || emptyStore('phs');
         const col = phsStore.headers ? phsStore.headers.findIndex((h) => /commodity name/i.test(h)) : -1;
         await c.runCover(col >= 0 ? phsStore.rows.map((row) => row[col]) : []);

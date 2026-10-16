@@ -64,6 +64,14 @@ export function startMock(lists, onRequest) {
       const col = headers.indexOf('Commodity Name');
       rows = rows.filter((row) => row[col].toLowerCase().includes(nameFilter));
     }
+    const typeFilter = (url.searchParams.get('field_commodity_type_value') || '').toLowerCase();
+    if (typeFilter && Array.isArray(rows)) {
+      if (lists.slowTypes && lists.slowTypes.includes(typeFilter)) rows = 'error';
+      else {
+        const col = headers.indexOf('Commodity Type');
+        rows = rows.filter((row) => row[col].toLowerCase().includes(typeFilter));
+      }
+    }
     if (rows === undefined) {
       res.writeHead(404, { 'content-type': 'text/html' }).end('<h1>Page not found</h1>');
     } else if (rows === 'error') {

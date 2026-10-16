@@ -556,6 +556,95 @@ export class Collector {
 
   // Once complete: look again at the smaller pieces, oldest first, and read any whose
   // count grew (new batches). Keeps the medicines list current without the slow first page.
+  // ---- reading the medicines list one commodity type at a time ---------------------
+  //
+  // The unfiltered list is too slow for the site to serve, but it may serve each commodity
+  // type on its own (the slowness grows with the number of matching rows). Each type found
+  // in the rows we hold is tried once; types the site answers are read page by page, two
+  // pages at a time, and the place is saved so a stop loses nothing. Types it cannot serve
+  // are left to the text searches.
+  typeWalkDue() {
+    if (!this.policy.slices) return false;
+    const w = this.store.typeWalk;
+    return !(w && w.doneAt);
+  }
+
+  async runTypeWalk() {
+    const store = this.store;
+    const col = store.headers ? store.headers.findIndex((h) => /commodity type/i.test(h)) : -1;
+    if (col < 0) return { done: false };
+    if (!store.typeWalk) {
+      const counts = new Map();
+      for (const row of store.rows) if (row[col]) counts.set(row[col], (counts.get(row[col]) || 0) + 1);
+      // Smallest first: quick wins, and a sign of whether the site copes.
+      const types = [...counts.entries()].sort((a, b) => a[1] - b[1]).map(([t]) => t);
+      store.typeWalk = { types: Object.fromEntries(types.map((t) => [t, { page: 0, lastPage: null, total: null, state: 'new' }])), startedAt: new Date().toISOString(), doneAt: null };
+      this.log(`reading by commodity type: ${types.length} types (${types.join('; ')})`);
+    }
+    const walk = store.typeWalk;
+    const rowsBefore = store.rows.length;
+    const workers = Math.max(1, Number(process.env.PRI_CONCURRENCY || 2));
+    for (const [type, t] of Object.entries(walk.types)) {
+      if (t.state === 'done' || t.state === 'failed') continue;
+      if (this.outOfTime()) break;
+      const query = `field_commodity_type_value=${encodeURIComponent(type)}`;
+      // First page: tells how many rows this type has, and whether the site copes.
+      if (t.lastPage === null) {
+        try {
+          const first = await this.fetchPage(query, 0, 1);
+          if (first.empty) { t.state = 'done'; t.total = 0; continue; }
+          for (const row of first.rows) this.add(row);
+          t.total = first.total || first.rows.length;
+          t.lastPage = Math.max(first.lastPage, Math.ceil(t.total / 100) - 1);
+          t.page = 1;
+          t.ms = first.ms;
+          this.log(`type "${type}": ${t.total} rows, ${t.lastPage + 1} pages, ${Math.round(first.ms / 100) / 10} s a page`);
+        } catch (err) {
+          if (this.timeLeft() < 20000) break;
+          t.state = 'failed';
+          t.error = String(err.message).slice(0, 100);
+          this.log(`type "${type}": the site could not serve it (${t.error}); left to the text searches`);
+          continue;
+        }
+      }
+      // The pages, a few at a time.
+      let failures = 0;
+      while (t.page <= t.lastPage && !this.outOfTime()) {
+        const batch = [];
+        for (let i = 0; i < workers && t.page + i <= t.lastPage; i++) batch.push(t.page + i);
+        const results = await Promise.all(batch.map((n) => this.fetchPage(query, n).then((page) => ({ n, page }), (err) => ({ n, err }))));
+        let ok = true;
+        for (const { n, page, err } of results.sort((a, b) => a.n - b.n)) {
+          if (err) { ok = false; break; }
+          for (const row of page.rows) this.add(row);
+          t.page = n + 1;
+        }
+        if (!ok) {
+          failures++;
+          if (failures >= 3) { t.state = 'failed'; t.error = 'pages kept failing'; break; }
+          await sleep(5000);
+          continue;
+        }
+        failures = 0;
+        if (t.page % 10 < workers) {
+          this.log(`type "${type}": page ${t.page} of ${t.lastPage + 1}, ${store.rows.length} rows`);
+          if (this.onProgress) await this.onProgress();
+        }
+        if (this.pauseMs) await sleep(this.pauseMs);
+      }
+      if (t.page > t.lastPage) t.state = 'done';
+    }
+    const found = store.rows.length - rowsBefore;
+    if (Object.values(walk.types).every((t) => t.state === 'done' || t.state === 'failed')) {
+      walk.doneAt = new Date().toISOString();
+      const failed = Object.entries(walk.types).filter(([, t]) => t.state === 'failed').map(([k]) => k);
+      this.stats.steps.push(`by type: finished, ${found} new rows this run${failed.length ? `; not served by the site: ${failed.join('; ')}` : ''}`);
+      return { done: true };
+    }
+    this.stats.steps.push(`by type: ${found} new rows this run, still reading`);
+    return { done: false };
+  }
+
   async refreshCover(maxSearches = Infinity) {
     const cover = this.store.cover;
     if (!cover || !cover.doneAt) return { done: false };

@@ -208,3 +208,25 @@ test('text searches do not loop on rows the site lists twice', async () => {
     mock.server.close();
   }
 });
+
+test('the medicines list is read one commodity type at a time when the site serves it', async () => {
+  const med = (i, type) => ['01/10/2026', `B${i}`, '', `MED ${i} TABS`, type, '', '10.00', '11.00'];
+  const rows = [];
+  for (let i = 0; i < 250; i++) rows.push(med(i, i % 5 ? 'Pharmaceutical Products (Classified)' : 'Medical Devices'));
+  for (let i = 250; i < 300; i++) rows.push(med(i, 'Vaccines'));
+  const lists = { [PH]: { headers: PHARMA_HEADERS, rows }, slowTypes: ['vaccines'] };
+  const mock = await startMock(lists);
+  try {
+    const held = [rows[1], rows[5], rows[260]]; // one of each type
+    const store = { ...emptyStore('ph'), slicesDone: true, headers: PHARMA_HEADERS, rows: held, seen: held.map(() => 0) };
+    const c = new Collector({ key: 'ph', store, deadlineAt: soon(60000), base: mock.url, pauseMs: 0, log: quiet });
+    assert.equal(c.typeWalkDue(), true);
+    const out = await c.runTypeWalk();
+    assert.equal(out.done, true);
+    assert.equal(c.store.rows.length, 251); // 250 from the two types it serves, plus the vaccine we held
+    assert.equal(c.store.typeWalk.types.Vaccines.state, 'failed');
+    assert.equal(c.typeWalkDue(), false);
+  } finally {
+    mock.server.close();
+  }
+});
