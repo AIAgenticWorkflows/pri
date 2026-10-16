@@ -373,6 +373,22 @@ export class Collector {
     const short = (node) => node.t === null || this.localCount(node.q) < node.t - tolerance(node.t);
     let searched = 0;
     const rowsBefore = store.rows.length;
+    // The longer pieces of a split, most promising first: those that appear most often in
+    // the names we already hold. Missing rows tend to look like held ones, so they are found
+    // early, and the rest are then skipped (see above) instead of searched.
+    const pushChildren = (q, side) => {
+      const freq = new Map(alphabet.map((ch) => [ch, 0]));
+      for (const name of this.foldedNames()) {
+        let at = name.indexOf(q);
+        while (at >= 0) {
+          const ch = side === 'right' ? name[at + q.length] : name[at - 1];
+          if (freq.has(ch)) freq.set(ch, freq.get(ch) + 1);
+          at = name.indexOf(q, at + 1);
+        }
+      }
+      const order = [...alphabet].sort((a, b) => freq.get(b) - freq.get(a));
+      for (const ch of order.reverse()) cover.stack.push({ q: side === 'right' ? q + ch : ch + q, step: 'search' });
+    };
     const query = (q) => `field_commodity_name_value=${encodeURIComponent(q)}`;
 
     // Several searches at once (PRI_CONCURRENCY, default 2). Each search taken from the
@@ -395,13 +411,23 @@ export class Collector {
         else if (short(node) && !node.left && node.q.length < 30) {
           node.left = true;
           cover.stack.push({ q: node.q, step: 'check' });
-          for (const ch of [...alphabet].reverse()) cover.stack.push({ q: ch + node.q, step: 'search' });
+          pushChildren(node.q, 'left');
         } else if (node.state !== 'ok') node.state = short(node) ? 'gap' : 'ok';
         return 'next';
       }
 
       // The same piece can be reached twice (AB from A, and from B searched on its left).
       if (!item.again && node.state !== 'new') return 'next';
+      // Every match of a longer piece is also a match of the shorter one it came from. Once
+      // we hold all of the shorter one's matches, the longer one has nothing new: skip it.
+      if (!item.again) {
+        const parents = [node.q.slice(0, -1), node.q.slice(1)].filter((p) => p && cover.nodes[p] && Number.isInteger(cover.nodes[p].t));
+        if (parents.some((p) => !short(cover.nodes[p]))) {
+          node.state = 'ok';
+          node.skipped = true;
+          return 'next';
+        }
+      }
       let first;
       try {
         if (this.timeLeft() < 30000) {
@@ -422,7 +448,7 @@ export class Collector {
         node.t = null;
         node.error = String(err.message).slice(0, 80);
         cover.stack.push({ q: node.q, step: 'check' });
-        for (const ch of [...alphabet].reverse()) cover.stack.push({ q: node.q + ch, step: 'search' });
+        pushChildren(node.q, 'right');
         return 'next';
       }
       node.t = first.empty ? 0 : first.total || first.rows.length;
@@ -436,7 +462,7 @@ export class Collector {
         // Too many to read page by page, or paging keeps missing rows: split.
         node.state = 'split';
         cover.stack.push({ q: node.q, step: 'check' });
-        for (const ch of [...alphabet].reverse()) cover.stack.push({ q: node.q + ch, step: 'search' });
+        pushChildren(node.q, 'right');
       } else {
         const pages = Math.max(first.lastPage, Math.ceil(node.t / 100) - 1);
         let finished = true;
